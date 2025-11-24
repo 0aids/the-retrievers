@@ -1,0 +1,106 @@
+(footprint "0805 CAP"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(descr "http://www.digikey.co.nz/Web%20Export/Supplier%20Content/Vishay_8026/PDF/VishayBeyschlag_SolderPad.pdf?redirected=1 with dimension G modified by +0.25mm")
+	(property "Reference" "REF**"
+		(at 0 -1.65 0)
+		(layer "F.SilkS")
+		(uuid "6aacf677-c704-4d0b-a600-9229ead49f77")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "0805 CAP"
+		(at 0 1.65 0)
+		(layer "F.Fab")
+		(uuid "b17333b4-de90-474f-abfb-2e854ce25211")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "d94c279d-7f78-474c-8160-bf4dddccc632")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "d20b9285-270f-45fb-a20b-74465e36dc50")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(fp_line
+		(start -1.8 -0.9)
+		(end 1.8 -0.9)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "8e564a5e-a2b4-4743-8afb-6025652692c2")
+	)
+	(fp_line
+		(start -1.8 0.9)
+		(end -1.8 -0.9)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "1e9c4aa5-6a91-4ac6-99ee-6781b13ff560")
+	)
+	(fp_line
+		(start -1.8 0.9)
+		(end 1.8 0.9)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "f53849bc-76ef-4ad7-a603-eee354bd3032")
+	)
+	(fp_line
+		(start 1.8 0.9)
+		(end 1.8 -0.9)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "d1517933-6fc3-4653-90b3-e82a4da3248f")
+	)
+	(pad "1" smd rect
+		(at -1 0)
+		(size 1.1 1.4)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "cc3617b9-7037-412e-bbbe-0c32554e7763")
+	)
+	(pad "2" smd rect
+		(at 1 0)
+		(size 1.1 1.4)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "5040dc9a-ff2d-486a-a924-f2e0c9771c1a")
+	)
+	(embedded_fonts no)
+)

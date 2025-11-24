@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "PSAT_Library")(type "KiCad")(uri "/home/aids/git/psat2025/the-retrievers/kicad/symbol-libaries/PSAT_Library.kicad_sym")(options "")(descr ""))
+)
