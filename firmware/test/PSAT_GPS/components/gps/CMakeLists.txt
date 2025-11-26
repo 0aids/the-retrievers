@@ -1,7 +1,5 @@
-file(GLOB_RECURSE GPS_SOURCES "*.c")
-
 idf_component_register(
-    SRCS ${GPS_SOURCES}
+    SRCS "gps_driver.c" "gps_parser.c" "gps_state.c" "minmea.c"
     INCLUDE_DIRS "include"
     REQUIRES driver
 )

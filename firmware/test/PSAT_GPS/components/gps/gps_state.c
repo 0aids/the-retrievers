@@ -1,5 +1,7 @@
 #include "gps_state.h"
 
+#include <string.h>
+
 #define KNOTS_TO_KPH 1.852
 #define SATS_PER_MSG 4
 
