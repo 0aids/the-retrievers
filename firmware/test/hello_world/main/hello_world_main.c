@@ -13,6 +13,8 @@
 #include "esp_flash.h"
 #include "esp_system.h"
 
+extern int printf(const char*, ...);
+extern int fflush(int);
 void app_main(void)
 {
     printf("Hello world!\n");
