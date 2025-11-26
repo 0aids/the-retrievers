@@ -5,6 +5,7 @@
 #define SATS_TO_STORE 32
 
 void gps_state_init(void);
+void gps_get_snapshot(gps_state_t* out);
 void gps_state_update_from_rmc(const struct minmea_sentence_rmc* rmc);
 void gps_state_update_from_gga(const struct minmea_sentence_gga* gga);
 void gps_state_update_from_gsv(const struct minmea_sentence_gsv* gsv);

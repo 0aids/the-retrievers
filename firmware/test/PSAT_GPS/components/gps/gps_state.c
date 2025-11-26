@@ -16,6 +16,10 @@ void gps_state_init(void) {
     gps_state.altitude_valid = false;
 }
 
+void gps_get_snapshot(gps_state_t* out) {
+    memcpy(out, &gps_state, sizeof(gps_state));
+}
+
 void gps_state_update_from_rmc(const struct minmea_sentence_rmc* rmc) {
     if (!rmc) return;
     if (!rmc->valid) {
