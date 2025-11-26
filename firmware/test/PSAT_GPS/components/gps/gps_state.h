@@ -1,7 +1,13 @@
-
 #include <stdbool.h>
 
+#include "minmea.h"
+
+#define SATS_TO_STORE 32
+
 void gps_state_init(void);
+void gps_state_update_from_rmc(const struct minmea_sentence_rmc* rmc);
+void gps_state_update_from_gga(const struct minmea_sentence_gga* gga);
+void gps_state_update_from_gsv(const struct minmea_sentence_gsv* gsv);
 
 typedef struct {
     bool position_valid;
@@ -33,5 +39,6 @@ typedef struct {
         int elevation;
         int azimuth;
         int snr;
-    } sat_info[32];
+    } sat_info[SATS_TO_STORE];
+    int sat_info_count;  // since we get in groups of 4, we need a way to count
 } gps_state_t;
