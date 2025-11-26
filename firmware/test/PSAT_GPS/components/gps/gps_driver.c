@@ -1,4 +1,8 @@
 #include "driver/uart.h"
+#include "esp_log.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "gps_parser.h"
 #include "gps_state.h"
 
 #define GPS_UART_NUM UART_NUM_1
@@ -13,8 +17,37 @@
 #define RX_BUFFER_SIZE 2048
 #define TX_BUFFER_SIZE 0  // cause we arent sending anything to gps
 
-void gps_task() {
-    // we finna do the gps stuff type shit
+#define GPS_BUFFER_SIZE 512  // aint no way we hitting the max
+#define TIMEOUT 50           // how long we wait for uart data in ms
+
+// buffer and buffer position
+static char gps_buffer[GPS_BUFFER_SIZE];
+static int gps_buffer_pos = 0;
+
+void gps_task(void* arg) {
+    uint8_t data[64];
+
+    while (1) {
+        int len = uart_read_bytes(GPS_UART_NUM, data, sizeof(data),
+                                  TIMEOUT / portTICK_PERIOD_MS);
+
+        // go through each byte we just read and add it to the buffer
+        for (int i = 0; i < len; i++) {
+            char c = data[i];
+            if (c == '\r') continue;
+
+            if (gps_buffer_pos < GPS_BUFFER_SIZE - 1)
+                gps_buffer[gps_buffer_pos++] = c;
+
+            if (c == '\n') {  // when we reach new line, we know a sentence is
+                              // complete
+                gps_buffer[gps_buffer_pos] = '\0';
+                gps_buffer_pos = 0;  // reset buffer pos to start
+
+                gps_process_nmea(gps_buffer);
+            }
+        }
+    }
 }
 
 void gps_init() {
