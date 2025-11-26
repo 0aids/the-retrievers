@@ -1,0 +1,1 @@
+void gps_process_nmea(const char* gps_buffer);
