@@ -63,10 +63,18 @@ target_compile_definitions(ai_thinker_lib PUBLIC
     REGION_CN470
 )
 # --- Executable Targets ---
-add_executable(base_station
-    "src/main.c"
-    # "src/pingpong.c"
-    "src/tremo_it.c"
+add_executable(ground_station
+    "src/ground_station/main.c"
+    "src/ground_station/tremo_it.c"
+    "src/init.c"
+    "src/ground_lora.c"
+    "${ai_thinker_source_dir}/platform/system/startup_cm4.S"
+)
+add_executable(psat_station
+    "src/psat_station/main.c"
+    "src/psat_station/tremo_it.c"
+    "src/init.c"
+    "src/psat_lora.c"
     "${ai_thinker_source_dir}/platform/system/startup_cm4.S"
 )
 # add_executable(psat_station
@@ -74,7 +82,7 @@ add_executable(base_station
 #     "${ai_thinker_source_dir}/platform/system/startup_cm4.S"
 # )
 # --- Target-Specific Options ---
-foreach(TARGET IN ITEMS base_station)
+foreach(TARGET IN ITEMS ground_station psat_station)
     # Link the SDK library and the pre-compiled crypto library
     target_link_libraries(${TARGET} PRIVATE
         ai_thinker_lib
