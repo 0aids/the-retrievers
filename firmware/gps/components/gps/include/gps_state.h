@@ -8,28 +8,25 @@
 #define SATS_TO_STORE 32
 
 typedef struct {
-    bool position_valid;
     double latitude;
     double longitude;
-
-    bool nav_valid;
     double speed_knots;
-    double speed_kph;  // this was derived not given by gps chip
+    double speed_kph;
     double course_deg;
-
-    int day, month, year;
-    int hours, minutes, seconds;
-
-    bool fix_info_valid;
-    int fix_quality;
-    int satellites_tracked;
     double hdop;
-
-    bool altitude_valid;
     double altitude;
     double geoidal_sep;
 
+    int day, month, year;
+    int hours, minutes, seconds;
+    int fix_quality;
+    int satellites_tracked;
     int sats_in_view;
+
+    bool position_valid;  // lat, long
+    bool nav_valid;       // knots, kph & course
+    bool fix_info_valid;  // fix quality, sats tracked
+    bool altitude_valid;  // altitude, geoidal
 } gps_state_t;
 
 void gps_state_init(void);
