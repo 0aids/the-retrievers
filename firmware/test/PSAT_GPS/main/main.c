@@ -1,7 +1,7 @@
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "gps_driver.h"
+#include "gps_driver_esp32.h"
 #include "gps_state.h"
 
 static const char* TAG = "MAIN";
