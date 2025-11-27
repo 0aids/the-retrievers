@@ -30,15 +30,6 @@ typedef struct {
     double geoidal_sep;
 
     int sats_in_view;
-    // might honestly remove this later as it takes up a lot of space and i dont
-    // think we will care about each indivisual satelite
-    struct {
-        int nr;
-        int elevation;
-        int azimuth;
-        int snr;
-    } sat_info[SATS_TO_STORE];
-    int sat_info_count;  // since we get in groups of 4, we need a way to count
 } gps_state_t;
 
 void gps_state_init(void);

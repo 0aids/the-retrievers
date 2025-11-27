@@ -73,21 +73,6 @@ void gps_state_update_from_gsv(const struct minmea_sentence_gsv* gsv) {
     if (!gsv) return;
 
     if (gsv->msg_nr == 1) {
-        gps_state.sat_info_count = 0;
         gps_state.sats_in_view = gsv->total_sats;
-    }
-
-    int start_index = (gsv->msg_nr - 1) * SATS_PER_MSG;
-    for (int i = 0; i < SATS_PER_MSG && (start_index + i) < SATS_TO_STORE;
-         i++) {
-        if (gsv->sats[i].nr == 0) continue;
-        int current_index = start_index + i;
-
-        gps_state.sat_info[current_index].nr = gsv->sats[i].nr;
-        gps_state.sat_info[current_index].elevation = gsv->sats[i].elevation;
-        gps_state.sat_info[current_index].azimuth = gsv->sats[i].azimuth;
-        gps_state.sat_info[current_index].snr = gsv->sats[i].snr;
-
-        gps_state.sat_info_count = current_index + 1;
     }
 }
