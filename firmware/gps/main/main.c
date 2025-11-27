@@ -1,8 +1,11 @@
+#include <stdbool.h>
+
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "gps_driver_esp32.h"
 #include "gps_state.h"
+#include "ready.h"
 
 static const char* TAG = "MAIN";
 static const char* GPS_TAG = "GPS";
@@ -10,9 +13,18 @@ static const char* GPS_TAG = "GPS";
 void log_gps_data();
 
 void main_task(void* arg) {
+    int deploy = false;
     gps_state_t gps;
 
     while (1) {
+        if (!deploy) {
+            ESP_LOGI(TAG, "WAITING FOR DEPLOYMENT SENSOR");
+            deploy = deployment_is_ready();
+            if (deploy) ESP_LOGI(TAG, "DEPLOYING NOW");
+            vTaskDelay(50 / portTICK_PERIOD_MS);
+            continue;
+        }
+
         gps_get_snapshot(&gps);
 
         if (gps.fix_info_valid) {
@@ -28,6 +40,7 @@ void main_task(void* arg) {
 void app_main(void) {
     gps_init();
     gps_start();
+    deployement_init();
 
     xTaskCreate(main_task, "main_task", 4096, NULL, 5, NULL);
     ESP_LOGI(TAG, "PSAT has started");
