@@ -1,70 +1,29 @@
-#include <stdbool.h>
-
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "gps_driver_esp32.h"
-#include "gps_state.h"
-#include "ready.h"
+#include "sm.h"
+#include "timers.h"
 
 static const char* TAG = "MAIN";
-static const char* GPS_TAG = "GPS";
-
-void log_gps_data();
-
-void main_task(void* arg) {
-    int deploy = false;
-    gps_state_t gps;
-
-    while (1) {
-        if (!deploy) {
-            ESP_LOGI(TAG, "WAITING FOR DEPLOYMENT SENSOR");
-            deploy = deployment_is_ready();
-            if (deploy) ESP_LOGI(TAG, "DEPLOYING NOW");
-            vTaskDelay(50 / portTICK_PERIOD_MS);
-            continue;
-        }
-
-        gps_get_snapshot(&gps);
-
-        if (gps.fix_info_valid) {
-            log_gps_data(&gps);
-        } else {
-            ESP_LOGI(TAG, "FIX NOT VALID - NOT CONNECTED");
-        }
-
-        vTaskDelay(5000 / portTICK_PERIOD_MS);
-    }
-}
 
 void app_main(void) {
-    gps_init();
-    gps_start();
-    deployement_init();
+    timers_init();
 
-    xTaskCreate(main_task, "main_task", 4096, NULL, 5, NULL);
+    fsm_start();
     ESP_LOGI(TAG, "PSAT has started");
-}
 
-void log_gps_data(gps_state_t* gps) {
-    ESP_LOGI(GPS_TAG, "position data valid: %d", gps->position_valid);
-    ESP_LOGI(GPS_TAG, "coords: (%f, %f)", gps->latitude, gps->longitude);
+    vTaskDelay(pdMS_TO_TICKS(30000));
 
-    ESP_LOGI(GPS_TAG, "navigation data valid: %d", gps->nav_valid);
-    ESP_LOGI(GPS_TAG, "speed: %.2f kph", gps->speed_kph);
-    ESP_LOGI(GPS_TAG, "course: %.2f", gps->course_deg);
+    ESP_LOGI(TAG, "Triggering fake landing event");
+    fsm_event_t landing_event = {.type = EVENT_LANDING_CONFIRMED};
+    fsm_post_event(&landing_event);
 
-    ESP_LOGI(GPS_TAG, "Date: %d-%d-%d", gps->day, gps->month, gps->year);
-    ESP_LOGI(GPS_TAG, "Time: %d:%d:%d", gps->hours, gps->minutes, gps->seconds);
+    vTaskDelay(pdMS_TO_TICKS(15000));
+    ESP_LOGI(TAG, "Triggering sound event");
+    fsm_event_t audio_event = {.type = EVENT_AUDIO_BEEP};
+    fsm_post_event(&audio_event);
 
-    ESP_LOGI(GPS_TAG, "fix valid: %d", gps->fix_info_valid);
-    ESP_LOGI(GPS_TAG, "Fix quality: %d", gps->fix_quality);
-    ESP_LOGI(GPS_TAG, "sats tracked: %d", gps->satellites_tracked);
-    ESP_LOGI(GPS_TAG, "HDOP: %f", gps->hdop);  // idk what this even is
-
-    ESP_LOGI(GPS_TAG, "altitude valkid: %d", gps->altitude_valid);
-    ESP_LOGI(GPS_TAG, "Alltitude: %f", gps->altitude);
-
-    ESP_LOGI(GPS_TAG, "sats in view: %d", gps->sats_in_view);
-    ESP_LOGI(GPS_TAG, "end\n\n");
+    vTaskDelay(pdMS_TO_TICKS(5000));
+    ESP_LOGI(TAG, "Triggering sound event 2");
+    fsm_event_t audio_event2 = {.type = EVENT_AUDIO_FUN};
+    fsm_post_event(&audio_event2);
 }
