@@ -11,22 +11,21 @@
 #include "sm.h"
 #include "timers.h"
 
-fsm_state_t state_prelaunch(const fsm_event_t* e) {
+fsm_state_t state_prelaunch(const fsm_event_t* event) {
     static const char* TAG = "FSM-PRELAUNCH";
-    ESP_LOGI(TAG, "Event %d", e->type);
+    ESP_LOGI(TAG, "Event %d", event->type);
 
-    switch (e->type) {
+    switch (event->type) {
         case EVENT_START_PRELAUNCH:
             ESP_LOGI(TAG, "Initilising timer, gps, audio and sensor");
 
             gps_init();
-            timers_start_10s();
-            deployment_init_isr();
             audio_init();
             audio2_init();
+            timers_start_10s();
+            deployment_init_isr();
 
-            fsm_event_t start_event;
-            start_event.type = EVENT_PRELAUNCH_COMPLETE;
+            fsm_event_t start_event = {.type = EVENT_PRELAUNCH_COMPLETE};
             fsm_post_event(&start_event);
 
             return STATE_PRELAUNCH;
@@ -40,11 +39,11 @@ fsm_state_t state_prelaunch(const fsm_event_t* e) {
     }
 }
 
-fsm_state_t state_ascent(const fsm_event_t* e) {
+fsm_state_t state_ascent(const fsm_event_t* event) {
     static const char* TAG = "FSM-ASCENT";
-    ESP_LOGI(TAG, "Event %d", e->type);
+    ESP_LOGI(TAG, "Event %d", event->type);
 
-    switch (e->type) {
+    switch (event->type) {
         case EVENT_TIMER_10S:
             ESP_LOGI(TAG, "Its been 10s, lets ping with lora rn");
             // lora send pong data here
@@ -54,12 +53,14 @@ fsm_state_t state_ascent(const fsm_event_t* e) {
             ESP_LOGI(TAG,
                      "Deployment confirmed, starting: gps, 5s & 1s timers, "
                      "stopping: 10s timer & deployment sensor");
+
             timers_stop_10s();
             // start the camera
             gps_start();
             timers_start_5s();
             timers_start_1s();
             stop_deployment_button();
+
             return STATE_DEPLOYED;
 
         default:
@@ -67,11 +68,11 @@ fsm_state_t state_ascent(const fsm_event_t* e) {
     }
 }
 
-fsm_state_t state_deployed(const fsm_event_t* e) {
+fsm_state_t state_deployed(const fsm_event_t* event) {
     static const char* TAG = "FSM-DEPLOYED";
-    ESP_LOGI(TAG, "Event %d", e->type);
+    ESP_LOGI(TAG, "Event %d", event->type);
 
-    switch (e->type) {
+    switch (event->type) {
         case EVENT_TIMER_5S:
             // we are currently waiting for camera to turn on, if the 5 second
             // timer fires before camera turns on we move on anyways
@@ -86,17 +87,18 @@ fsm_state_t state_deployed(const fsm_event_t* e) {
     }
 }
 
-fsm_state_t state_descent(const fsm_event_t* e) {
+fsm_state_t state_descent(const fsm_event_t* event) {
     static const char* TAG = "FSM-DESCENT";
-    ESP_LOGI(TAG, "Event %d", e->type);
+    ESP_LOGI(TAG, "Event %d", event->type);
 
-    switch (e->type) {
+    switch (event->type) {
         case EVENT_TIMER_1S:
             ESP_LOGI(TAG, "its been 1 second, camera go snap");
             // take a photo here
             return STATE_DECENT;
         case EVENT_TIMER_5S:
             ESP_LOGI(TAG, "its been 5 seconds, sending gps data to ground");
+
             gps_state_t gps_snapshot;
             gps_get_snapshot(&gps_snapshot);
 
@@ -107,6 +109,7 @@ fsm_state_t state_descent(const fsm_event_t* e) {
             } else {
                 ESP_LOGI(TAG, "FIX NOT VALID - NOT CONNECTED");
             }
+
             return STATE_DECENT;
         case EVENT_LANDING_CONFIRMED:
             ESP_LOGI(TAG, "landing has been detected, stopping 1s timer");
@@ -118,11 +121,11 @@ fsm_state_t state_descent(const fsm_event_t* e) {
     }
 }
 
-fsm_state_t state_landing(const fsm_event_t* e) {
+fsm_state_t state_landing(const fsm_event_t* event) {
     static const char* TAG = "FSM-LANDING";
-    ESP_LOGI(TAG, "Event %d", e->type);
+    ESP_LOGI(TAG, "Event %d", event->type);
 
-    switch (e->type) {
+    switch (event->type) {
         case EVENT_TIMER_5S:
             // same like before but a stop version
             ESP_LOGI(TAG, "camera didnt turn off but we move on anyways");
@@ -135,12 +138,11 @@ fsm_state_t state_landing(const fsm_event_t* e) {
     }
 }
 
-fsm_state_t state_recovery(const fsm_event_t* e) {
+fsm_state_t state_recovery(const fsm_event_t* event) {
     static const char* TAG = "FSM-RECOVERY";
-    ESP_LOGI(TAG, "Event %d", e->type);
+    ESP_LOGI(TAG, "Event %d", event->type);
 
-    if (!e) return STATE_RECOVERY;
-    switch (e->type) {
+    switch (event->type) {
         case EVENT_TIMER_5S:
             ESP_LOGI(TAG, "its been 5 seconds, sending gps data to ground");
             gps_state_t gps_snapshot;
@@ -161,14 +163,14 @@ fsm_state_t state_recovery(const fsm_event_t* e) {
                 "its been 5 seconds, yo ground im still alive find me pls");
             return STATE_RECOVERY;
         case EVENT_LORA_COMMAND:
-            ESP_LOGI(TAG, "recovery got lora cmd: %s", e->data.str);
+            ESP_LOGI(TAG, "recovery got lora cmd: %s", event->data.str);
             fsm_event_t lora_event;
 
-            if (strcmp(e->data.str, "AUDIO_ON") == 0)
+            if (strcmp(event->data.str, "AUDIO_ON") == 0)
                 lora_event.type = EVENT_AUDIO_ON;
-            if (strcmp(e->data.str, "AUDIO_OFF") == 0)
+            if (strcmp(event->data.str, "AUDIO_OFF") == 0)
                 lora_event.type = EVENT_AUDIO_OFF;
-            if (strcmp(e->data.str, "AUDIO_BEEP") == 0)
+            if (strcmp(event->data.str, "AUDIO_BEEP") == 0)
                 lora_event.type = EVENT_AUDIO_BEEP;
 
             fsm_post_event(&lora_event);

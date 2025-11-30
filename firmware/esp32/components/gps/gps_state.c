@@ -24,6 +24,7 @@ void gps_get_snapshot(gps_state_t* out) {
 
 void gps_state_update_from_rmc(const struct minmea_sentence_rmc* rmc) {
     if (!rmc) return;
+
     if (!rmc->valid) {
         gps_state.nav_valid = false;
         return;
@@ -72,7 +73,7 @@ void gps_state_update_from_gga(const struct minmea_sentence_gga* gga) {
 void gps_state_update_from_gsv(const struct minmea_sentence_gsv* gsv) {
     if (!gsv) return;
 
-    if (gsv->msg_nr == 1) {
+    if (gsv->msg_nr == 1) {  // only update on first message and ignore rest
         gps_state.sats_in_view = gsv->total_sats;
     }
 }

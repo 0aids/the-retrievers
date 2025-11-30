@@ -6,6 +6,8 @@
 #include "freertos/task.h"
 #include "state_handlers.h"
 
+#define QUEUE_SIZE 32
+
 static const char* TAG = "FSM";
 
 static QueueHandle_t fsm_event_queue = NULL;
@@ -24,10 +26,9 @@ void fsm_post_event_from_isr(const fsm_event_t* event) {
 void fsm_task(void* arg) {
     fsm_event_t event;
 
-    fsm_event_t startup;
-    startup.type = EVENT_START_PRELAUNCH;
-
-    fsm_post_event(&startup);
+    // use prelaunch event to kickstart the state machine
+    fsm_event_t startup_event = {.type = EVENT_START_PRELAUNCH};
+    fsm_post_event(&startup_event);
 
     while (1) {
         if (!xQueueReceive(fsm_event_queue, &event, portMAX_DELAY)) continue;
@@ -67,6 +68,6 @@ void fsm_task(void* arg) {
 }
 
 void fsm_start() {
-    fsm_event_queue = xQueueCreate(32, sizeof(fsm_event_t));
+    fsm_event_queue = xQueueCreate(QUEUE_SIZE, sizeof(fsm_event_t));
     xTaskCreate(fsm_task, "fsm_task", 4096, NULL, 10, NULL);
 }
