@@ -142,10 +142,23 @@ fsm_state_t state_recovery(const fsm_event_t* e) {
     if (!e) return STATE_RECOVERY;
     switch (e->type) {
         case EVENT_TIMER_5S:
+            ESP_LOGI(TAG, "its been 5 seconds, sending gps data to ground");
+            gps_state_t gps_snapshot;
+            gps_get_snapshot(&gps_snapshot);
+
+            if (gps_snapshot.fix_info_valid) {
+                log_gps_data(&gps_snapshot);
+                // lora gonna send gps here
+
+            } else {
+                ESP_LOGI(TAG, "FIX NOT VALID - NOT CONNECTED");
+            }
+
+            // alternatively we could stop gps and just lora send smth like hey
+            // guys im alive or smth idk
             ESP_LOGI(
                 TAG,
                 "its been 5 seconds, yo ground im still alive find me pls");
-            // lora send smth like hey guys im alive or smth idk
             return STATE_RECOVERY;
         case EVENT_LORA_COMMAND:
             ESP_LOGI(TAG, "recovery got lora cmd: %s", e->data.str);
