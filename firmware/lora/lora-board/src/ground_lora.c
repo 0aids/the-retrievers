@@ -1,78 +1,73 @@
 #include "ground_lora.h"
 #include <string.h>
 #include <stdio.h>
+#include "global_radio.h"
+#include "packets/packets.h"
 #include "global_lora.h"
 #include "radio.h"
-#include "sx126x-board.h"
 #include "tremo_delay.h"
 
 #define RX_TIMEOUT 0 //ms
 
-static uint8_t Buffer[BUFFER_SIZE];
-static uint8_t BufferSize = BUFFER_SIZE;
-static RadioEvents_t RadioEvents;
-
+static packet_t g_packet;
 
 void GroundOnTxDone( void )
 {
-    // Radio.Sleep( );
+    printf("tx done\r\n");
+    gr_RadioSetRx(RX_TIMEOUT);
+    // gr_RadioSleep( );
 }
 
 void GroundOnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
 {
-    // Radio.Sleep( );
-    BufferSize = size;
-    memcpy( Buffer, payload, BufferSize );
-    printf("Received: ");
-    for (uint8_t i = 0; i < BufferSize; i++) {
-        printf("%c", Buffer[i]);
+    // gr_RadioSleep( );
+    g_packet = ParsePacket(payload, size);
+    printPacketStats(&g_packet);
+    delay_ms(2000);
+    switch (g_packet.type) {
+        case PING:
+            d_pingResponse();
+        default:
+            break;
+
     }
-    printf("\r\n");
-    printf("Time on air: %ld ms\r\n", Radio.TimeOnAir(MODEM_LORA, size));
-    printf("Signal strength: %d dbm\r\n", Radio.Rssi(MODEM_LORA));
 }
 
 void GroundOnTxTimeout( void )
 {
-    // Radio.Sleep( );
+    printf("tx timeout\r\n");
+    // gr_RadioSleep( );
 }
 
 void GroundOnRxTimeout( void )
 {
     printf("OnRxTimeout\r\n");
-    // Radio.Sleep( );
+    // gr_RadioSleep( );
 }
 
 void GroundOnRxError( void )
 {
-    // Radio.Sleep( );
+    printf("RX Error\r\n");
+    // gr_RadioSleep( );
 }
 
 void GroundRadioInit(void) {
-    RadioEvents.TxDone = GroundOnTxDone;
-    RadioEvents.RxDone = GroundOnRxDone;
-    RadioEvents.TxTimeout = GroundOnTxTimeout;
-    RadioEvents.RxTimeout = GroundOnRxTimeout;
-    RadioEvents.RxError = GroundOnRxError;
-    Radio.Init( &RadioEvents );
+    gr_RadioSetTxDoneCallback(GroundOnTxDone);
+    gr_RadioSetRxDoneCallback(GroundOnRxDone);
+    gr_RadioSetTxTimeoutCallback(GroundOnTxTimeout);
+    gr_RadioSetRxTimeoutCallback(GroundOnRxTimeout);
+    gr_RadioSetRxErrorCallback(GroundOnRxError);
 
-    Radio.SetChannel( RF_FREQUENCY );
-    Radio.SetTxConfig( MODEM_LORA, TX_OUTPUT_POWER, 0, LORA_BANDWIDTH,
-                                   LORA_SPREADING_FACTOR, LORA_CODINGRATE,
-                                   LORA_PREAMBLE_LENGTH, LORA_FIX_LENGTH_PAYLOAD_ON,
-                                   true, 0, 0, LORA_IQ_INVERSION_ON, 3000 );
-
-    Radio.SetRxConfig( MODEM_LORA, LORA_BANDWIDTH, LORA_SPREADING_FACTOR,
-                                   LORA_CODINGRATE, 0, LORA_PREAMBLE_LENGTH,
-                                   LORA_SYMBOL_TIMEOUT, LORA_FIX_LENGTH_PAYLOAD_ON,
-                                   0, true, 0, 0, LORA_IQ_INVERSION_ON, true );
-    Radio.Rx(RX_TIMEOUT);
-    // SX126xAntSwOn();
+    gr_RadioInit();
+    gr_RadioSetRx(0);
 }
 
 
 void GroundRadioMain() {
     // For now, set the PSAT to be a beacon broadcasting some random ass text.
     printf("Waiting for payload...\r\n");
-    Radio.IrqProcess();
+    e_radioState radioState = gr_RadioGetStatus();
+    printf("State: %s\r\n", gr_RadioStatesToString(radioState));
+    gr_RadioCheckRecv();
+    printf("\r\n");
 }

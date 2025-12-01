@@ -1,103 +1,161 @@
 #include "psat_lora.h"
+#include "global_radio.h"
 #include "tremo_delay.h"
+#include <stdint.h>
 #include <string.h>
+#include "packets/packets.h"
 #include <stdio.h>
-#define RX_TIMEOUT_VALUE                            1800
+#define RX_TIMEOUT_VALUE                            2500
+#define RX_CONTINUOUS 0
 
-typedef enum
-{
-    LOWPOWER,
-    RX,
-    RX_TIMEOUT,
-    RX_ERROR,
-    TX,
-    TX_TIMEOUT
-}States_t;
+#define d_psatRadioStatesXMacro \
+    X(psatRadioStates_ToSend) \
+    X(psatRadioStates_Sending) \
+    X(psatRadioStates_SendDone) \
+    X(psatRadioStates_ToReceive) \
+    X(psatRadioStates_Receiving) \
+    X(psatRadioStates_ReceiveDone) \
+    X(psatRadioStates_ReceiveTimedOut) \
+    X(psatRadioStates_Idle) \
 
-const uint8_t PingMsg[] = "PING";
-const uint8_t PongMsg[] = "PONG";
+#define X(name) name,
 
-uint16_t BufferSize = BUFFER_SIZE;
-uint8_t Buffer[BUFFER_SIZE];
+typedef enum  {
+    d_psatRadioStatesXMacro
+} e_psatRadioState;
 
-volatile States_t State = LOWPOWER;
+#undef X
 
-int8_t RssiValue = 0;
-int8_t SnrValue = 0;
 
-uint32_t ChipId[2] = {0};
+#define X(name) case name: return #name;
+const char* PsatRadioStateToString(e_psatRadioState state) {
+    switch (state) {
+        d_psatRadioStatesXMacro
+        default:                return "UNKNOWN_RADIO_STATE";
+    }
+}
+#undef X
 
+static e_psatRadioState g_psatRadioState = psatRadioStates_Idle;
 /*!
  * Radio events function pointer
  */
-static RadioEvents_t RadioEvents;
+static packet_t g_recvPacket;
+static packet_t g_sendPacket;
+
+// Listens for pings and requests.
+// If a ping is requested, then send a pong back.
+// If a req is received, return an ack
+void PsatRadioRX() {
+    switch (g_recvPacket.type) {
+        case PING:
+            {
+                d_pingResponse();
+            }
+            break;
+        case GPS_REQ:
+        case BUZ_REQ:
+        case FOLD_REQ:
+            {
+                d_ackResponse();
+            }
+            break;
+        default:
+            break;
+    }
+}
 
 
 void PsatOnTxDone( void )
 {
-    Radio.Sleep( );
-    State = TX;
+    gr_RadioSetIdle( );
+    g_psatRadioState = psatRadioStates_SendDone;
 }
 
 void PsatOnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
 {
-    Radio.Sleep( );
-    BufferSize = size;
-    memcpy( Buffer, payload, BufferSize );
-    RssiValue = rssi;
-    SnrValue = snr;
-    State = RX;
+    // This will need to be changed later to forward all data via i2c, but for now
+    // we will just parse it here.
+    g_recvPacket = ParsePacket(payload, size + 1);
+    printPacketStats(&g_recvPacket);
+    PsatRadioRX();
+    g_psatRadioState = psatRadioStates_ReceiveDone;
 }
 
 void PsatOnTxTimeout( void )
 {
-    Radio.Sleep( );
-    State = TX_TIMEOUT;
+    // RadioSleep( );
 }
 
 void PsatOnRxTimeout( void )
 {
-    printf("OnRxTimeout\r\n");
-    Radio.Sleep( );
-    State = RX_TIMEOUT;
+    printf("PSAT rx timeout\r\n");
+    // RadioSleep( );
 }
 
 void PsatOnRxError( void )
 {
-    Radio.Sleep( );
-    State = RX_ERROR;
+    printf("PSAT rx ERROR\r\n");
+    // RadioSleep( );
 }
 
 void PsatRadioInit(void) {
-    RadioEvents.TxDone = PsatOnTxDone;
-    RadioEvents.RxDone = PsatOnRxDone;
-    RadioEvents.TxTimeout = PsatOnTxTimeout;
-    RadioEvents.RxTimeout = PsatOnRxTimeout;
-    RadioEvents.RxError = PsatOnRxError;
-    Radio.Init( &RadioEvents );
-
-    Radio.SetChannel( RF_FREQUENCY );
-    Radio.SetTxConfig( MODEM_LORA, TX_OUTPUT_POWER, 0, LORA_BANDWIDTH,
-                                   LORA_SPREADING_FACTOR, LORA_CODINGRATE,
-                                   LORA_PREAMBLE_LENGTH, LORA_FIX_LENGTH_PAYLOAD_ON,
-                                   true, 0, 0, LORA_IQ_INVERSION_ON, 3000 );
-
-    Radio.SetRxConfig( MODEM_LORA, LORA_BANDWIDTH, LORA_SPREADING_FACTOR,
-                                   LORA_CODINGRATE, 0, LORA_PREAMBLE_LENGTH,
-                                   LORA_SYMBOL_TIMEOUT, LORA_FIX_LENGTH_PAYLOAD_ON,
-                                   0, true, 0, 0, LORA_IQ_INVERSION_ON, true );
+    gr_RadioSetTxDoneCallback(PsatOnTxDone);
+    gr_RadioSetRxDoneCallback(PsatOnRxDone);
+    gr_RadioSetTxTimeoutCallback(PsatOnTxTimeout);
+    gr_RadioSetRxTimeoutCallback(PsatOnRxTimeout);
+    gr_RadioSetRxErrorCallback(PsatOnRxError);
+    gr_RadioInit();
 }
 
+volatile uint16_t recvTries = 0;
+#define recvTrialThreshold 5
+
 void PsatRadioMain() {
-    // For now, set the PSAT to be a beacon broadcasting some random ass text.
-    Buffer[0] = 'B';
-    Buffer[1] = 'A';
-    Buffer[2] = 'L';
-    Buffer[3] = 'L';
-    Buffer[4] = 'S';
+    printf("Before psat state: %s\r\n", PsatRadioStateToString(g_psatRadioState));
+    switch (g_psatRadioState) {
+        case psatRadioStates_ToSend:
+            g_psatRadioState = psatRadioStates_Sending;
+            g_sendPacket = CreatePacket(PING, NULL, 0);
+            gr_RadioSend((uint8_t*)&g_sendPacket, 1);
 
-    Radio.Send(Buffer, BufferSize);
-    delay_ms(10);
+        case psatRadioStates_Sending:
+            break;
 
-    printf("Sent BALLS\r\n");
+        case psatRadioStates_SendDone:
+            g_psatRadioState = psatRadioStates_ToReceive;
+            break;
+
+        case psatRadioStates_ToReceive:
+            g_psatRadioState = psatRadioStates_Receiving;
+            gr_RadioSetRx(RX_TIMEOUT_VALUE);
+            break;
+
+        case psatRadioStates_Receiving:
+            gr_RadioSetRx(RX_TIMEOUT_VALUE);
+            recvTries++;
+            if (recvTries >= 5) {
+                g_psatRadioState = psatRadioStates_ReceiveTimedOut;
+                recvTries = 0;
+            }
+            break;
+
+        case psatRadioStates_ReceiveDone:
+            recvTries = 0;
+        case psatRadioStates_Idle:
+            g_psatRadioState = psatRadioStates_ToSend;
+            break;
+
+        case psatRadioStates_ReceiveTimedOut:
+            printf("Receive Timed out!!!\r\n");
+            g_psatRadioState = psatRadioStates_ToSend;
+            break;
+    }
+
+    printf("Current psat state: %s\r\n", PsatRadioStateToString(g_psatRadioState));
+    gr_RadioCheckRecv();
+    printf(
+        "===========================================================\r\n"
+        "===========================================================\r\n"
+    );
 }

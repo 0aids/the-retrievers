@@ -9,6 +9,8 @@ set(ai_thinker_source_dir "external/Ai-Thinker-LoRaWAN-Ra-08")
 set(main_grd_st "${CMAKE_CURRENT_SOURCE_DIR}/src/main_grd_st.c")
 set(main_psat_st "${CMAKE_CURRENT_SOURCE_DIR}/src/main_psat_st.c")
 set(linker_script "${CMAKE_CURRENT_SOURCE_DIR}/cfg/gcc.ld")
+
+
 # --- Ai-Thinker SDK Library ---
 # Correctly glob for all source files recursively
 file(GLOB_RECURSE ai_thinker_c_src
@@ -62,19 +64,57 @@ target_compile_definitions(ai_thinker_lib PUBLIC
     USE_MODEM_LORA
     REGION_CN470
 )
+
+
+# --- Extra library stuff ---
+# other library stuff and files
+file(GLOB_RECURSE psat_c_src 
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/psat_station/*"
+)
+
+file(GLOB_RECURSE ground_c_src 
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/ground_station/*"
+)
+
+file(GLOB_RECURSE other_lib_c_src
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*"
+)
+
+list(REMOVE_ITEM other_lib_c_src
+    ${psat_c_src}
+    ${ground_c_src}
+)
+
+add_library(
+    other_lib STATIC ${other_lib_c_src}
+)
+
+target_compile_options(other_lib PUBLIC
+    -Wall
+    -Os
+    -ggdb
+    -ffunction-sections
+    -fdata-sections
+    -fno-common
+    -mfpu=fpv4-sp-d16
+    -mfloat-abi=softfp
+    -mcpu=cortex-m4
+    -mthumb  # <-- This fixes the ARM mode errors
+    -fno-builtin-printf
+    -fno-builtin-sprintf
+    -fno-builtin-snprintf
+)
+target_link_libraries(other_lib PRIVATE
+    ai_thinker_lib
+)
+
 # --- Executable Targets ---
 add_executable(ground_station
-    "src/ground_station/main.c"
-    "src/ground_station/tremo_it.c"
-    "src/init.c"
-    "src/ground_lora.c"
+    ${ground_c_src}
     "${ai_thinker_source_dir}/platform/system/startup_cm4.S"
 )
 add_executable(psat_station
-    "src/psat_station/main.c"
-    "src/psat_station/tremo_it.c"
-    "src/init.c"
-    "src/psat_lora.c"
+    ${psat_c_src}
     "${ai_thinker_source_dir}/platform/system/startup_cm4.S"
 )
 # add_executable(psat_station
@@ -86,6 +126,7 @@ foreach(TARGET IN ITEMS ground_station psat_station)
     # Link the SDK library and the pre-compiled crypto library
     target_link_libraries(${TARGET} PRIVATE
         ai_thinker_lib
+        other_lib
         # "${ai_thinker_source_dir}/drivers/crypto/lib/libcrypto.a"
     )
     # The compile options and definitions are now inherited from ai_thinker_lib,
