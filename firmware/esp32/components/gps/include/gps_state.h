@@ -8,37 +8,25 @@
 #define SATS_TO_STORE 32
 
 typedef struct {
-    bool position_valid;
     double latitude;
     double longitude;
-
-    bool nav_valid;
     double speed_knots;
-    double speed_kph;  // this was derived not given by gps chip
+    double speed_kph;
     double course_deg;
-
-    int day, month, year;
-    int hours, minutes, seconds;
-
-    bool fix_info_valid;
-    int fix_quality;
-    int satellites_tracked;
     double hdop;
-
-    bool altitude_valid;
     double altitude;
     double geoidal_sep;
 
+    int day, month, year;
+    int hours, minutes, seconds;
+    int fix_quality;
+    int satellites_tracked;
     int sats_in_view;
-    // might honestly remove this later as it takes up a lot of space and i dont
-    // think we will care about each indivisual satelite
-    struct {
-        int nr;
-        int elevation;
-        int azimuth;
-        int snr;
-    } sat_info[SATS_TO_STORE];
-    int sat_info_count;  // since we get in groups of 4, we need a way to count
+
+    bool position_valid;  // lat, long
+    bool nav_valid;       // knots, kph & course
+    bool fix_info_valid;  // fix quality, sats tracked
+    bool altitude_valid;  // altitude, geoidal
 } gps_state_t;
 
 void gps_state_init(void);

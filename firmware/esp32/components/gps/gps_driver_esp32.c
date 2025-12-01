@@ -1,9 +1,10 @@
+#include "gps_driver_esp32.h"
+
 #include "driver/uart.h"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "gps_parser.h"
-#include "gps_state.h"
 
 #define GPS_UART_NUM UART_NUM_1
 #define GPS_UART_BAUD 9600
@@ -70,4 +71,28 @@ void gps_init() {
 void gps_start() {
     xTaskCreate(gps_task, "gps_task", GPS_TASK_STACK_SIZE, NULL,
                 GPS_TASK_PRIORITY, NULL);
+}
+
+void log_gps_data(gps_state_t* gps) {
+    static const char* GPS_TAG = "GPS";
+    ESP_LOGI(GPS_TAG, "position data valid: %d", gps->position_valid);
+    ESP_LOGI(GPS_TAG, "coords: (%f, %f)", gps->latitude, gps->longitude);
+
+    ESP_LOGI(GPS_TAG, "navigation data valid: %d", gps->nav_valid);
+    ESP_LOGI(GPS_TAG, "speed: %.2f kph", gps->speed_kph);
+    ESP_LOGI(GPS_TAG, "course: %.2f", gps->course_deg);
+
+    ESP_LOGI(GPS_TAG, "Date: %d-%d-%d", gps->day, gps->month, gps->year);
+    ESP_LOGI(GPS_TAG, "Time: %d:%d:%d", gps->hours, gps->minutes, gps->seconds);
+
+    ESP_LOGI(GPS_TAG, "fix valid: %d", gps->fix_info_valid);
+    ESP_LOGI(GPS_TAG, "Fix quality: %d", gps->fix_quality);
+    ESP_LOGI(GPS_TAG, "sats tracked: %d", gps->satellites_tracked);
+    ESP_LOGI(GPS_TAG, "HDOP: %f", gps->hdop);  // idk what this even is
+
+    ESP_LOGI(GPS_TAG, "altitude valkid: %d", gps->altitude_valid);
+    ESP_LOGI(GPS_TAG, "Alltitude: %f", gps->altitude);
+
+    ESP_LOGI(GPS_TAG, "sats in view: %d", gps->sats_in_view);
+    ESP_LOGI(GPS_TAG, "end\n\n");
 }

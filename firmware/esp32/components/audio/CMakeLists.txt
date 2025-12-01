@@ -1,5 +1,5 @@
 idf_component_register(
-    SRCS "ready.c"
+    SRCS "audio.c" "audio2.c"
     INCLUDE_DIRS "include"
-    REQUIRES driver
+    REQUIRES driver 
 )

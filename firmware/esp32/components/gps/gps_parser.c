@@ -1,15 +1,8 @@
 
 #include <stdio.h>
 
-// #include "esp_log.h"
 #include "gps_state.h"
 #include "minmea.h"
-
-// static const char* TAG = "GPS";
-
-// more info about this shit:
-// https://tavotech.com/gps-nmea-sentence-structure/
-// https://w3.cs.jmu.edu/bernstdh/web/common/help/nmea-sentences.php
 
 void gps_process_nmea(const char* gps_buffer) {
     switch (minmea_sentence_id(gps_buffer, false)) {
@@ -32,7 +25,10 @@ void gps_process_nmea(const char* gps_buffer) {
         } break;
 
         default:
-            // ESP_LOGI(TAG, "smth else: %s", gps_buffer);
             break;
     }
 }
+
+// more info about this shit:
+// https://tavotech.com/gps-nmea-sentence-structure/
+// https://w3.cs.jmu.edu/bernstdh/web/common/help/nmea-sentences.php
