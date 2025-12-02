@@ -63,6 +63,7 @@ target_compile_definitions(ai_thinker_lib PUBLIC
     CONFIG_DEBUG_UART=UART0  # <-- This fixes the undeclared identifier error
     USE_MODEM_LORA
     REGION_CN470
+    d_runPsatConnectionTests
 )
 
 

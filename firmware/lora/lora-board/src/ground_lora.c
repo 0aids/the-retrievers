@@ -60,7 +60,7 @@ static inline void BlockingRadioSend(uint8_t* buffer, uint16_t bufferSize) {
     // while (gr_RadioGetStatus() != gr_RadioStates_Idle)
     // {
         // Sleep until we finished transmitting.
-    DelayMs(500);
+    DelayMs(100);
     // }
 }
 
@@ -74,18 +74,16 @@ void GroundRadioInit(void) {
     gr_RadioInit();
     // As a test we'll ping on startup and then listen for the beacon details later afterwards.
     printf("Starting up\r\n");
-    DelayMs(2000);
 
-    printf("Sleeping for 1s and then pinging\r\n");
-    g_packetSend = CreatePacket(PING, NULL, 0);
     printf("Pinging!\r\n");
+    g_packetSend = CreatePacket(PING, NULL, 0);
     BlockingRadioSend((uint8_t*)&g_packetSend, 1);
-    gr_RadioSetRx(0);
 
     printf("Waiting 2s for response!\r\n");
     g_timer = TimerGetCurrentTime();
-    while (TimerGetCurrentTime() < g_timer + 2000)
+    while (TimerGetCurrentTime() < g_timer + 5000)
     {
+        gr_RadioSetRx(0);
         gr_RadioCheckRecv();
         DelayMs(10);
         if (g_packetRecv.type == PONG) {

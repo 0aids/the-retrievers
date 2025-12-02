@@ -116,7 +116,6 @@ void PsatRadioInit(void) {
     gr_RadioSetRxErrorCallback(PsatOnRxError);
     gr_RadioInit();
     printf("Starting up\r\n");
-    DelayMs(2000);
     g_TxRoutineTimer = TimerGetCurrentTime();
 }
 
@@ -126,7 +125,8 @@ static inline void BlockingRadioSend(uint8_t* buffer, uint16_t bufferSize) {
     // while (gr_RadioGetStatus() != gr_RadioStates_Idle)
     // {
         // Sleep until we finished transmitting.
-    DelayMs(500);
+    DelayMs(100);
+    gr_RadioSetRx(0);
     // }
 }
 
@@ -136,7 +136,12 @@ void PsatRadioMain() {
     g_lastPsatRadioState = g_psatRadioState;
     switch (g_psatRadioState) {
         case psatRadioStates_Idle:
-            gr_RadioCheckRecv();
+            if (gr_RadioGetStatus() != gr_RadioStates_Rx)
+            {
+                gr_RadioSetRx(0);
+            }
+            else
+                gr_RadioCheckRecv();
             if (g_psatRadioProcessingState == psatRadioProcessingState_RxDone)
             {
                 g_psatRadioState = psatRadioStates_ExecuteCMD;
@@ -161,7 +166,7 @@ void PsatRadioMain() {
             switch (g_recvPacket.type) {
                 case PING:
                     printf("Received ping, sending pong!\r\n");
-                    g_sendPacket = CreatePacket(PING, NULL, 0);
+                    g_sendPacket = CreatePacket(PONG, NULL, 0);
                     BlockingRadioSend((uint8_t*)&g_sendPacket, 1);
                     break;
                         
@@ -179,6 +184,7 @@ void PsatRadioMain() {
                     break;
             }
             g_psatRadioProcessingState = psatRadioProcessingState_Idle;
+            g_psatRadioState = psatRadioStates_Idle;
             g_recvPacket.type = EMPTY;
             break;
 
@@ -201,7 +207,9 @@ void PsatRadioMain() {
                 g_sendPacket = CreatePacket(STATE_DATA, NULL, 0);
                 BlockingRadioSend((uint8_t*)&g_sendPacket, 1);
             }
+
             // Send Ping request and wait for response for 2s
+#ifdef d_runPsatConnectionTests
             else if (g_TxRoutineCounter % 3 == 2)
             {
                 printf("Sending ping\r\n");
@@ -224,10 +232,17 @@ void PsatRadioMain() {
                     }
                 }
             }
-            if (g_lastPsatRadioState != psatRadioStates_Beacon)
-                g_psatRadioState = psatRadioStates_Idle;
+#endif
 
-            else g_psatRadioState = psatRadioStates_Beacon;
+            // If we were in beacon mode we return to beacon mode
+            if (g_lastPsatRadioState != psatRadioStates_Beacon)
+            {
+                g_psatRadioState = psatRadioStates_Idle;
+            }
+            else 
+            {
+                g_psatRadioState = psatRadioStates_Beacon;
+            }
 
             break;
     }
