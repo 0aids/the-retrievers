@@ -1,5 +1,5 @@
 #include "packets/packets.h"
-#include "radio.h"
+#include "global_radio.h"
 #include <string.h>
 #include "stddef.h"
 #include "stdbool.h"
@@ -26,6 +26,7 @@ packet_t CreatePacket(e_PacketType_t type, const uint8_t * const dataBuffer, con
         return packet;
     }
     memcpy(packet.data, dataBuffer, dataBufferLength);
+    packet.m_dataSize = dataBufferLength;
 
     return packet;
 }
@@ -69,6 +70,7 @@ const char* PSATStateToString(e_PSAT_States_t state) {
 void printPacketStats(packet_t *packet)
 {
     printf("Received: %s\r\n", PacketTypeToString(packet->type));
-    printf("Time on air: %u ms\r\n", Radio.TimeOnAir(MODEM_LORA, packet->m_dataSize + 1));
-    printf("Signal strength: %d dbm\r\n", Radio.Rssi(MODEM_LORA));
+    printf("Time on air: %u ms\r\n", gr_RadioGetTimeOnAir(packet));
+    printf("Signal strength: %d dbm\r\n", gr_RadioGetRSSI());
+    printf("Total packet size including header: %d\r\n", packet->m_dataSize + 1);
 }
