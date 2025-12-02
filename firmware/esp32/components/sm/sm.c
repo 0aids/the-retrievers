@@ -13,6 +13,8 @@ static const char* TAG = "FSM";
 static QueueHandle_t fsm_event_queue = NULL;
 static fsm_state_t current_state = STATE_PRELAUNCH;
 
+fsm_state_t fsm_get_current_state() { return current_state; }
+
 void fsm_post_event(const fsm_event_t* event) {
     if (!fsm_event_queue || !event) return;
     xQueueSend(fsm_event_queue, event, 0);
