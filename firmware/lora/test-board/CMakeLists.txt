@@ -80,7 +80,7 @@ foreach(TARGET IN ITEMS pingpong)
     # so we can remove them from this loop.
     # Add linker options for this target
     target_link_options(${TARGET} PRIVATE
-        --specs=nano.specs
+        # --specs=nano.specs
         -static
         -mcpu=cortex-m4
         -mthumb

@@ -54,11 +54,7 @@ int main(void)
     // Target board initialization
     board_init();
 
-    while (true) {
-        delay_ms(100);
-        printf("hello world\r\n");
-    }
-    // app_start();
+    app_start();
 }
 
 #ifdef USE_FULL_ASSERT
