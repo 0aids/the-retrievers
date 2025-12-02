@@ -1,6 +1,8 @@
 #include "psat_lora.h"
 #include "global_radio.h"
-#include "tremo_delay.h"
+// Only non-cross platform thing.
+#include "delay.h"
+#include "timer.h"
 #include <stdint.h>
 #include <string.h>
 #include "packets/packets.h"
@@ -9,14 +11,10 @@
 #define RX_CONTINUOUS 0
 
 #define d_psatRadioStatesXMacro \
-    X(psatRadioStates_ToSend) \
-    X(psatRadioStates_Sending) \
-    X(psatRadioStates_SendDone) \
-    X(psatRadioStates_ToReceive) \
-    X(psatRadioStates_Receiving) \
-    X(psatRadioStates_ReceiveDone) \
-    X(psatRadioStates_ReceiveTimedOut) \
     X(psatRadioStates_Idle) \
+    X(psatRadioStates_ExecuteCMD) \
+    X(psatRadioStates_Beacon) \
+    X(psatRadioStates_TxRoutine) \
 
 #define X(name) name,
 
@@ -36,40 +34,41 @@ const char* PsatRadioStateToString(e_psatRadioState state) {
 }
 #undef X
 
-static e_psatRadioState g_psatRadioState = psatRadioStates_Idle;
-/*!
- * Radio events function pointer
- */
-static packet_t g_recvPacket;
-static packet_t g_sendPacket;
+#define d_psatRadioProcessingStateXMacro \
+    X(psatRadioProcessingState_Idle) \
+    X(psatRadioProcessingState_Tx) \
+    X(psatRadioProcessingState_TxDone) \
+    X(psatRadioProcessingState_Rx) \
+    X(psatRadioProcessingState_RxDone) \
 
-// Listens for pings and requests.
-// If a ping is requested, then send a pong back.
-// If a req is received, return an ack
-void PsatRadioRX() {
-    switch (g_recvPacket.type) {
-        case PING:
-            {
-                d_pingResponse();
-            }
-            break;
-        case GPS_REQ:
-        case BUZ_REQ:
-        case FOLD_REQ:
-            {
-                d_ackResponse();
-            }
-            break;
-        default:
-            break;
+#define X(name) name,
+
+typedef enum  {
+    d_psatRadioProcessingStateXMacro
+} e_psatRadioProcessingState;
+
+#undef X
+
+
+#define X(name) case name: return #name;
+const char* PsatRadioProcessingStateToString(e_psatRadioProcessingState state) {
+    switch (state) {
+        d_psatRadioProcessingStateXMacro
+        default:                return "UNKNOWN_RADIO_STATE";
     }
 }
+#undef X
 
+static e_psatRadioState g_psatRadioState = psatRadioStates_Idle;
+static e_psatRadioState g_lastPsatRadioState = psatRadioStates_Idle;
+static e_psatRadioProcessingState g_psatRadioProcessingState = psatRadioProcessingState_Idle;
+static packet_t g_recvPacket;
+static packet_t g_sendPacket;
 
 void PsatOnTxDone( void )
 {
     gr_RadioSetIdle( );
-    g_psatRadioState = psatRadioStates_SendDone;
+    g_psatRadioProcessingState = psatRadioProcessingState_TxDone;
 }
 
 void PsatOnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
@@ -78,12 +77,12 @@ void PsatOnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
     // we will just parse it here.
     g_recvPacket = ParsePacket(payload, size + 1);
     printPacketStats(&g_recvPacket);
-    PsatRadioRX();
-    g_psatRadioState = psatRadioStates_ReceiveDone;
+    g_psatRadioProcessingState = psatRadioProcessingState_RxDone;
 }
 
 void PsatOnTxTimeout( void )
 {
+    printf("PSAT tx timeout\r\n");
     // RadioSleep( );
 }
 
@@ -99,6 +98,16 @@ void PsatOnRxError( void )
     // RadioSleep( );
 }
 
+TimerTime_t g_TxRoutineTimer = 0;
+volatile uint8_t g_TxRoutineCounter = 0;
+volatile uint8_t g_numPingTries = 0;
+
+// Define it in compilation time to override.
+// Otherwise it defaults to 9999 in which it will basically won't go to the beacon mode.
+#ifndef d_disconnectRetryThreshold
+#define d_disconnectRetryThreshold 9999
+#endif
+
 void PsatRadioInit(void) {
     gr_RadioSetTxDoneCallback(PsatOnTxDone);
     gr_RadioSetRxDoneCallback(PsatOnRxDone);
@@ -106,56 +115,120 @@ void PsatRadioInit(void) {
     gr_RadioSetRxTimeoutCallback(PsatOnRxTimeout);
     gr_RadioSetRxErrorCallback(PsatOnRxError);
     gr_RadioInit();
+    printf("Starting up\r\n");
+    DelayMs(2000);
+    g_TxRoutineTimer = TimerGetCurrentTime();
 }
 
-volatile uint16_t recvTries = 0;
-#define recvTrialThreshold 5
+static inline void BlockingRadioSend(uint8_t* buffer, uint16_t bufferSize) {
+    printf("Sending packet!\r\n");
+    gr_RadioSend(buffer, bufferSize);
+    // while (gr_RadioGetStatus() != gr_RadioStates_Idle)
+    // {
+        // Sleep until we finished transmitting.
+    DelayMs(500);
+    // }
+}
+
+#define d_TxRoutineIntervalMilliseconds 5000
 
 void PsatRadioMain() {
-    printf("Before psat state: %s\r\n", PsatRadioStateToString(g_psatRadioState));
+    g_lastPsatRadioState = g_psatRadioState;
     switch (g_psatRadioState) {
-        case psatRadioStates_ToSend:
-            g_psatRadioState = psatRadioStates_Sending;
-            g_sendPacket = CreatePacket(PING, NULL, 0);
-            gr_RadioSend((uint8_t*)&g_sendPacket, 1);
-
-        case psatRadioStates_Sending:
-            break;
-
-        case psatRadioStates_SendDone:
-            g_psatRadioState = psatRadioStates_ToReceive;
-            break;
-
-        case psatRadioStates_ToReceive:
-            g_psatRadioState = psatRadioStates_Receiving;
-            gr_RadioSetRx(RX_TIMEOUT_VALUE);
-            break;
-
-        case psatRadioStates_Receiving:
-            gr_RadioSetRx(RX_TIMEOUT_VALUE);
-            recvTries++;
-            if (recvTries >= 5) {
-                g_psatRadioState = psatRadioStates_ReceiveTimedOut;
-                recvTries = 0;
+        case psatRadioStates_Idle:
+            gr_RadioCheckRecv();
+            if (g_psatRadioProcessingState == psatRadioProcessingState_RxDone)
+            {
+                g_psatRadioState = psatRadioStates_ExecuteCMD;
+                printf("Received packet, state transition to %s\r\n",  PsatRadioStateToString(g_psatRadioState));
+                break;
+            }
+            // If the time since the last routine is larger the d_TxRoutineIntervalMilliseconds
+            // This method causes no negative numbers, as we are using unsigned ints.
+            if (TimerGetCurrentTime() > d_TxRoutineIntervalMilliseconds + g_TxRoutineTimer)
+            {
+                printf("Changing to TxRoutine!\r\n");
+                g_psatRadioState = psatRadioStates_TxRoutine;
+                g_TxRoutineTimer = TimerGetCurrentTime();
             }
             break;
 
-        case psatRadioStates_ReceiveDone:
-            recvTries = 0;
-        case psatRadioStates_Idle:
-            g_psatRadioState = psatRadioStates_ToSend;
+        case psatRadioStates_Beacon:
+            // Attempt if we can ping stuff back
+            break;
+        case psatRadioStates_ExecuteCMD:
+            // We received a command, so check the recv packet
+            switch (g_recvPacket.type) {
+                case PING:
+                    printf("Received ping, sending pong!\r\n");
+                    g_sendPacket = CreatePacket(PING, NULL, 0);
+                    BlockingRadioSend((uint8_t*)&g_sendPacket, 1);
+                    break;
+                        
+                case BUZ_REQ:
+                case GPS_REQ:
+                case FOLD_REQ:
+                    // TODO: Send relevant data if applicable (GPS data request)
+                    printf("Received req, sending ack!\r\n");
+                    g_sendPacket = CreatePacket(ACK, NULL, 0);
+                    BlockingRadioSend((uint8_t*)&g_sendPacket, 1);
+                    break;
+
+                default:
+                    printf("Received unknown or malformed request packet\r\n");
+                    break;
+            }
+            g_psatRadioProcessingState = psatRadioProcessingState_Idle;
+            g_recvPacket.type = EMPTY;
             break;
 
-        case psatRadioStates_ReceiveTimedOut:
-            printf("Receive Timed out!!!\r\n");
-            g_psatRadioState = psatRadioStates_ToSend;
+        case psatRadioStates_TxRoutine:
+            g_TxRoutineCounter++;
+            // Just do the normal beacon stuff. Alternate between beaconing GPS data,
+            // State data, or pings to home station.
+
+            // Send GPS data
+            if (g_TxRoutineCounter % 3 == 0)
+            {
+                printf("Sending GPS data\r\n");
+                g_sendPacket = CreatePacket(GPS_DATA, NULL, 0);
+                BlockingRadioSend((uint8_t*)&g_sendPacket, 1);
+            }
+            // Send State data
+            else if (g_TxRoutineCounter % 3 == 1)
+            {
+                printf("Sending State data\r\n");
+                g_sendPacket = CreatePacket(STATE_DATA, NULL, 0);
+                BlockingRadioSend((uint8_t*)&g_sendPacket, 1);
+            }
+            // Send Ping request and wait for response for 2s
+            else if (g_TxRoutineCounter % 3 == 2)
+            {
+                printf("Sending ping\r\n");
+                g_sendPacket = CreatePacket(PING, NULL, 0);
+                BlockingRadioSend((uint8_t*)&g_sendPacket, 1);
+                gr_RadioSetRx(2000);
+                DelayMs(2000);
+                gr_RadioCheckRecv();
+                if (g_psatRadioProcessingState == psatRadioProcessingState_RxDone)
+                {
+                    g_psatRadioProcessingState = psatRadioProcessingState_Idle;
+                    g_numPingTries = 0;
+                }
+                else {
+                    g_numPingTries++;
+                    if (g_numPingTries > d_disconnectRetryThreshold) {
+                        // Assume we have lost connection
+                        g_psatRadioState = psatRadioStates_Beacon;
+                        printf("Lost connection with GS - No pong received ;_;\r\n");
+                    }
+                }
+            }
+            if (g_lastPsatRadioState != psatRadioStates_Beacon)
+                g_psatRadioState = psatRadioStates_Idle;
+
+            else g_psatRadioState = psatRadioStates_Beacon;
+
             break;
     }
-
-    printf("Current psat state: %s\r\n", PsatRadioStateToString(g_psatRadioState));
-    gr_RadioCheckRecv();
-    printf(
-        "===========================================================\r\n"
-        "===========================================================\r\n"
-    );
 }

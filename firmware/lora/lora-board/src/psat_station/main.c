@@ -12,8 +12,8 @@ int main(void)
     PsatRadioInit();
 
     while (1) {
-        printf("Looping!\r\n");
-        delay_ms(500);
+        // printf("Looping!\r\n");
+        delay_ms(50);
         PsatRadioMain();
     }
 }

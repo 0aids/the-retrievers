@@ -7,11 +7,12 @@
 // ONLY USED FOR THE LORA STANDALONE
 
 static RadioEvents_t RadioEvents;
-static packet_t g_packet;
 #define X(name) case name: return #name;
 const char* const gr_RadioStatesToString(e_radioState state) {
     switch (state) {
         d_radioStatesXMacro
+        default:
+            return "Unknown radio state";
     }
 }
 
