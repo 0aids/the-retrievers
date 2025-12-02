@@ -11,9 +11,11 @@
 static const char* TAG = "FSM";
 
 static QueueHandle_t fsm_event_queue = NULL;
+TaskHandle_t xHandleSM = NULL;
 static fsm_state_t current_state = STATE_PRELAUNCH;
 
 fsm_state_t fsm_get_current_state() { return current_state; }
+void fsm_set_current_state(fsm_state_t new_state) { current_state = new_state; }
 
 void fsm_post_event(const fsm_event_t* event) {
     if (!fsm_event_queue || !event) return;
@@ -71,5 +73,10 @@ void fsm_task(void* arg) {
 
 void fsm_start() {
     fsm_event_queue = xQueueCreate(QUEUE_SIZE, sizeof(fsm_event_t));
-    xTaskCreate(fsm_task, "fsm_task", 4096, NULL, 10, NULL);
+    xTaskCreate(fsm_task, "fsm_task", 4096, NULL, 10, &xHandleSM);
+}
+
+void fsm_kill() {
+    if (xHandleSM == NULL) return;
+    vTaskDelete(xHandleSM);
 }
