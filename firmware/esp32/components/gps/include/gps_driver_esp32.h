@@ -5,6 +5,7 @@
 
 void gps_init(void);
 void gps_start(void);
+void gps_kill(void);
 void log_gps_data(gps_state_t* gps);
 
 #endif

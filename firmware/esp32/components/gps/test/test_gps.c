@@ -9,5 +9,7 @@ TEST_CASE("checks if we have a gps signal/fix", "[gps]") {
     gps_get_snapshot(&gps_snapshot);
 
     log_gps_data(&gps_snapshot);
+    gps_kill();
+
     TEST_ASSERT_TRUE(gps_snapshot.fix_info_valid);
 }

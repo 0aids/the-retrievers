@@ -25,6 +25,8 @@
 static char gps_buffer[GPS_BUFFER_SIZE];
 static int gps_buffer_pos = 0;
 
+TaskHandle_t xHandleGPS = NULL;
+
 void gps_task(void* arg) {
     uint8_t data[64];
 
@@ -70,7 +72,12 @@ void gps_init() {
 
 void gps_start() {
     xTaskCreate(gps_task, "gps_task", GPS_TASK_STACK_SIZE, NULL,
-                GPS_TASK_PRIORITY, NULL);
+                GPS_TASK_PRIORITY, &xHandleGPS);
+}
+
+void gps_kill() {
+    if (xHandleGPS == NULL) return;
+    vTaskDelete(xHandleGPS);
 }
 
 void log_gps_data(gps_state_t* gps) {
