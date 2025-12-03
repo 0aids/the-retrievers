@@ -12,7 +12,7 @@ static const char* TAG = "FSM";
 
 static QueueHandle_t fsm_event_queue = NULL;
 TaskHandle_t xHandleSM = NULL;
-static fsm_state_t current_state = STATE_PRELAUNCH;
+static volatile fsm_state_t current_state = STATE_PRELAUNCH;
 
 fsm_state_t fsm_get_current_state() { return current_state; }
 void fsm_set_current_state(fsm_state_t new_state) { current_state = new_state; }
@@ -24,11 +24,16 @@ void fsm_post_event(const fsm_event_t* event) {
 
 void fsm_post_event_from_isr(const fsm_event_t* event) {
     if (!fsm_event_queue || !event) return;
-    xQueueSendFromISR(fsm_event_queue, event, NULL);
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+    BaseType_t res =
+        xQueueSendFromISR(fsm_event_queue, event, &xHigherPriorityTaskWoken);
+    if (res != pdPASS) {
+    }  // ill implement ts later
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
 void fsm_task(void* arg) {
-    fsm_event_t event;
+    fsm_event_t event = {0};
 
     // use prelaunch event to kickstart the state machine
     fsm_event_t startup_event = {.type = EVENT_START_PRELAUNCH};
@@ -77,6 +82,12 @@ void fsm_start() {
 }
 
 void fsm_kill() {
-    if (xHandleSM == NULL) return;
-    vTaskDelete(xHandleSM);
+    if (xHandleSM != NULL) {
+        vTaskDelete(xHandleSM);
+        xHandleSM = NULL;
+    }
+    if (fsm_event_queue != NULL) {
+        vQueueDelete(fsm_event_queue);
+        fsm_event_queue = NULL;
+    }
 }

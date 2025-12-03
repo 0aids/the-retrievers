@@ -78,6 +78,7 @@ void gps_start() {
 void gps_kill() {
     if (xHandleGPS == NULL) return;
     vTaskDelete(xHandleGPS);
+    xHandleGPS = NULL;
 }
 
 void log_gps_data(gps_state_t* gps) {

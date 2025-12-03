@@ -164,16 +164,25 @@ fsm_state_t state_recovery(const fsm_event_t* event) {
             return STATE_RECOVERY;
         case EVENT_LORA_COMMAND:
             ESP_LOGI(TAG, "recovery got lora cmd: %s", event->data.str);
-            fsm_event_t lora_event;
+            fsm_event_t lora_event = {0};
+            bool got_cmd = false;
 
-            if (strcmp(event->data.str, "AUDIO_ON") == 0)
+            if (strcmp(event->data.str, "AUDIO_ON") == 0) {
                 lora_event.type = EVENT_AUDIO_ON;
-            if (strcmp(event->data.str, "AUDIO_OFF") == 0)
+                got_cmd = true;
+            }
+            if (strcmp(event->data.str, "AUDIO_OFF") == 0) {
                 lora_event.type = EVENT_AUDIO_OFF;
-            if (strcmp(event->data.str, "AUDIO_BEEP") == 0)
+                got_cmd = true;
+            }
+            if (strcmp(event->data.str, "AUDIO_BEEP") == 0) {
                 lora_event.type = EVENT_AUDIO_BEEP;
+                got_cmd = true;
+            }
 
-            fsm_post_event(&lora_event);
+            if (got_cmd) {
+                fsm_post_event(&lora_event);
+            }
 
             return STATE_RECOVERY;
         case EVENT_AUDIO_ON:
@@ -182,7 +191,7 @@ fsm_state_t state_recovery(const fsm_event_t* event) {
             return STATE_RECOVERY;
 
         case EVENT_AUDIO_OFF:
-            ESP_LOGI(TAG, "AUDIO ON");
+            ESP_LOGI(TAG, "AUDIO OFF");
             audio_off();
             return STATE_RECOVERY;
 
