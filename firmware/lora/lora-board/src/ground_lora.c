@@ -35,6 +35,7 @@ void PrintGpsState(const gps_state_t *gps)
     printf("  Course:          %.2f deg\r\n", gps->course_deg);
 
     printf("\r\nFix / Satellite Info:\r\n");
+
     printf("  HDOP:            %.2f\r\n", gps->hdop);
     printf("  Fix Quality:     %d\r\n", gps->fix_quality);
     printf("  Sats Tracked:    %d\r\n", gps->satellites_tracked);

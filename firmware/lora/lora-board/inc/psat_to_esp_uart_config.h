@@ -1,0 +1,1 @@
+../../../test/esp32-lora-test/components/radio_impl/include/uart_config.h
