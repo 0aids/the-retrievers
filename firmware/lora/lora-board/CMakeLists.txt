@@ -64,6 +64,7 @@ target_compile_definitions(ai_thinker_lib PUBLIC
     USE_MODEM_LORA
     REGION_CN470
     d_runPsatConnectionTests
+    d_aiThinkerPlatform
 )
 
 
