@@ -1,4 +1,4 @@
-#ifdef d_psatStandaloneMode
+#ifndef d_psatStandaloneMode
 #include <stdio.h>
 #include "delay.h"
 #include "tremo_cm4.h"
@@ -18,7 +18,7 @@
 
 void uartLogInit()
 {
-#ifdef d_psatStandaloneMode
+#ifndef d_psatStandaloneMode
     // uart0
     gpio_set_iomux(GPIOB, GPIO_PIN_0, 1);
     gpio_set_iomux(GPIOB, GPIO_PIN_1, 1);
@@ -36,7 +36,7 @@ void uartLogInit()
 
 void uartToEsp32Init()
 {
-#ifdef d_psatStandaloneMode
+#ifndef d_psatStandaloneMode
     // uart1
     // IO4 = uart1 TX
     // IO5 = uart1 RX
@@ -62,7 +62,7 @@ void uartToEsp32Init()
 
 void initBoard()
 {
-#ifdef d_psatStandaloneMode
+#ifndef d_psatStandaloneMode
     rcc_enable_oscillator(RCC_OSC_XO32K, true);
 
     rcc_enable_peripheral_clk(RCC_PERIPHERAL_UART0, true);
@@ -91,7 +91,7 @@ static char g_uartInputBuffer[d_uartInputBufferSize] = {0};
 
 void appMain()
 {
-#ifdef d_psatStandaloneMode
+#ifndef d_psatStandaloneMode
     // Test: Poll the uart input and print it to the screen.
     uint16_t iter = 0;
     printf("Starting loop!\r\n");
