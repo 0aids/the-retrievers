@@ -24,15 +24,8 @@ void app_main(void) {
     // Loops to check if deployed
     while (1){
         int status = gpio_get_level(button);
-        if (status){
-            servo_set_angle(&servo_state, 0);
-            printf("Angle at 0\n");
-        }
-        else{
-
-            servo_set_angle(&servo_state , 60);
-            printf("Angle at 60\n");
-        }
-        vTaskDelay(pdMS_TO_TICKS(50));
+        if (status){servo_set_angle_and_speed(&servo_state, 120, 100);}
+        else{servo_set_angle_and_speed(&servo_state , 0, 100);}
+        printf("Angle at %i\n", servo_state.angle);
     }
 }

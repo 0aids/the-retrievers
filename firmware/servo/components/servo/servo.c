@@ -76,6 +76,28 @@ void servo_set_angle(servo_t *servo_state, uint16_t angle) {
     servo_state->angle = angle;
 }
 
+#define SERVO_INCREMENT_PERIOD_MS           (50)
+
+void servo_set_angle_and_speed(servo_t *servo_state, uint16_t angle, uint16_t speed) {
+    if (angle > SERVO_ANGLE_MAX) angle = SERVO_ANGLE_MAX;
+    uint16_t current_ang = servo_state->angle;
+    if (angle == current_ang){return;}
+
+    uint16_t increment = speed/SERVO_INCREMENT_PERIOD_MS;    
+
+    while(current_ang < angle){
+        current_ang += increment;
+        servo_set_angle(servo_state, current_ang);
+        vTaskDelay(pdMS_TO_TICKS(1000/SERVO_INCREMENT_PERIOD_MS));
+    }
+    while(current_ang > angle){
+        current_ang -= increment;
+        servo_set_angle(servo_state, current_ang);
+        vTaskDelay(pdMS_TO_TICKS(1000/SERVO_INCREMENT_PERIOD_MS));
+    }
+
+}
+
 uint16_t servo_get_angle(servo_t *servo_state) {
     return servo_state->angle;
 }

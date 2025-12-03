@@ -27,4 +27,7 @@ uint32_t get_duty(uint16_t angle);
 // Configure the servo peripheral and sets the initial angle to 0
 servo_t servo_setup(void);
 
+// Sets the angle of the servo at a given speed(degrees/sec)
+void servo_set_angle_and_speed(servo_t *servo_state, uint16_t angle, uint16_t speed);
+
 #endif
