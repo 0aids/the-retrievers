@@ -1,7 +1,4 @@
-/*
-Using LEDC peripheral to control the servo motor
-*/
-
+//Using LEDC peripheral to control the servo motor
 
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
@@ -9,12 +6,6 @@ Using LEDC peripheral to control the servo motor
 #include "driver/ledc.h"
 #include "esp_err.h"
 #include "servo.h"
-
-#include "driver/gpio.h"
-
-#define interrupt_pin           (25)
-bool deploy = false;
-uint16_t interrupt_count = 0;
 
 #define SERVO_GPIO_PIN          (13)             // GPIO Pin the servo signal is connected to
 #define PWM_TIMER              LEDC_TIMER_0
@@ -87,48 +78,4 @@ void servo_set_angle(servo_t *servo_state, uint16_t angle) {
 
 uint16_t servo_get_angle(servo_t *servo_state) {
     return servo_state->angle;
-}
-
-void loop(servo_t *servo_state){
-    // Changes the angle if the PSAT is deployed. Remains at 0 otherwise.
-    if (deploy){
-        servo_set_angle(servo_state , 60);
-    }
-    else{
-        servo_set_angle(servo_state, 0);
-    }
-    // For testing
-    deploy = false;
-    vTaskDelay(100/portTICK_PERIOD_MS);
-    
-}
-
-// For testing
-static void IRAM_ATTR gpio_isr_handler(void *arg){
-    deploy = true;
-    gpio_isr_handler_add(interrupt_pin, gpio_isr_handler, NULL);
-    gpio_intr_enable(interrupt_pin);
-}
-
-
-void app_main(void) {
-    // For testing
-    gpio_reset_pin(interrupt_pin);
-    gpio_set_direction(interrupt_pin, GPIO_MODE_INPUT);
-
-    gpio_set_pull_mode(interrupt_pin, GPIO_PULLUP_ONLY);
-
-    gpio_set_intr_type(interrupt_pin, GPIO_INTR_POSEDGE);
-
-    gpio_install_isr_service(0);
-    gpio_isr_handler_add(interrupt_pin, gpio_isr_handler, NULL);
-
-    gpio_intr_enable(interrupt_pin);
-
-    // Sets up the servo
-    servo_t servo_state = servo_setup();
-    // Loops to check if deployed
-    while (1){
-        loop(&servo_state);
-    }
 }
