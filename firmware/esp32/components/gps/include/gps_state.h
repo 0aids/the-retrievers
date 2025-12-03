@@ -2,26 +2,27 @@
 #define GPS_STATE_H
 
 #include <stdbool.h>
+#include <stdint.h>
 
 #include "minmea.h"
 
 #define SATS_TO_STORE 32
 
 typedef struct {
-    double latitude;
-    double longitude;
-    double speed_knots;
-    double speed_kph;
-    double course_deg;
-    double hdop;
-    double altitude;
-    double geoidal_sep;
+    float latitude;
+    float longitude;
+    float speed_knots;
+    float speed_kph;
+    float course_deg;
+    float hdop;
+    float altitude;
+    float geoidal_sep;
 
-    int day, month, year;
-    int hours, minutes, seconds;
-    int fix_quality;
-    int satellites_tracked;
-    int sats_in_view;
+    int32_t day, month, year;
+    int32_t hours, minutes, seconds;
+    int32_t fix_quality;
+    int32_t satellites_tracked;
+    int32_t sats_in_view;
 
     bool position_valid;  // lat, long
     bool nav_valid;       // knots, kph & course

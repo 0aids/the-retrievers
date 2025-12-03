@@ -1,3 +1,4 @@
+#include "tremo_cm4.h"
 #include "tremo_delay.h"
 #include "tremo_uart.h"
 #include "tremo_gpio.h"
@@ -19,6 +20,7 @@ void uart_log_init(void)
     uart_config_init(&uart_config);
 
     uart_config.baudrate = UART_BAUDRATE_115200;
+    uart_config.fifo_mode = ENABLE;
     uart_init(CONFIG_DEBUG_UART, &uart_config);
     uart_cmd(CONFIG_DEBUG_UART, ENABLE);
 }

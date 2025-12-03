@@ -11,9 +11,8 @@ int main(void)
     GroundRadioInit();
 
     while (1) {
-        printf("Looping!\r\n");
         GroundRadioMain();
-        delay_ms(500);
+        delay_ms(50);
     }
 }
 

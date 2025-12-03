@@ -1,5 +1,6 @@
 #include "psat_lora.h"
 #include "global_radio.h"
+#include "gps_state.h"
 // Only non-cross platform thing.
 #include "delay.h"
 #include "timer.h"
@@ -65,10 +66,38 @@ static e_psatRadioProcessingState g_psatRadioProcessingState = psatRadioProcessi
 static packet_t g_recvPacket;
 static packet_t g_sendPacket;
 
+static gps_state_t g_fakeGpsData = {
+    .latitude           = -36.8485,     // Auckland-ish
+    .longitude          = 174.7633,
+    .speed_knots        = 12.5,
+    .speed_kph          = 23.1,
+    .course_deg         = 87.0,         // Heading east
+    .hdop               = 0.9,
+    .altitude           = 150.0,        // meters
+    .geoidal_sep        = -34.2,
+
+    .day                = 5,
+    .month              = 12,
+    .year               = 2025,
+    .hours              = 14,
+    .minutes            = 37,
+    .seconds            = 22,
+
+    .fix_quality        = 1,            // Standard GPS fix
+    .satellites_tracked = 10,
+    .sats_in_view       = 14,
+
+    .position_valid     = true,
+    .nav_valid          = true,
+    .fix_info_valid     = true,
+    .altitude_valid     = true,
+};
+
 void PsatOnTxDone( void )
 {
     gr_RadioSetIdle( );
     g_psatRadioProcessingState = psatRadioProcessingState_TxDone;
+    printf("Sent!\r\n");
 }
 
 void PsatOnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
@@ -119,17 +148,6 @@ void PsatRadioInit(void) {
     g_TxRoutineTimer = TimerGetCurrentTime();
 }
 
-static inline void BlockingRadioSend(uint8_t* buffer, uint16_t bufferSize) {
-    printf("Sending packet!\r\n");
-    gr_RadioSend(buffer, bufferSize);
-    // while (gr_RadioGetStatus() != gr_RadioStates_Idle)
-    // {
-        // Sleep until we finished transmitting.
-    DelayMs(100);
-    gr_RadioSetRx(0);
-    // }
-}
-
 #define d_TxRoutineIntervalMilliseconds 5000
 
 void PsatRadioMain() {
@@ -142,6 +160,7 @@ void PsatRadioMain() {
             }
             else
                 gr_RadioCheckRecv();
+
             if (g_psatRadioProcessingState == psatRadioProcessingState_RxDone)
             {
                 g_psatRadioState = psatRadioStates_ExecuteCMD;
@@ -167,16 +186,21 @@ void PsatRadioMain() {
                 case PING:
                     printf("Received ping, sending pong!\r\n");
                     g_sendPacket = CreatePacket(PONG, NULL, 0);
-                    BlockingRadioSend((uint8_t*)&g_sendPacket, 1);
+                    gr_RadioSend((uint8_t*)&g_sendPacket, 1);
                     break;
                         
                 case BUZ_REQ:
-                case GPS_REQ:
                 case FOLD_REQ:
                     // TODO: Send relevant data if applicable (GPS data request)
                     printf("Received req, sending ack!\r\n");
                     g_sendPacket = CreatePacket(ACK, NULL, 0);
-                    BlockingRadioSend((uint8_t*)&g_sendPacket, 1);
+                    gr_RadioSend((uint8_t*)&g_sendPacket, 1);
+                    break;
+                case GPS_REQ:
+                    printf("Sending GPS data!\r\n");
+                    g_sendPacket = CreatePacket(GPS_DATA, (uint8_t*)&g_fakeGpsData, sizeof(gps_state_t));
+                    gr_RadioSend((uint8_t*)&g_sendPacket, g_sendPacket.m_dataSize + 1);
+                    DelayMs(200);
                     break;
 
                 default:
@@ -197,15 +221,17 @@ void PsatRadioMain() {
             if (g_TxRoutineCounter % 3 == 0)
             {
                 printf("Sending GPS data\r\n");
-                g_sendPacket = CreatePacket(GPS_DATA, NULL, 0);
-                BlockingRadioSend((uint8_t*)&g_sendPacket, 1);
+                g_sendPacket = CreatePacket(GPS_DATA, (uint8_t*)&g_fakeGpsData, sizeof(gps_state_t));
+                gr_RadioSend((uint8_t*)&g_sendPacket, g_sendPacket.m_dataSize + 1);
+                DelayMs(100);
             }
             // Send State data
             else if (g_TxRoutineCounter % 3 == 1)
             {
                 printf("Sending State data\r\n");
                 g_sendPacket = CreatePacket(STATE_DATA, NULL, 0);
-                BlockingRadioSend((uint8_t*)&g_sendPacket, 1);
+                gr_RadioSend((uint8_t*)&g_sendPacket, 1);
+                DelayMs(50);
             }
 
             // Send Ping request and wait for response for 2s
@@ -214,7 +240,9 @@ void PsatRadioMain() {
             {
                 printf("Sending ping\r\n");
                 g_sendPacket = CreatePacket(PING, NULL, 0);
-                BlockingRadioSend((uint8_t*)&g_sendPacket, 1);
+                gr_RadioSend((uint8_t*)&g_sendPacket, 1);
+                DelayMs(50);
+
                 gr_RadioSetRx(2000);
                 DelayMs(2000);
                 gr_RadioCheckRecv();
