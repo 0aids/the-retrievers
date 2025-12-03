@@ -44,8 +44,6 @@ void gr_RadioSetRxTimeoutCallback(void (*callback)(void));
 
 void gr_RadioSetRxErrorCallback(void (*callback)(void));
 
-void gr_RadioSetTxTimeoutCallback(void (*callback)(void));
-
 /*
  * Send a buffer over the radio. This is done asynchronously.
  */
