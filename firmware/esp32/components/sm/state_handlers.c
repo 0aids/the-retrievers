@@ -11,6 +11,8 @@
 #include "sm.h"
 #include "timers.h"
 
+#define MECHANICAL_DEPLOY_DELAY_SECONDS 30
+
 fsm_state_t state_prelaunch(const fsm_event_t* event) {
     static const char* TAG = "FSM-PRELAUNCH";
     ESP_LOGI(TAG, "Event %d", event->type);
@@ -60,6 +62,7 @@ fsm_state_t state_ascent(const fsm_event_t* event) {
             timers_start_5s();
             timers_start_1s();
             stop_deployment_button();
+            timers_start_mechanical(MECHANICAL_DEPLOY_DELAY_SECONDS);
 
             return STATE_DEPLOYED;
 

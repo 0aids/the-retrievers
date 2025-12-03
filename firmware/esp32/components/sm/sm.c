@@ -44,6 +44,10 @@ void fsm_task(void* arg) {
 
         fsm_state_t new_state = current_state;
 
+        if (event.type == EVENT_FOLDING_TIMER_REACHED) {
+            // do the servo thing here
+        }
+
         switch (current_state) {
             case STATE_PRELAUNCH:
                 new_state = state_prelaunch(&event);
