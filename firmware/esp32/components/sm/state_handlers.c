@@ -205,7 +205,8 @@ fsm_state_t state_recovery(const fsm_event_t* event) {
 
         case EVENT_AUDIO_BEEP:
             ESP_LOGI(TAG, "AUDIO BEEP");
-            audio_beep(1000);
+            audio_beep(2500);
+            audio2_beep(2500);
             return STATE_RECOVERY;
         default:
             return STATE_RECOVERY;

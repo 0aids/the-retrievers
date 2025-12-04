@@ -45,3 +45,19 @@ void passive_buzzer_play_song(void) {
         vTaskDelay(pdMS_TO_TICKS(50));
     }
 }
+
+static void audio2_beep_task(void* arg) {
+    uint32_t duration_ms = (uint32_t)(uintptr_t)arg;
+    ledc_set_freq(LEDC_MODE, LEDC_TIMER, 1400);
+    ledc_set_duty(LEDC_MODE, LEDC_CHANNEL, LEDC_DUTY);
+    ledc_update_duty(LEDC_MODE, LEDC_CHANNEL);
+    vTaskDelay(pdMS_TO_TICKS(duration_ms));
+    ledc_set_duty(LEDC_MODE, LEDC_CHANNEL, 0);
+    ledc_update_duty(LEDC_MODE, LEDC_CHANNEL);
+    vTaskDelete(NULL);
+}
+
+void audio2_beep(uint32_t duration_ms) {
+    BaseType_t res = xTaskCreate(audio2_beep_task, "beep", 2048,
+                                 (void*)(uintptr_t)duration_ms, 1, NULL);
+}

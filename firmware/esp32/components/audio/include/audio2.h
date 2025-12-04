@@ -7,5 +7,6 @@
 
 void audio2_init(void);
 void passive_buzzer_play_song(void);
+void audio2_beep(uint32_t duration_ms);
 
 #endif
