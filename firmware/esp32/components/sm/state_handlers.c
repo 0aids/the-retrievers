@@ -200,7 +200,7 @@ fsm_state_t state_recovery(const fsm_event_t* event) {
 
         case EVENT_AUDIO_FUN:
             ESP_LOGI(TAG, "AUDIO :)");
-            passive_buzzer_play_song();
+            audio2_song();
             return STATE_RECOVERY;
 
         case EVENT_AUDIO_BEEP:
