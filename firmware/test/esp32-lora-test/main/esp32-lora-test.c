@@ -38,6 +38,54 @@ static gps_state_t g_fakeGpsData = {
     .fix_info_valid     = true,
     .altitude_valid     = true,
 };
+static packet_t s_packetSend;
+
+void PrintGpsState(const gps_state_t *gps)
+{
+    if (!gps) {
+        printf("GPS State: NULL pointer\r\n");
+        return;
+    }
+
+    printf("=== GPS STATE ===\n\r");
+
+    printf("Position:\n\r");
+    printf("  Latitude:        %.6f\r\n", gps->latitude);
+    printf("  Longitude:       %.6f\r\n", gps->longitude);
+    printf("  Altitude:        %.2f m\r\n", gps->altitude);
+    printf("  Geoidal Sep:     %.2f m\r\n", gps->geoidal_sep);
+
+    printf("\r\nSpeed & Course:\r\n");
+    printf("  Speed (knots):   %.2f\r\n", gps->speed_knots);
+    printf("  Speed (kph):     %.2f\r\n", gps->speed_kph);
+    printf("  Course:          %.2f deg\r\n", gps->course_deg);
+
+    printf("\r\nFix / Satellite Info:\r\n");
+
+    printf("  HDOP:            %.2f\r\n", gps->hdop);
+    printf("  Fix Quality:     %d\r\n", gps->fix_quality);
+    printf("  Sats Tracked:    %d\r\n", gps->satellites_tracked);
+    printf("  Sats in View:    %d\r\n", gps->sats_in_view);
+
+    printf("\r\nTimestamp:\r\n");
+    // BUG: Buggy printf implementation means multiple format specifiers causes a crash!
+    // printf("  Date:            %02d-%02d-%04d\n", gps->day, gps->month, gps->year);
+    // printf("  Time:            %02d:%02d:%02d\n", gps->hours, gps->minutes, gps->seconds);
+    printf("  Date:            %02d", gps->day);
+    printf("-%02d", gps->month);
+    printf("-%04d\r\n", gps->year);
+    printf("  Time:            %02d:", gps->hours);
+    printf("%02d:", gps->minutes);
+    printf("%02d\r\n", gps->seconds);
+
+    printf("\r\nValidity Flags:\r\n");
+    printf("  Position Valid:  %s\r\n", gps->position_valid ? "true" : "false");
+    printf("  Nav Valid:       %s\r\n", gps->nav_valid ? "true" : "false");
+    printf("  Fix Info Valid:  %s\r\n", gps->fix_info_valid ? "true" : "false");
+    printf("  Altitude Valid:  %s\r\n", gps->altitude_valid ? "true" : "false");
+
+    printf("===================\r\n");
+}
 
 
 static uart_config_t uart0_config = {
@@ -122,22 +170,48 @@ void app_main(void)
             case grReq_RadioSend:
                 // As a test we'll send the fake gps data.
                 printf("Sending fake gps data!\r\n");
-                packet_t packet = CreatePacket(
+                s_packetSend = CreatePacket(
                     GPS_DATA, 
                   (uint8_t*)&g_fakeGpsData, 
               sizeof(g_fakeGpsData)
                 );
-                printf("Inter-board packet-size: %u\r\n", packet.m_dataSize + 1);
-                gr_RadioSend((uint8_t*)&packet, packet.m_dataSize + 1);
+                PrintGpsState((gps_state_t*)s_packetSend.data);
+                printf("Inter-board packet-size: %u\r\n", s_packetSend.m_dataSize + 2);
+                gr_RadioSend((uint8_t*)&s_packetSend, s_packetSend.m_dataSize + 2);
                 break;
             case grReq_RadioCheckRecv:
+                gr_RadioCheckRecv();
+                break;
+
             case grReq_RadioSetRx:
+                // Using a test timeout of 5000ms
+                gr_RadioSetRx(5000);
+                break;
+
             case grReq_RadioSetIdle:
+                gr_RadioSetIdle();
+                break;
+
             case grReq_RadioGetStatus:
+                e_radioState state = gr_RadioGetStatus();
+                printf("Radio state given: %s\r\n", gr_RadioStatesToString(state));
+                break;
+
             case grReq_RadioGetRSSI:
+                int16_t rssi = gr_RadioGetRSSI();
+                printf("Rssi given: %d\r\n", rssi);
+                break;
+                
             case grReq_RadioGetTimeOnAir:
+                printf("Time on air is not implemented!\r\n");
+                break;
+
+            case grReq__RadioRequestRxPacket:
+                printf("Retrieving the packet in the Lora's Rx!!!\r\n");
+                break;
+
             default:
-                printf("Unimplemented or invalid!\r\n");
+                printf("Invalid!\r\n");
         }
         // Convert this into a basic command scheme
         // printf("Sending that line!\r\n");

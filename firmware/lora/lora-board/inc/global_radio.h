@@ -25,14 +25,12 @@
 
 #define X(name) name,
 
-typedef enum {
+typedef enum __attribute__((packed)){
     d_radioStatesXMacro
 } e_radioState;
 
 #undef X
 
-
-const char* const gr_RadioStatesToString(e_radioState state);
 
 void gr_RadioSetTxDoneCallback(void (*callback)(void));
 
@@ -72,6 +70,16 @@ e_radioState gr_RadioGetStatus();
 int16_t gr_RadioGetRSSI();
 
 uint32_t gr_RadioGetTimeOnAir(packet_t *packet);
+
+static inline const char* const gr_RadioStatesToString(e_radioState state) {
+    switch (state) {
+#define X(name) case name: return #name;
+        d_radioStatesXMacro
+#undef X
+        default:
+            return "Unknown radio state";
+    }
+}
 
 
 #endif // global_radio_h_INCLUDED

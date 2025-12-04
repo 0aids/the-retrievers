@@ -2,7 +2,7 @@
 #include "driver/uart.h"
 #include "uart_config.h"
 
-void blockingTransmitBuffer(uart_port_t uartPort, uint8_t* buffer, uint16_t bufferLength)
+void blockingTransmitBuffer(uart_port_t uartPort, const uint8_t* const buffer, uint16_t bufferLength)
 {
     uart_write_bytes(uartPort, buffer,bufferLength);
     if (

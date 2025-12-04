@@ -2,6 +2,7 @@
 #define uart_config_h_INCLUDED
 
 #include <string.h>
+#include "packets/packets.h"
 #include <stdio.h>
 #include <stdint.h>
 
@@ -22,8 +23,9 @@
     X(RadioGetStatus) \
     X(RadioGetRSSI) \
     X(RadioGetTimeOnAir) \
+    X(_RadioRequestRxPacket) \
     X(Invalid) \
-
+// _RadioRequestRxPacket is for retrieving the radio data.
 
 #define X(name) grReq_##name,
 typedef enum __attribute__((packed)) {
@@ -64,9 +66,10 @@ static inline void grReq_printAllTypes(void)
 // 1 byte extra header which is just the instructions to do
 // with the data.
 
+// It needs to own the data you absolute monkey otherwise you cannot submit it!!!
 typedef struct {
     e_grRequest requestType;
-    uint8_t * dataBuffer;
+    uint8_t dataBuffer[d_defaultPacketBufferSize];
     uint16_t m_dataBufferSize;
 } espToLoraPacket_t;
 
@@ -78,24 +81,24 @@ static inline espToLoraPacket_t EspToLoraPacket_Create(
 {
     espToLoraPacket_t ret = {
         .requestType = requestType,
-        .dataBuffer = dataBuffer,
         .m_dataBufferSize = dataBufferSize
     };
+    memcpy(ret.dataBuffer, dataBuffer, dataBufferSize);
     return ret;
 }
 
 // Converts an array of bytes (including that data bytes) into a
-// espToLoraPacket_t. DOES NOT OWN IT'S DATA BUFFER!!!!!!!
+// espToLoraPacket_t.
 static inline espToLoraPacket_t EspToLoraPacket_CreateFromBuffer(uint8_t* const buffer, uint16_t bufferSize)
 {
     if (bufferSize == 0 || buffer == NULL) {
         return EspToLoraPacket_Create(grReq_Invalid, NULL, 0);
     }
-    else if (bufferSize == 1 || buffer != NULL) {
+    else if (bufferSize == 1 &&  buffer != NULL) {
         return EspToLoraPacket_Create(buffer[0], NULL, 0);
     }
     else {
-        return EspToLoraPacket_Create(buffer[0], buffer + 1, bufferSize - 1);
+        return EspToLoraPacket_Create(buffer[0], &buffer[1], bufferSize - 1);
     }
 }
 
@@ -103,6 +106,29 @@ static inline void EspToLoraPacket_PrintPacketStats(const espToLoraPacket_t *pac
     printf("Request type: %s\r\n", grRequestToString(packet->requestType));
     printf("Data Buffer size: %d\r\n", packet->m_dataBufferSize);
 }
+
+// AHHH this is the fucking 1000000th packet format I've had to write!!!!
+typedef struct {
+    int16_t rssi;
+    int8_t snr;
+    uint8_t data[d_defaultPacketBufferSize];
+    uint16_t m_dataLength; // The m_ prefix indicates that this data is not sent / can be inferred.
+} gr_RxDonePacket_t;
+
+// This is a bitmask of the irqs that might need to be handled.
+// These are sent back.
+typedef enum __attribute__((packed)) {
+    gr_irqs_None = 0,
+    gr_irqs_RxDone = 1 << 0,
+    gr_irqs_TxDone = 1 << 1,
+    gr_irqs_RxTimeout = 1 << 2,
+    gr_irqs_TxTimeout = 1 << 3,
+    gr_irqs_RxError = 1 << 4,
+} gr_irqsToHandle_t;
+
+// =======================================
+// ============= Definitions =============
+// =======================================
 
 #ifdef ESP_PLATFORM
 #include "driver/uart.h"
