@@ -4,6 +4,8 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 #include "freertos/task.h"
+#include "servo.h"
+#include "driver/ledc.h"
 #include "state_handlers.h"
 
 #define QUEUE_SIZE 32
@@ -45,7 +47,10 @@ void fsm_task(void* arg) {
         fsm_state_t new_state = current_state;
 
         if (event.type == EVENT_FOLDING_TIMER_REACHED) {
-            // do the servo thing here
+            ESP_LOGI(TAG, "FIRING MECHANISM");
+            servo_t servo_state = servo_setup();
+            servo_set_angle_and_speed(&servo_state, 120, 100);
+            ledc_stop(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, false);
         }
 
         switch (current_state) {
