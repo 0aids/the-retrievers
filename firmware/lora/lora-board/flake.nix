@@ -28,6 +28,7 @@
                 python313
                 uv
                 usbutils
+                screen
             ]
             ++ (
               if system == "aarch64-darwin"
