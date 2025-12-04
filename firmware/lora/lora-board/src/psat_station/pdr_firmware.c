@@ -8,6 +8,7 @@
 #include "tremo_gpio.h"
 #include "tremo_rcc.h"
 #include "tremo_pwr.h"
+#include "global_radio.h"
 
 // Why does timer.h need to be here???
 #include "timer.h"
@@ -53,8 +54,9 @@ void uartToEsp32Init()
     uart_config.data_width = d_gr_uartDataBits;
     uart_config.parity = d_gr_uartParityMode;
     uart_config.stop_bits = d_gr_uartStopBits;
+    uart_config.flow_control = UART_FLOW_CONTROL_DISABLED;
 
-    uart_config.fifo_mode = ENABLE; // Enable inputs and outputs
+    uart_config.fifo_mode = ENABLE;
     uart_init(d_gr_uartPort, &uart_config);
     uart_cmd(d_gr_uartPort, ENABLE);
 #endif
@@ -97,25 +99,37 @@ void appMain()
     uint16_t iter = 0;
     printf("Starting loop!\r\n");
     while (1) {
-        DelayMs(10);
-        if (iter++ % 50 == 0) {
-            printf("Still Looping\r\n");
-        }
+        // DelayMs(10);
+        // if (iter++ % 50 == 0) {
+        //     printf("Still Looping\r\n");
+        // }
+        DelayMs(1);
         if (uart_get_flag_status(d_gr_uartPort, UART_FLAG_RX_FIFO_EMPTY) == RESET)
         {
             printf("Received something in uart!\r\n");
             // Clear the buffer
-            uint16_t i = 0;
+            uint8_t i = 0;
+            DelayMs(4);
             while(uart_get_flag_status(d_gr_uartPort, UART_FLAG_RX_FIFO_EMPTY) == RESET &&
                   i < d_uartInputBufferSize - 1)
             {
                 g_uartInputBuffer[i++] = uart_receive_data(d_gr_uartPort);
-                printf("Received char: %#X\r\n", g_uartInputBuffer[i-1]);
-                DelayMs(1);
+                printf("Received char %u: %#X\r\n", i-1,  g_uartInputBuffer[i-1]);
+                DelayMs(4);
             }
-            s_espToLoraPacket = EspToLoraPacket_CreateFromBuffer(g_uartInputBuffer, i-1);
+            uint8_t bufferSize = i - 1;
+            printf("Inter-board buffer size: %u\r\n", bufferSize);
+            s_espToLoraPacket = EspToLoraPacket_CreateFromBuffer(g_uartInputBuffer, bufferSize);
             EspToLoraPacket_PrintPacketStats(&s_espToLoraPacket);
-            uart_send_data(d_gr_uartPort, d_gr_uartAck);
+            // Send the ack (The amount of bytes received)
+            uart_send_data(d_gr_uartPort, bufferSize);
+            switch (s_espToLoraPacket.requestType) {
+                case grReq_RadioSend:
+                    // Forward the data using the standalone.
+                default:
+                    printf("Unimplemented or invalid!\r\n");
+                    break;
+            }
         }
     }
 #endif

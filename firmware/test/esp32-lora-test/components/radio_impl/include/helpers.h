@@ -7,6 +7,8 @@
 void blockingTransmitBuffer(uart_port_t uartPort, uint8_t* buffer, uint16_t bufferLength);
 
 // Tries to get the ack from the uart
-bool waitForAck(uart_port_t uartPort, uint16_t timeout_ms);
+// Checks by comparing it to the number received (which is the number of bytes the
+//                                                lora received)
+bool waitForAck(uart_port_t uartPort, uint16_t timeout_ms, uint8_t numBytesSent);
 
 #endif // helpers_h_INCLUDED

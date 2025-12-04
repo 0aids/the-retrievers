@@ -15,7 +15,7 @@ void blockingTransmitBuffer(uart_port_t uartPort, uint8_t* buffer, uint16_t buff
     else printf("Sent successfully! \r\n");
 }
 
-bool waitForAck(uart_port_t uartPort, uint16_t timeout_ms)
+bool waitForAck(uart_port_t uartPort, uint16_t timeout_ms, uint8_t numBytesSent)
 {
     uint8_t buf = 0;
     int len = uart_read_bytes(uartPort, &buf, sizeof(buf), timeout_ms / portTICK_PERIOD_MS) ;
@@ -24,5 +24,5 @@ bool waitForAck(uart_port_t uartPort, uint16_t timeout_ms)
         return false;
     }
     printf("Ack Received!\r\n");
-    return (buf == d_gr_uartAck);
+    return (buf == numBytesSent);
 }

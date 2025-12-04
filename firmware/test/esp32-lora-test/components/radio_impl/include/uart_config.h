@@ -25,8 +25,6 @@
     X(Invalid) \
 
 
-#define d_gr_uartAck (uint8_t)0xFF
-
 #define X(name) grReq_##name,
 typedef enum __attribute__((packed)) {
     grReq_XMacro
@@ -117,7 +115,8 @@ static inline void EspToLoraPacket_PrintPacketStats(const espToLoraPacket_t *pac
 #define d_gr_radioRxPort 16
 #endif
 
-#define d_gr_uartBaudRate 115200
+// Really fucking slow baud rate because otherwise the lora will not receive most bits.
+#define d_gr_uartBaudRate 2400
 #define d_gr_uartDataBits UART_DATA_8_BITS
 #define d_gr_uartParityMode UART_PARITY_DISABLE
 #define d_gr_uartStopBits UART_STOP_BITS_1
@@ -132,7 +131,7 @@ static inline void EspToLoraPacket_PrintPacketStats(const espToLoraPacket_t *pac
 #define d_gr_radioRxPort GPIO_PIN_5
 #define d_gr_radioGpioPort GPIOA
 
-#define d_gr_uartBaudRate UART_BAUDRATE_115200
+#define d_gr_uartBaudRate UART_BAUDRATE_2400
 #define d_gr_uartDataBits UART_DATA_WIDTH_8
 #define d_gr_uartParityMode UART_PARITY_NO
 #define d_gr_uartStopBits UART_STOP_BITS_1

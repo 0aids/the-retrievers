@@ -50,7 +50,7 @@ void gr_RadioSend(uint8_t *buffer, uint16_t bufferSize)
     s_espToLoraPacket.m_dataBufferSize + 1
     );
     // The lora will send an ack to acknowledge it's received the entire payload
-    waitForAck(d_gr_uartPort, d_uartAckTimeout_ms);
+    waitForAck(d_gr_uartPort, d_uartAckTimeout_ms, s_espToLoraPacket.m_dataBufferSize + 1);
 }
 
 // Checks uart to see if anything is there. If so, we will run the relevant callbacks
@@ -79,7 +79,7 @@ static uart_config_t uart_config = {
     .parity = d_gr_uartParityMode,
     .stop_bits = d_gr_uartStopBits,
     .flow_ctrl = d_gr_uartFlowCtrlMode,
-    .rx_flow_ctrl_thresh = d_gr_uartFlowCtrlThresh,
+    .source_clk = UART_SCLK_DEFAULT,
 };
 
 void gr_RadioInit()
@@ -89,9 +89,9 @@ void gr_RadioInit()
         uart_driver_install(
             d_gr_uartPort, 
             d_defaultPacketBufferSize, 
-            d_defaultPacketBufferSize, 
-            10, 
-            &s_uartQueue, 
+            0, 
+            0, 
+            NULL, 
             0 // itrpt flags
         )
     );

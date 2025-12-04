@@ -4,6 +4,7 @@
 #include "radio.h"
 #include "packets/packets.h"
 #include <stdint.h>
+
 // ONLY USED FOR THE LORA STANDALONE
 
 static RadioEvents_t RadioEvents;
