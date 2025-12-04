@@ -1,11 +1,18 @@
 #ifndef uart_config_h_INCLUDED
 #define uart_config_h_INCLUDED
 
+#include <string.h>
+#include <stdio.h>
+#include <stdint.h>
+
 // Packet style
-// byte 1 -> Enum of request
-// byte 2 and 3 -> Number of data bytes if relevant
-// byte 4 and 4+ -> data bytes if relevant
+// byte 1  -> Enum of request
+// byte 2+ -> data bytes if relevant
 // Who cares about error checking
+
+// =================================================
+// ============= Enum for Request Type =============
+// =================================================
 
 #define grReq_XMacro \
     X(RadioSend) \
@@ -15,7 +22,10 @@
     X(RadioGetStatus) \
     X(RadioGetRSSI) \
     X(RadioGetTimeOnAir) \
+    X(Invalid) \
 
+
+#define d_gr_uartAck (uint8_t)0xFF
 
 #define X(name) grReq_##name,
 typedef enum __attribute__((packed)) {
@@ -23,6 +33,78 @@ typedef enum __attribute__((packed)) {
 } e_grRequest;
 #undef X
 
+static inline e_grRequest grReq_StringToEnum(const char *str)
+{
+    #define X(name) if (strcmp(#name, str) == 0) return grReq_##name;
+    grReq_XMacro
+    #undef X
+    return grReq_Invalid;
+}
+
+static inline const char* grRequestToString(e_grRequest req)
+{
+    switch (req) {
+        #define X(name) case grReq_##name: return "grReq_" #name;
+        grReq_XMacro
+        #undef X
+        default: return "Unknown_grRequest";
+    }
+}
+
+static inline void grReq_printAllTypes(void)
+{
+    printf("All types:\r\n");
+    #define X(name) printf(#name "\r\n");
+    grReq_XMacro
+    #undef X
+}
+
+// =====================================================
+// ============= Inter-Board communication =============
+// =====================================================
+// Board to board communication over uart. packets have a small
+// 1 byte extra header which is just the instructions to do
+// with the data.
+
+typedef struct {
+    e_grRequest requestType;
+    uint8_t * dataBuffer;
+    uint16_t m_dataBufferSize;
+} espToLoraPacket_t;
+
+static inline espToLoraPacket_t EspToLoraPacket_Create(
+    e_grRequest requestType,
+    uint8_t *dataBuffer,
+    uint16_t dataBufferSize
+)
+{
+    espToLoraPacket_t ret = {
+        .requestType = requestType,
+        .dataBuffer = dataBuffer,
+        .m_dataBufferSize = dataBufferSize
+    };
+    return ret;
+}
+
+// Converts an array of bytes (including that data bytes) into a
+// espToLoraPacket_t. DOES NOT OWN IT'S DATA BUFFER!!!!!!!
+static inline espToLoraPacket_t EspToLoraPacket_CreateFromBuffer(uint8_t* const buffer, uint16_t bufferSize)
+{
+    if (bufferSize == 0 || buffer == NULL) {
+        return EspToLoraPacket_Create(grReq_Invalid, NULL, 0);
+    }
+    else if (bufferSize == 1 || buffer != NULL) {
+        return EspToLoraPacket_Create(buffer[0], NULL, 0);
+    }
+    else {
+        return EspToLoraPacket_Create(buffer[0], buffer + 1, bufferSize - 1);
+    }
+}
+
+static inline void EspToLoraPacket_PrintPacketStats(const espToLoraPacket_t *packet) {
+    printf("Request type: %s\r\n", grRequestToString(packet->requestType));
+    printf("Data Buffer size: %d\r\n", packet->m_dataBufferSize);
+}
 
 #ifdef ESP_PLATFORM
 #include "driver/uart.h"
@@ -62,6 +144,5 @@ typedef enum __attribute__((packed)) {
 #error "d_aiThinkerPlatform or ESP_PLATFORM is _NOT_ defined!!!"
 
 #endif
-
 
 #endif // uart_config_h_INCLUDED

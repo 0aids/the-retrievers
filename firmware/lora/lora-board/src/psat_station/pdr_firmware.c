@@ -87,12 +87,13 @@ void initBoard()
 }
 
 #define d_uartInputBufferSize 256
-static char g_uartInputBuffer[d_uartInputBufferSize] = {0};
+static uint8_t g_uartInputBuffer[d_uartInputBufferSize] = {0};
+static espToLoraPacket_t s_espToLoraPacket;
 
 void appMain()
 {
 #ifndef d_psatStandaloneMode
-    // Test: Poll the uart input and print it to the screen.
+    // TODO: Figure out how to get this done without polling IE using interrupts.
     uint16_t iter = 0;
     printf("Starting loop!\r\n");
     while (1) {
@@ -110,11 +111,11 @@ void appMain()
             {
                 g_uartInputBuffer[i++] = uart_receive_data(d_gr_uartPort);
                 printf("Received char: %#X\r\n", g_uartInputBuffer[i-1]);
-                DelayMs(10);
+                DelayMs(1);
             }
-            // End the string.
-            g_uartInputBuffer[i] = 0;
-            printf("%s\r\n", g_uartInputBuffer);
+            s_espToLoraPacket = EspToLoraPacket_CreateFromBuffer(g_uartInputBuffer, i-1);
+            EspToLoraPacket_PrintPacketStats(&s_espToLoraPacket);
+            uart_send_data(d_gr_uartPort, d_gr_uartAck);
         }
     }
 #endif

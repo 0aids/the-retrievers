@@ -1,14 +1,16 @@
 // ================= global_radio.h implementation!!! ================ 
-
 // Implementations for global_radio for the psat stack -
 // The Esp32 connects to the lora over uart. The esp32 compiles against this
 // file for implementations of radio.
 
 #include "global_radio.h"
+#include "helpers.h"
 #include "uart_config.h"
 #include <stdint.h>
 #include "driver/uart.h"
 #include "esp_err.h"
+
+static espToLoraPacket_t s_espToLoraPacket;
 
 void gr_RadioSetTxDoneCallback(void (*callback)(void))
 {
@@ -35,12 +37,23 @@ void gr_RadioSetRxErrorCallback(void (*callback)(void))
  */
 void gr_RadioSend(uint8_t *buffer, uint16_t bufferSize)
 {
+    s_espToLoraPacket = 
+        EspToLoraPacket_Create(
+           grReq_RadioSend, 
+           buffer, 
+           bufferSize
+        );
+
+    blockingTransmitBuffer(
+        d_gr_uartPort, 
+    (uint8_t*)&s_espToLoraPacket, 
+    s_espToLoraPacket.m_dataBufferSize + 1
+    );
+    // The lora will send an ack to acknowledge it's received the entire payload
+    waitForAck(d_gr_uartPort, d_uartAckTimeout_ms);
 }
 
-/*
- * Does a check on the Radio to see if it has received anything, and will
- * run any of the callbacks setup. The radio will only see stuff when Rx is enabled.
- * */
+// Checks uart to see if anything is there. If so, we will run the relevant callbacks
 void gr_RadioCheckRecv()
 {
 }
@@ -58,7 +71,6 @@ void gr_RadioSetRx(uint32_t timeout)
 void gr_RadioSetIdle()
 {
 }
-
 
 static QueueHandle_t s_uartQueue;
 static uart_config_t uart_config = {
