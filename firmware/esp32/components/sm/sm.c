@@ -40,6 +40,7 @@ void fsm_task(void* arg) {
     // use prelaunch event to kickstart the state machine
     fsm_event_t startup_event = {.type = EVENT_START_PRELAUNCH};
     fsm_post_event(&startup_event);
+    servo_t servo_state = servo_setup();
 
     while (1) {
         if (!xQueueReceive(fsm_event_queue, &event, portMAX_DELAY)) continue;
@@ -48,7 +49,6 @@ void fsm_task(void* arg) {
 
         if (event.type == EVENT_FOLDING_TIMER_REACHED) {
             ESP_LOGI(TAG, "FIRING MECHANISM");
-            servo_t servo_state = servo_setup();
             servo_set_angle_and_speed(&servo_state, 120, 100);
             ledc_stop(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, false);
         }
