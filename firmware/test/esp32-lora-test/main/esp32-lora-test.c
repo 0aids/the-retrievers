@@ -4,11 +4,13 @@
 #include "esp_err.h"
 #include "freertos/idf_additions.h"
 #include "global_radio.h"
+#include "helpers.h"
 #include "packets/packets.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "hal/uart_types.h"
 #include "portmacro.h"
+#include "psat_lora.h"
 #include "uart_config.h"
 #include "gps_state.h"
 
@@ -159,11 +161,23 @@ void app_main(void)
 
     while (1) {
         blockingGetInput(UART_NUM_0, inputBuffer, d_defaultPacketBufferSize);
+        uart_flush_input(d_gr_uartPort);
+        if (strcmp("fsm", inputBuffer) == 0) {
+            printf("running fsm!\r\n");
+            logging_verbose = false;
+            uart_driver_delete(d_gr_uartPort);
+            PsatRadioInit();
+            while (1) {
+                vTaskDelay(50 / portTICK_PERIOD_MS);
+                PsatRadioMain();
+            }
+        }
         e_grRequest requestType = grReq_StringToEnum((char*)inputBuffer);
         if (requestType == grReq_Invalid)
         {
             printf("Invalid Request!!\r\n");
             grReq_printAllTypes();
+            continue;
         }
 
         switch (requestType) {
@@ -206,12 +220,13 @@ void app_main(void)
                 printf("Time on air is not implemented!\r\n");
                 break;
 
-            case grReq__RadioRequestRxPacket:
-                printf("Retrieving the packet in the Lora's Rx!!!\r\n");
-                break;
+            // case grReq__RadioRequestRxPacket:
+            //     printf("Retrieving the packet in the Lora's Rx!!!\r\n");
+            //     break;
 
             default:
-                printf("Invalid!\r\n");
+                printf("Invalid or unimplemented (_RadioRequestRxPacket must be run via checkrecv.)!\r\n");
+                break;
         }
         // Convert this into a basic command scheme
         // printf("Sending that line!\r\n");

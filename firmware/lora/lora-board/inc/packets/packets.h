@@ -82,6 +82,7 @@ static inline packet_t CreatePacket(e_PacketType_t type, const uint8_t * const d
     return packet;
 }
 
+// The size of the parsed packet is the entire size of the received buffer.
 static inline packet_t ParsePacket(uint8_t *payload, uint16_t size) {
     packet_t pack = {
         .type = payload[0],

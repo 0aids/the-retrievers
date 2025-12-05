@@ -251,6 +251,7 @@ void GroundRadioMain() {
         else if (strcmp(g_uartInputBuffer, g_possibleInst[possibleInst_gpsReq]) == 0) 
         {
             printf("Requesting GPS!\r\n");
+            g_packetRecv.type = EMPTY;
             g_packetSend = CreatePacket(GPS_REQ, NULL, 0);
             gr_RadioSend((uint8_t*)&g_packetSend, g_packetSend.m_dataSize + 1);
             // This is required otherwise we will get a tx timeout.

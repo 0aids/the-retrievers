@@ -1,9 +1,25 @@
 #include "psat_lora.h"
 #include "global_radio.h"
 #include "gps_state.h"
+#include <stdint.h>
+
 // Only non-cross platform thing.
+#ifndef ESP_PLATFORM
+
 #include "delay.h"
 #include "timer.h"
+
+#else
+
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "esp_timer.h"
+
+#define DelayMs(timeInMs) vTaskDelay((timeInMs) / portTICK_PERIOD_MS)
+#define TimerTime_t int64_t
+#define TimerGetCurrentTime() (esp_timer_get_time() / 1000)
+
+#endif
 #include <stdint.h>
 #include <string.h>
 #include "packets/packets.h"
@@ -235,7 +251,7 @@ void PsatRadioMain() {
             }
 
             // Send Ping request and wait for response for 2s
-#ifdef d_runPsatConnectionTests
+#if defined(d_runPsatConnectionTests) || defined(ESP_PLATFORM)
             else if (g_TxRoutineCounter % 3 == 2)
             {
                 printf("Sending ping\r\n");
@@ -253,7 +269,8 @@ void PsatRadioMain() {
                 }
                 else {
                     g_numPingTries++;
-                    if (g_numPingTries > d_disconnectRetryThreshold) {
+                    // if (g_numPingTries > d_disconnectRetryThreshold) {
+                    if (false) {
                         // Assume we have lost connection
                         g_psatRadioState = psatRadioStates_Beacon;
                         printf("Lost connection with GS - No pong received ;_;\r\n");

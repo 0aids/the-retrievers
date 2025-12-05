@@ -1,0 +1,1 @@
+../../../../../lora/lora-board/inc/global_lora.h

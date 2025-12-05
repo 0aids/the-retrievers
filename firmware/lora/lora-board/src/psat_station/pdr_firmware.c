@@ -206,6 +206,10 @@ void appMain()
     printf("Starting loop!\r\n");
     gr_RadioInit();
     gr_RadioSetRxDoneCallback(ForwarderOnRxDone);
+    gr_RadioSetTxDoneCallback(ForwarderOnTxDone);
+    gr_RadioSetRxTimeoutCallback(ForwarderOnRxTimeout);
+    gr_RadioSetTxTimeoutCallback(ForwarderOnTxTimeout);
+    gr_RadioSetRxErrorCallback(ForwarderOnRxError);
     while (1) {
         // DelayMs(10);
         // if (iter++ % 50 == 0) {
@@ -234,10 +238,10 @@ void appMain()
 
             switch (s_espToLoraPacket.requestType) {
                 case grReq_RadioSend:
-                    memcpy(&s_gpsState, &(s_espToLoraPacket.dataBuffer[1]) , sizeof(gps_state_t));
-                    PrintGpsState(&s_gpsState);
-                    gr_RadioSend(s_espToLoraPacket.dataBuffer, s_espToLoraPacket.m_dataBufferSize);
+                    // memcpy(&s_gpsState, &(s_espToLoraPacket.dataBuffer[1]) , sizeof(gps_state_t));
+                    // PrintGpsState(&s_gpsState);
                     // Forward the data using the standalone.
+                    gr_RadioSend(s_espToLoraPacket.dataBuffer, s_espToLoraPacket.m_dataBufferSize);
                     break;
                 case grReq_RadioCheckRecv:
                     // Sends the irqs that got triggered.
@@ -308,6 +312,7 @@ void appMain()
                 case grReq__RadioRequestRxPacket:
                     printf("Sending stored Rx Packet!!!\r\n");
                     if (g_recvPacket.type == EMPTY) {
+                        // If there is nothing, we will just timeout the other guy.
                         printf("Error: There is no packet waiting to be received???\r\n");
                         break;
                     }
