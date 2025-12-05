@@ -9,10 +9,15 @@
 #include "freertos/task.h"
 #include "gps_driver_esp32.h"
 #include "mock_buttons.h"
+#include "psat_lora.h"
 #include "sm.h"
 #include "timers.h"
 
 #define MECHANICAL_DEPLOY_DELAY_SECONDS 30
+
+gps_state_t gps_state = {0};
+TaskHandle_t xHandleRadio = NULL;
+void psat_radio_task_start();
 
 fsm_state_t state_prelaunch(const fsm_event_t* event) {
     static const char* TAG = "FSM-PRELAUNCH";
@@ -30,6 +35,9 @@ fsm_state_t state_prelaunch(const fsm_event_t* event) {
             // mock buttons
             prelaunch_init_isr();
             landing_init_isr();
+
+            PsatRadioInit();
+            psat_radio_task_start();
 
             // fsm_event_t start_event = {.type = EVENT_PRELAUNCH_COMPLETE};
             // fsm_post_event(&start_event);
@@ -109,8 +117,6 @@ fsm_state_t state_descent(const fsm_event_t* event) {
 
             if (gps_snapshot.fix_info_valid) {
                 log_gps_data(&gps_snapshot);
-                // lora gonna send gps here
-
             } else {
                 ESP_LOGI(TAG, "FIX NOT VALID - NOT CONNECTED");
             }
@@ -149,11 +155,10 @@ fsm_state_t state_recovery(const fsm_event_t* event) {
     switch (event->type) {
         case EVENT_TIMER_5S:
             ESP_LOGI(TAG, "its been 5 seconds, sending gps data to ground");
-            gps_state_t gps_snapshot;
-            gps_get_snapshot(&gps_snapshot);
+            gps_get_snapshot(&gps_state);
 
-            if (gps_snapshot.fix_info_valid) {
-                log_gps_data(&gps_snapshot);
+            if (gps_state.fix_info_valid) {
+                log_gps_data(&gps_state);
                 // lora gonna send gps here
 
             } else {
@@ -223,4 +228,15 @@ fsm_state_t state_error(const fsm_event_t* event) {
         default:
             return STATE_ERROR;
     }
+}
+
+void psat_radio_task() {
+    while (1) {
+        PsatRadioMain();
+        vTaskDelay(pdMS_TO_TICKS(1));
+    }
+}
+
+void psat_radio_task_start() {
+    xTaskCreate(psat_radio_task, "radio_task", 4096, NULL, 10, &xHandleRadio);
 }
