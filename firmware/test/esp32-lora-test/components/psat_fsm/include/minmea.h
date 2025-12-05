@@ -1,1 +1,0 @@
-../../../../../esp32/components/gps/include/minmea.h
