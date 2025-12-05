@@ -10,7 +10,9 @@
 #include "driver/uart.h"
 #include "esp_err.h"
 
-static espToLoraPacket_t s_espToLoraPacket;
+static espToLoraPacket_t s_espToLoraPacketSend;
+static gr_RxDonePacket_t s_rxDonePacket;
+static char s_debugBuffer[d_defaultPacketBufferSize] = {0};
 
 static void gr_RadioDefaultCallback(void) {
     printf("Default callback\r\n");
@@ -55,7 +57,7 @@ void gr_RadioSetRxErrorCallback(void (*callback)(void))
  */
 void gr_RadioSend(uint8_t *buffer, uint16_t bufferSize)
 {
-    s_espToLoraPacket = 
+    s_espToLoraPacketSend = 
         EspToLoraPacket_Create(
            grReq_RadioSend, 
            buffer, 
@@ -64,11 +66,11 @@ void gr_RadioSend(uint8_t *buffer, uint16_t bufferSize)
 
     blockingTransmitBuffer(
         d_gr_uartPort, 
-    (uint8_t*)&s_espToLoraPacket, 
-    s_espToLoraPacket.m_dataBufferSize + 1
+    (uint8_t*)&s_espToLoraPacketSend, 
+        bufferSize + 1
     );
     // The lora will send an ack to acknowledge it's received the entire payload
-    waitForAck(d_gr_uartPort, d_uartAckTimeout_ms, s_espToLoraPacket.m_dataBufferSize + 1);
+    waitForAck(d_gr_uartPort, d_uartAckTimeout_ms, bufferSize + 1);
 }
 
 // Checks uart to see if anything is there. If so, we will run the relevant callbacks
@@ -84,9 +86,9 @@ void gr_RadioCheckRecv()
     waitForAck(d_gr_uartPort, d_uartAckTimeout_ms, sizeof(reqType));
     int len = uart_read_bytes(d_gr_uartPort, &irqsToHandle, sizeof(irqsToHandle), 100 / portTICK_PERIOD_MS); 
     if (len == sizeof(irqsToHandle)) {
-        printf("Received: %0#1b\r\n", irqsToHandle);
+        gr_irqs_PrintAssociatedTypes(irqsToHandle);
     } else {
-        printf("Invalid response received! len = %d\r\n", len);
+        verbPrintf("Invalid response received! len = %d\r\n", len);
     }
 
     if (irqsToHandle & gr_irqs_TxDone) {
@@ -144,13 +146,13 @@ void gr_RadioCheckRecv()
 void gr_RadioSetRx(uint32_t timeout)
 {
     const static e_grRequest reqType = grReq_RadioSetRx;
-    s_espToLoraPacket = EspToLoraPacket_Create(reqType, (uint8_t*)&timeout, sizeof(timeout));
+    s_espToLoraPacketSend = EspToLoraPacket_Create(reqType, (uint8_t*)&timeout, sizeof(timeout));
     blockingTransmitBuffer(
         d_gr_uartPort,
-        (uint8_t*)&s_espToLoraPacket,
-        s_espToLoraPacket.m_dataBufferSize + 1
+        (uint8_t*)&s_espToLoraPacketSend,
+        s_espToLoraPacketSend.m_dataBufferSize + 1
     );
-    waitForAck(d_gr_uartPort, d_uartAckTimeout_ms, s_espToLoraPacket.m_dataBufferSize + 1);
+    waitForAck(d_gr_uartPort, d_uartAckTimeout_ms, s_espToLoraPacketSend.m_dataBufferSize + 1);
 }
 
 /*

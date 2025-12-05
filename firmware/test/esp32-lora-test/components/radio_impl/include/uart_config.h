@@ -102,7 +102,7 @@ static inline espToLoraPacket_t EspToLoraPacket_CreateFromBuffer(uint8_t* const 
     }
 }
 
-static inline void EspToLoraPacket_PrintPacketStats(const espToLoraPacket_t *packet) {
+static inline void EspToLoraPacket_PrintPacketStats(const espToLoraPacket_t * const packet) {
     printf("Request type: %s\r\n", grRequestToString(packet->requestType));
     printf("Data Buffer size: %d\r\n", packet->m_dataBufferSize);
 }
@@ -115,6 +115,12 @@ typedef struct {
     uint16_t m_dataLength; // The m_ prefix indicates that this data is not sent / can be inferred.
 } gr_RxDonePacket_t;
 
+static inline void gr_RxDonePacket_PrintPacketStats(const gr_RxDonePacket_t * const packet) {
+    printf("Rssi: %d\r\n", packet->rssi);
+    printf("Snr: %d\r\n", packet->snr);
+    printf("Data length: %d\r\n", packet->m_dataLength);
+}
+
 // This is a bitmask of the irqs that might need to be handled.
 // These are sent back.
 typedef enum __attribute__((packed)) {
@@ -125,6 +131,34 @@ typedef enum __attribute__((packed)) {
     gr_irqs_TxTimeout = 1 << 3,
     gr_irqs_RxError = 1 << 4,
 } gr_irqsToHandle_t;
+
+#define gr_irqs_PrintAssociatedTypes(irqs)\
+{\
+    if (irqs == gr_irqs_None) {\
+        verbPrintf("gr_irqs_None\r\n");\
+        return;\
+    }\
+    if (irqs & gr_irqs_RxDone)\
+    {\
+        verbPrintf("gr_irqs_RxDone\r\n");\
+    }\
+    if (irqs & gr_irqs_TxDone)\
+    {\
+        verbPrintf("gr_irqs_TxDone\r\n");\
+    }\
+    if (irqs & gr_irqs_RxTimeout)\
+    {\
+        verbPrintf("gr_irqs_RxTimeout\r\n");\
+    }\
+    if (irqs & gr_irqs_TxTimeout)\
+    {\
+        verbPrintf("gr_irqs_TxTimeout\r\n");\
+    }\
+    if (irqs & gr_irqs_RxError)\
+    {\
+        verbPrintf("gr_irqs_RxError\r\n");\
+    }\
+}
 
 // =======================================
 // ============= Definitions =============
