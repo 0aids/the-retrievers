@@ -16,7 +16,6 @@
 
 fsm_state_t state_prelaunch(const fsm_event_t* event) {
     static const char* TAG = "FSM-PRELAUNCH";
-    ESP_LOGI(TAG, "Event %d", event->type);
 
     switch (event->type) {
         case EVENT_START_PRELAUNCH:
@@ -49,7 +48,6 @@ fsm_state_t state_prelaunch(const fsm_event_t* event) {
 
 fsm_state_t state_ascent(const fsm_event_t* event) {
     static const char* TAG = "FSM-ASCENT";
-    ESP_LOGI(TAG, "Event %d", event->type);
 
     switch (event->type) {
         case EVENT_TIMER_10S:
@@ -79,7 +77,6 @@ fsm_state_t state_ascent(const fsm_event_t* event) {
 
 fsm_state_t state_deployed(const fsm_event_t* event) {
     static const char* TAG = "FSM-DEPLOYED";
-    ESP_LOGI(TAG, "Event %d", event->type);
 
     switch (event->type) {
         case EVENT_TIMER_5S:
@@ -98,7 +95,6 @@ fsm_state_t state_deployed(const fsm_event_t* event) {
 
 fsm_state_t state_descent(const fsm_event_t* event) {
     static const char* TAG = "FSM-DESCENT";
-    ESP_LOGI(TAG, "Event %d", event->type);
 
     switch (event->type) {
         case EVENT_TIMER_1S:
@@ -133,7 +129,6 @@ fsm_state_t state_descent(const fsm_event_t* event) {
 
 fsm_state_t state_landing(const fsm_event_t* event) {
     static const char* TAG = "FSM-LANDING";
-    ESP_LOGI(TAG, "Event %d", event->type);
 
     switch (event->type) {
         case EVENT_TIMER_5S:
@@ -150,7 +145,6 @@ fsm_state_t state_landing(const fsm_event_t* event) {
 
 fsm_state_t state_recovery(const fsm_event_t* event) {
     static const char* TAG = "FSM-RECOVERY";
-    ESP_LOGI(TAG, "Event %d", event->type);
 
     switch (event->type) {
         case EVENT_TIMER_5S:

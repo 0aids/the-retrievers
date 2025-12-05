@@ -1,11 +1,11 @@
 #include "sm.h"
 
+#include "driver/ledc.h"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 #include "freertos/task.h"
 #include "servo.h"
-#include "driver/ledc.h"
 #include "state_handlers.h"
 
 #define QUEUE_SIZE 32
@@ -45,6 +45,8 @@ void fsm_task(void* arg) {
     while (1) {
         if (!xQueueReceive(fsm_event_queue, &event, portMAX_DELAY)) continue;
 
+        ESP_LOGI(TAG, "Recieved Event %s", fsm_event_to_string(event.type));
+
         fsm_state_t new_state = current_state;
 
         if (event.type == EVENT_FOLDING_TIMER_REACHED) {
@@ -75,11 +77,12 @@ void fsm_task(void* arg) {
             case STATE_ERROR:
                 new_state = state_error(&event);
                 break;
+            case STATE__COUNT:
+                break;
         }
 
         if (new_state != current_state) {
-            ESP_LOGI(TAG, "moving to a new state from %d to %d", current_state,
-                     new_state);
+            fsm_print_transition(current_state, new_state);
             current_state = new_state;
         }
     }

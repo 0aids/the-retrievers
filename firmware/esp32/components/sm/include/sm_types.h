@@ -11,6 +11,7 @@ typedef enum {
     STATE_LANDING,
     STATE_RECOVERY,
     STATE_ERROR,
+    STATE__COUNT
 } fsm_state_t;
 
 typedef enum {
@@ -30,6 +31,7 @@ typedef enum {
     EVENT_AUDIO_FUN,
     EVENT_LORA_COMMAND,
     EVENT_ERROR,
+    EVENT__COUNT
 } fsm_event_type_t;
 
 typedef union {
@@ -44,5 +46,9 @@ typedef struct {
     fsm_event_data_t data;  // if we wanna put some data along with the event,
                             // eg gps or the specific lora command
 } fsm_event_t;
+
+const char* fsm_state_to_string(fsm_state_t state);
+const char* fsm_event_to_string(fsm_event_type_t event);
+void fsm_print_transition(fsm_state_t old_state, fsm_state_t new_state);
 
 #endif
