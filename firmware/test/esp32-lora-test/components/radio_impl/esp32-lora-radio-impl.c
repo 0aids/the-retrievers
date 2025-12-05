@@ -94,9 +94,39 @@ void gr_RadioCheckRecv()
     }
     if (irqsToHandle & gr_irqs_RxDone) {
         // TODO: Collect the received packet
-        // The data should be in the fifo, we'll flush it out
-        // gr_RadioRxDoneCallback();
+        // This means we send another request to retreive the packet.
+        const static e_grRequest rxDoneGetPacket = grReq__RadioRequestRxPacket;
+        blockingTransmitBuffer(d_gr_uartPort, &rxDoneGetPacket, sizeof(rxDoneGetPacket));
+        // waitForAck(d_gr_uartPort, d_uartAckTimeout_ms, sizeof(rxDoneGetPacket));
+        // uart_flush(d_gr_uartPort);
+        // Get packet
+        // We don't know the actual size of the packet
+        // yolo it, can't be assed to add error checking
+        waitForAck(d_gr_uartPort, d_uartAckTimeout_ms, sizeof(rxDoneGetPacket));
+        int len = uart_read_bytes(d_gr_uartPort, &s_rxDonePacket, sizeof(s_rxDonePacket), 500 / portTICK_PERIOD_MS); 
+        if (len <= 0) {
+            printf("Failed to retrieve any data from rxdone???\r\n");
+            irqsToHandle |= gr_irqs_RxError;
+            goto goto_RxDoneError;
+        }
+        verbPrintf("Received %d bytes! \r\n", len);
+        s_rxDonePacket.m_dataLength = len - sizeof(s_rxDonePacket.rssi) - sizeof(s_rxDonePacket.snr);
+
+        for (uint16_t i = 0; i < len; i++) {
+            verbPrintf("Received char %u: ", i);
+            verbPrintf("%#X,   ", ((uint8_t*)&s_rxDonePacket)[i]);
+            verbPrintf("%c\r\n", ((uint8_t*)&s_rxDonePacket)[i]);
+        }
+        
+
+        gr_RadioRxDoneCallback(
+            s_rxDonePacket.data,
+            s_rxDonePacket.m_dataLength,
+            s_rxDonePacket.rssi,
+            s_rxDonePacket.snr
+        );
     }
+    goto_RxDoneError:
     if (irqsToHandle & gr_irqs_TxTimeout) {
         gr_RadioTxTimeoutCallback();
     }

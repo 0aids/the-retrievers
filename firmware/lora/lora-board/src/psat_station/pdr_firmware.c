@@ -1,6 +1,7 @@
 #ifndef d_psatStandaloneMode
 #include <stdio.h>
 #include "delay.h"
+#include "packets/packets.h"
 #include "tremo_cm4.h"
 #include "tremo_delay.h"
 #include "tremo_regs.h"
@@ -18,8 +19,14 @@
 #include "gps_state.h"
 #endif
 
-static gr_irqsToHandle_t s_irqsToHandle;
-static packet_t g_recvPacket;
+static bool testRecvDone = false;
+static gr_irqsToHandle_t s_irqsToHandle = gr_irqs_RxDone;
+static packet_t g_recvPacket = {
+    .data = "Hello world!",
+    .m_dataSize = 13,
+    .type = TEST_TYPE
+};
+static gr_RxDonePacket_t s_rxDonePacket = {0};
 static packet_t g_sendPacket;
 static uint32_t s_pleaseAlignMe32bit;
 static gps_state_t s_gpsState;
@@ -153,9 +160,16 @@ void ForwarderOnTxDone( void )
 void ForwarderOnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
 {
     // Store it here
-    g_recvPacket = ParsePacket(payload, size + 1);
+    printf("FORWARDER Rx Done!\r\n");
+    g_recvPacket = ParsePacket(payload, size);
     printPacketStats(&g_recvPacket);
     s_irqsToHandle |= gr_irqs_RxDone;
+
+    // Setup the handle for returning the packet data
+    memcpy(s_rxDonePacket.data, &g_recvPacket, g_recvPacket.m_dataSize + 1);
+    s_rxDonePacket.rssi = rssi;
+    s_rxDonePacket.snr = snr;
+    s_rxDonePacket.m_dataLength = size;
 }
 
 void ForwarderOnTxTimeout( void )
@@ -227,10 +241,23 @@ void appMain()
                     break;
                 case grReq_RadioCheckRecv:
                     // Sends the irqs that got triggered.
-                    s_irqsToHandle = gr_irqs_None;
+                    // For the first checkrecv we will have the rxdone = true
+                    if (!testRecvDone) 
+                    {
+                        testRecvDone = true;
+                        printf("Doing the Test irq!\r\n");
+                        uart_send_data(d_gr_uartPort, s_irqsToHandle);
+                        // Setup the handle for returning the packet data
+                        memcpy(s_rxDonePacket.data, &g_recvPacket, g_recvPacket.m_dataSize + 1);
+                        s_rxDonePacket.rssi = -100;
+                        s_rxDonePacket.snr = 10;
+                        s_rxDonePacket.m_dataLength = g_recvPacket.m_dataSize + 1;
+                        gr_RxDonePacket_PrintPacketStats(&s_rxDonePacket);
+                    }
                     gr_RadioCheckRecv();
                     // And then we send the activated ones back.
                     uart_send_data(d_gr_uartPort, s_irqsToHandle);
+                    s_irqsToHandle = gr_irqs_None;
                     break;
 
                 case grReq_RadioSetRx:
@@ -284,7 +311,20 @@ void appMain()
                         printf("Error: There is no packet waiting to be received???\r\n");
                         break;
                     }
-                    // TODO: Continue later.
+                    uint16_t i = 0;
+                    // Convert the received packet into a gr_rxdonepacket_t
+                    uint16_t totalPacketSize =  s_rxDonePacket.m_dataLength + sizeof(int8_t) + sizeof(int16_t);
+                    printf("Total packet size: %u\r\n", totalPacketSize);
+                    DelayMs(1);
+                    for (i = 0; i < totalPacketSize; i++) {
+                        uint8_t value = ((uint8_t*)&s_rxDonePacket)[i];
+                        printf("i: %u    ", i);
+                        printf("hex: %#x    ", value);
+                        printf("char: %c\r\n", value);
+                        uart_send_data(d_gr_uartPort, value);
+                    }
+                    g_recvPacket.type = EMPTY;
+                    // Wait for ack?
                     break;
 
                 default:

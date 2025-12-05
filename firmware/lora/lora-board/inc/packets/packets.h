@@ -19,6 +19,7 @@ typedef enum __attribute__((packed)) {
     BUZ_REQ, // Uses ACK for acknowledgement.
     FOLD_REQ, // ^
     STATE_DATA, // This fits
+    TEST_TYPE,
 } e_PacketType_t;
 
 typedef enum __attribute__((packed)) {
@@ -41,6 +42,7 @@ typedef struct {
 #define d_pingResponse() \
     { \
     packet_t packet = CreatePacket(PONG, NULL, 0); \
+    delay_ms(500); \
     Radio.Send((uint8_t*) &packet, 1); \
     printf("Sent PONG response!\r\n"); \
     delay_ms(100); \
