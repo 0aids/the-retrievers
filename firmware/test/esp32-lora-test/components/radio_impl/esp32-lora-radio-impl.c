@@ -15,10 +15,16 @@ static gr_RxDonePacket_t s_rxDonePacket;
 static char s_debugBuffer[d_defaultPacketBufferSize] = {0};
 
 static void gr_RadioDefaultCallback(void) {
-    printf("Default callback\r\n");
+    verbPrintf("Default callback\r\n");
 }
 static void gr_RadioDefaultRxDoneCallback(uint8_t* data, uint16_t dataLength, int16_t rssi, int8_t snr) {
-    printf("Default RxDone callback\r\n");
+    verbPrintf("Default RxDone callback\r\n");
+    if (dataLength < d_defaultPacketBufferSize) {
+        verbPrintf("Stats: \r\n");
+        verbPrintf("Data length: %u\r\n", dataLength);
+        verbPrintf("RSSI: %d\r\n", rssi);
+        verbPrintf("SNR: %u\r\n", snr);
+    }
 }
 
 static void (*gr_RadioTxDoneCallback)(void) = gr_RadioDefaultCallback;
@@ -216,9 +222,9 @@ e_radioState gr_RadioGetStatus()
     e_radioState status = gr_RadioStates_Unknown;
     int len = uart_read_bytes(d_gr_uartPort, &status, sizeof(status), 100 / portTICK_PERIOD_MS); 
     if (len == sizeof(status)) {
-        printf("Received: %s\r\n", gr_RadioStatesToString(status));
+        verbPrintf("Received: %s\r\n", gr_RadioStatesToString(status));
     } else {
-        printf("Invalid response received! len = %d\r\n", len);
+        verbPrintf("Invalid response received! len = %d\r\n", len);
     }
     return status;
 }
@@ -237,16 +243,16 @@ int16_t gr_RadioGetRSSI()
     int16_t rssi = gr_RadioStates_Unknown;
     int len = uart_read_bytes(d_gr_uartPort, &rssi, sizeof(rssi), 100 / portTICK_PERIOD_MS); 
     if (len == sizeof(rssi)) {
-        printf("Received rssi: %ddbm\r\n", rssi);
+        verbPrintf("Received rssi: %ddbm\r\n", rssi);
     } else {
-        printf("Invalid response received! len = %d\r\n", len);
+        verbPrintf("Invalid response received! len = %d\r\n", len);
     }
     return rssi;
 }
 
 uint32_t gr_RadioGetTimeOnAir(packet_t *packet)
 {
-    printf("Unimplemented!\r\n");
+    verbPrintf("Unimplemented!\r\n");
     return 1;
 }
 
