@@ -8,6 +8,7 @@
 #include "freertos/queue.h"
 #include "freertos/task.h"
 #include "gps_driver_esp32.h"
+#include "mock_buttons.h"
 #include "sm.h"
 #include "timers.h"
 
@@ -27,13 +28,18 @@ fsm_state_t state_prelaunch(const fsm_event_t* event) {
             timers_start_10s();
             deployment_init_isr();
 
-            fsm_event_t start_event = {.type = EVENT_PRELAUNCH_COMPLETE};
-            fsm_post_event(&start_event);
+            // mock buttons
+            prelaunch_init_isr();
+            landing_init_isr();
+
+            // fsm_event_t start_event = {.type = EVENT_PRELAUNCH_COMPLETE};
+            // fsm_post_event(&start_event);
 
             return STATE_PRELAUNCH;
 
         case EVENT_PRELAUNCH_COMPLETE:
             ESP_LOGI(TAG, "prelaunch complete moving into ascent...");
+            stop_prelaunch_button();
             return STATE_ASCENT;
 
         default:
@@ -117,6 +123,7 @@ fsm_state_t state_descent(const fsm_event_t* event) {
         case EVENT_LANDING_CONFIRMED:
             ESP_LOGI(TAG, "landing has been detected, stopping 1s timer");
             timers_stop_1s();
+            stop_landing_button();
             // stop the camera
             return STATE_LANDING;
         default:
