@@ -16,6 +16,8 @@
 #include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "servo.h"
+#include "sm.h"
 
 #define DelayMs(timeInMs) vTaskDelay((timeInMs) / portTICK_PERIOD_MS)
 #define TimerTime_t int64_t
@@ -249,6 +251,16 @@ void PsatRadioMain() {
                     break;
 
                 case BUZ_REQ:
+#ifdef ESP_PLATFORM
+                    fsm_event_t audio_event = {.type = EVENT_AUDIO_BEEP};
+                    fsm_post_event(&audio_event);
+                    printf("Sending audio event\r\n");
+#endif
+
+                    printf("Received audio req, sending ack!\r\n");
+                    g_sendPacket = CreatePacket(ACK, NULL, 0);
+                    gr_RadioSend((uint8_t*)&g_sendPacket, 1);
+                    break;
                 case FOLD_REQ:
                     // TODO: Send relevant data if applicable (GPS data request)
                     printf("Received req, sending ack!\r\n");
@@ -295,9 +307,31 @@ void PsatRadioMain() {
             }
             // Send State data
             else if (g_TxRoutineCounter % 3 == 1) {
+#ifdef ESP_PLATFORM
                 printf("Sending State data\r\n");
                 g_sendPacket = CreatePacket(STATE_DATA, NULL, 0);
                 gr_RadioSend((uint8_t*)&g_sendPacket, 1);
+                gps_get_snapshot(&s_curGpsState);
+
+                servo_t servo_state = fsm_get_current_servo_state();
+                uint16_t angle = servo_get_angle(&servo_state);
+
+                PSAT_State_Data_t data = {
+                    .gps_fix = s_curGpsState.fix_info_valid,
+                    .servo_angle = angle,
+                    .state = fsm_get_current_state()};
+
+                
+                printf("Current State: %s\n",
+                       fsm_state_to_string(data.state));
+                printf("GPS Fix Valid: %d\n", data.gps_fix);
+                printf("Servo Angle: %d\n", data.servo_angle);
+
+                g_sendPacket = CreatePacket(STATE_DATA, (uint8_t*)&data,
+                                            sizeof(PSAT_State_Data_t));
+                gr_RadioSend((uint8_t*)&g_sendPacket,
+                             g_sendPacket.m_dataSize + 1);
+#endif
                 DelayMs(50);
             }
             // Send Ping request and wait for response for 2s

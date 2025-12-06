@@ -9,15 +9,12 @@
 #include "freertos/task.h"
 #include "gps_driver_esp32.h"
 #include "mock_buttons.h"
-#include "psat_lora.h"
 #include "sm.h"
 #include "timers.h"
 
 #define MECHANICAL_DEPLOY_DELAY_SECONDS 30
 
 gps_state_t gps_state = {0};
-TaskHandle_t xHandleRadio = NULL;
-void psat_radio_task_start();
 
 fsm_state_t state_prelaunch(const fsm_event_t* event) {
     static const char* TAG = "FSM-PRELAUNCH";
@@ -35,9 +32,6 @@ fsm_state_t state_prelaunch(const fsm_event_t* event) {
             // mock buttons
             prelaunch_init_isr();
             landing_init_isr();
-
-            PsatRadioInit();
-            psat_radio_task_start();
 
             // fsm_event_t start_event = {.type = EVENT_PRELAUNCH_COMPLETE};
             // fsm_post_event(&start_event);
@@ -228,15 +222,4 @@ fsm_state_t state_error(const fsm_event_t* event) {
         default:
             return STATE_ERROR;
     }
-}
-
-void psat_radio_task() {
-    while (1) {
-        PsatRadioMain();
-        vTaskDelay(pdMS_TO_TICKS(1));
-    }
-}
-
-void psat_radio_task_start() {
-    xTaskCreate(psat_radio_task, "radio_task", 4096, NULL, 10, &xHandleRadio);
 }
