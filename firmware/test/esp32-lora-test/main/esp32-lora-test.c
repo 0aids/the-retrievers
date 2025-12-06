@@ -190,8 +190,8 @@ void app_main(void)
               sizeof(g_fakeGpsData)
                 );
                 PrintGpsState((gps_state_t*)s_packetSend.data);
-                printf("Inter-board packet-size: %u\r\n", s_packetSend.m_dataSize + 2);
-                gr_RadioSend((uint8_t*)&s_packetSend, s_packetSend.m_dataSize + 2);
+                printf("Inter-board packet-size: %u\r\n", s_packetSend.m_dataSize + 1);
+                gr_RadioSend((uint8_t*)&s_packetSend, s_packetSend.m_dataSize + 1);
                 break;
             case grReq_RadioCheckRecv:
                 gr_RadioCheckRecv();
