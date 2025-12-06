@@ -77,6 +77,7 @@ void GroundOnTxDone( void )
     // gr_RadioSleep( );
 }
 
+void PrintState(PSAT_State_Data_t *g_packetStateData);
 void GroundOnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
 {
     // gr_RadioSleep( );

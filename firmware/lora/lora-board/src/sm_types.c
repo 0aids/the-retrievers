@@ -1,0 +1,1 @@
+../../../esp32/components/sm/sm_types.c

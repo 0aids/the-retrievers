@@ -3,7 +3,7 @@
 
 #include "gps_state.h"
 
-typedef enum {
+typedef enum __attribute__((packed)) {
     STATE_PRELAUNCH,
     STATE_ASCENT,
     STATE_DEPLOYED,

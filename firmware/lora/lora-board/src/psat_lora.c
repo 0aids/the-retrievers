@@ -11,7 +11,7 @@
 #include "delay.h"
 #include "timer.h"
 
-#else
+#else  // on esp:
 
 #include "esp_timer.h"
 #include "freertos/FreeRTOS.h"

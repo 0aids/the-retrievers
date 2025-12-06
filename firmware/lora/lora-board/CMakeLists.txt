@@ -58,6 +58,8 @@ target_compile_options(ai_thinker_lib PUBLIC
     -fno-builtin-printf
     -fno-builtin-sprintf
     -fno-builtin-snprintf
+    -Wno-format-security
+    -Wno-format-truncation
 )
 target_compile_definitions(ai_thinker_lib PUBLIC
     CONFIG_DEBUG_UART=UART0  # <-- This fixes the undeclared identifier error
