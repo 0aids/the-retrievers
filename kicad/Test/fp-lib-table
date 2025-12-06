@@ -1,4 +1,0 @@
-(fp_lib_table
-  (version 7)
-  (lib (name "PSAT_Library")(type "KiCad")(uri "/home/aids/git/psat2025/the-retrievers/kicad/footprint-libraries/PSAT_Library.pretty")(options "")(descr ""))
-)
