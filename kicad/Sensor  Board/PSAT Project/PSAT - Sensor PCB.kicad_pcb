@@ -352,7 +352,7 @@
 	(footprint "Sensor_Motion:InvenSense_QFN-24_4x4mm_P0.5mm"
 		(layer "F.Cu")
 		(uuid "0cdefabe-39fc-46d9-ac48-6d35d9061c76")
-		(at 105.78 90.05)
+		(at 105.78 90)
 		(descr "24-Lead Plastic QFN (4mm x 4mm); Pitch 0.5mm; EP 2.7x2.6mm; for InvenSense motion sensors; keepout area marked (Package see: https://store.invensense.com/datasheets/invensense/MPU-6050_DataSheet_V3%204.pdf; See also https://www.invensense.com/wp-content/uploads/2015/02/InvenSense-MEMS-Handling.pdf)")
 		(tags "QFN 0.5")
 		(property "Reference" "U1"
@@ -880,7 +880,7 @@
 			)
 			(polygon
 				(pts
-					(xy 104.405 88.725) (xy 107.155 88.725) (xy 107.155 91.375) (xy 104.405 91.375)
+					(xy 104.405 88.675) (xy 107.155 88.675) (xy 107.155 91.325) (xy 104.405 91.325)
 				)
 			)
 		)
