@@ -98,16 +98,18 @@ void GroundOnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
             printf("Payload size: %u\r\n", size);
             memcpy(&g_packetStateData, &g_packetRecv.data, g_packetRecv.m_dataSize);
             PrintState(&g_packetStateData);
+            break
         default:
             break;
     }
 }
 
 void PrintState(PSAT_State_Data_t *g_packetStateData) {
-    printf("Current State: %s", fsm_state_to_string(g_packetStateData->state));
-    printf("GPS Fix Valid: %d", g_packetStateData->gps_fix);
-    printf("Servo Angle: %d", g_packetStateData->servo_angle);
+    printf("Current State: %s\n", fsm_state_to_string(g_packetStateData->state));
+    printf("GPS Fix Valid: %d\n", g_packetStateData->gps_fix);
+    printf("Servo Angle: %d\n", g_packetStateData->servo_angle);
 }
+
 
 void GroundOnTxTimeout( void )
 {

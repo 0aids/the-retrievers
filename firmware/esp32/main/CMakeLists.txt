@@ -1,5 +1,5 @@
 idf_component_register(
     SRCS "main.c"
     INCLUDE_DIRS "."
-    REQUIRES gps deployment sm driver psat_fsm radio_impl
+    REQUIRES gps deployment sm driver lora_task
 )

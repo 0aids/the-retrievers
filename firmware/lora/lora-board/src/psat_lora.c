@@ -309,15 +309,23 @@ void PsatRadioMain() {
             else if (g_TxRoutineCounter % 3 == 1) {
 #ifdef ESP_PLATFORM
                 printf("Sending State data\r\n");
+                g_sendPacket = CreatePacket(STATE_DATA, NULL, 0);
+                gr_RadioSend((uint8_t*)&g_sendPacket, 1);
                 gps_get_snapshot(&s_curGpsState);
 
-                servo_t servo_state = {0};
+                servo_t servo_state = fsm_get_current_servo_state();
                 uint16_t angle = servo_get_angle(&servo_state);
 
                 PSAT_State_Data_t data = {
                     .gps_fix = s_curGpsState.fix_info_valid,
                     .servo_angle = angle,
                     .state = fsm_get_current_state()};
+
+                
+                printf("Current State: %s\n",
+                       fsm_state_to_string(data.state));
+                printf("GPS Fix Valid: %d\n", data.gps_fix);
+                printf("Servo Angle: %d\n", data.servo_angle);
 
                 g_sendPacket = CreatePacket(STATE_DATA, (uint8_t*)&data,
                                             sizeof(PSAT_State_Data_t));

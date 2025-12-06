@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include <string.h>
 
-// esp only
 #include "sm_types.h"
 
 #define d_defaultPacketBufferSize 256

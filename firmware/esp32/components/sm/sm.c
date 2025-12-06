@@ -5,7 +5,6 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 #include "freertos/task.h"
-#include "servo.h"
 #include "state_handlers.h"
 
 #define QUEUE_SIZE 32
@@ -15,8 +14,10 @@ static const char* TAG = "FSM";
 static QueueHandle_t fsm_event_queue = NULL;
 TaskHandle_t xHandleSM = NULL;
 static volatile fsm_state_t current_state = STATE_PRELAUNCH;
+static volatile servo_t servo_state = {0};
 
 fsm_state_t fsm_get_current_state() { return current_state; }
+servo_t fsm_get_current_servo_state() { return servo_state; }
 void fsm_set_current_state(fsm_state_t new_state) { current_state = new_state; }
 
 void fsm_post_event(const fsm_event_t* event) {
@@ -40,7 +41,7 @@ void fsm_task(void* arg) {
     // use prelaunch event to kickstart the state machine
     fsm_event_t startup_event = {.type = EVENT_START_PRELAUNCH};
     fsm_post_event(&startup_event);
-    servo_t servo_state = servo_setup();
+    servo_state = servo_setup();
 
     while (1) {
         if (!xQueueReceive(fsm_event_queue, &event, portMAX_DELAY)) continue;
