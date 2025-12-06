@@ -1,1 +1,1 @@
-/Users/sid/Desktop/Coding/Other/PSAT/the-retrievers/firmware/esp32/components/sm/sm_types.c
+../../../esp32/components/sm/sm_types.c
