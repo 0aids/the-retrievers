@@ -7,6 +7,7 @@
 #include "sm.h"
 
 #define READY_PIN 21
+// io5 -> 16
 #define LANDING_PIN 19
 
 static volatile uint32_t last_press_landing_tick = 0;
