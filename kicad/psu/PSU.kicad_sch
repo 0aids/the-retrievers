@@ -1151,6 +1151,174 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Device:D"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 1.016)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "D"
+				(at 0 2.54 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "D"
+				(at 0 -2.54 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "~"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Diode"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Sim.Device" "D"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Sim.Pins" "1=K 2=A"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "diode"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "TO-???* *_Diode_* *SingleDiode* D_*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "D_0_1"
+				(polyline
+					(pts
+						(xy -1.27 1.27) (xy -1.27 -1.27)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.27 1.27) (xy 1.27 -1.27) (xy -1.27 0) (xy 1.27 1.27)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.27 0) (xy -1.27 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "D_1_1"
+				(pin passive line
+					(at -3.81 0 0)
+					(length 2.54)
+					(name "K"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 3.81 0 180)
+					(length 2.54)
+					(name "A"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "Device:Fuse_Small"
 			(pin_numbers
 				(hide yes)
@@ -2863,6 +3031,16 @@
 	)
 	(wire
 		(pts
+			(xy 74.93 46.99) (xy 76.2 46.99)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "283a5f26-bf59-46fb-87ad-b2c09ca0c91e")
+	)
+	(wire
+		(pts
 			(xy 96.52 157.48) (xy 96.52 158.75)
 		)
 		(stroke
@@ -3343,6 +3521,16 @@
 	)
 	(wire
 		(pts
+			(xy 66.04 46.99) (xy 67.31 46.99)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "95a52db9-f2c3-4dfe-a757-74d538b508c2")
+	)
+	(wire
+		(pts
 			(xy 44.45 44.45) (xy 53.34 44.45)
 		)
 		(stroke
@@ -3500,6 +3688,16 @@
 			(type default)
 		)
 		(uuid "b5733f87-d161-4c4a-88d0-368111496141")
+	)
+	(wire
+		(pts
+			(xy 66.04 48.26) (xy 66.04 46.99)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b85f1029-fb79-4127-9557-60f1277ad8ce")
 	)
 	(wire
 		(pts
@@ -4782,7 +4980,7 @@
 	)
 	(symbol
 		(lib_id "power:VBUS")
-		(at 76.2 29.21 90)
+		(at 68.58 29.21 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -4791,7 +4989,7 @@
 		(fields_autoplaced yes)
 		(uuid "33ebcc06-1887-4b8b-a55a-5029a0905132")
 		(property "Reference" "#PWR024"
-			(at 80.01 29.21 0)
+			(at 72.39 29.21 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4800,7 +4998,7 @@
 			)
 		)
 		(property "Value" "1.8V"
-			(at 72.39 29.2099 90)
+			(at 64.77 29.2099 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4809,7 +5007,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 76.2 29.21 0)
+			(at 68.58 29.21 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4818,7 +5016,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 76.2 29.21 0)
+			(at 68.58 29.21 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4827,7 +5025,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"VBUS\""
-			(at 76.2 29.21 0)
+			(at 68.58 29.21 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4976,6 +5174,92 @@
 			(project "PSU"
 				(path "/cfc5ecac-396a-430d-b465-b4fb30a46c19"
 					(reference "#PWR038")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 72.39 29.21 180)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "3994e5cd-6b4c-4560-8314-26ecdb19086b")
+		(property "Reference" "D2"
+			(at 75.438 27.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "D"
+			(at 72.39 25.4 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Footprint" "Diode_SMD:D_0805_2012Metric"
+			(at 72.39 29.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 72.39 29.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Diode"
+			(at 72.39 29.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Device" "D"
+			(at 72.39 29.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Pins" "1=K 2=A"
+			(at 72.39 29.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "173d8b3c-4f5c-4333-9567-371ef7a6ff65")
+		)
+		(pin "1"
+			(uuid "9a7a9f6f-49c5-479c-9087-7b3dbe84f856")
+		)
+		(instances
+			(project ""
+				(path "/cfc5ecac-396a-430d-b465-b4fb30a46c19"
+					(reference "D2")
 					(unit 1)
 				)
 			)
@@ -5213,7 +5497,7 @@
 				)
 			)
 		)
-		(property "Footprint" "BQ21040DBVR:SOT95P280X145-6N"
+		(property "Footprint" "PSAT_Library:BQ21040DBVR"
 			(at 71.12 101.6 0)
 			(effects
 				(font
@@ -5294,7 +5578,7 @@
 				)
 			)
 		)
-		(property "Footprint" "SPM6530T_1R5M100:IND_SPM6530T-1R5M100"
+		(property "Footprint" "PSAT_Library:IND_SPM6530T-1R5M100"
 			(at 49.53 153.67 0)
 			(effects
 				(font
@@ -5631,7 +5915,7 @@
 				)
 			)
 		)
-		(property "Footprint" "RT4812GJ8F:SOT65P279X100-8N"
+		(property "Footprint" "PSAT_Library:RT4812GJ8F"
 			(at 72.39 156.21 0)
 			(effects
 				(font
@@ -6344,7 +6628,7 @@
 	)
 	(symbol
 		(lib_id "power:VBUS")
-		(at 76.2 31.75 90)
+		(at 68.58 31.75 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -6353,7 +6637,7 @@
 		(fields_autoplaced yes)
 		(uuid "69ab3fbc-5653-421b-ac04-642abad038a4")
 		(property "Reference" "#PWR025"
-			(at 80.01 31.75 0)
+			(at 72.39 31.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6362,7 +6646,7 @@
 			)
 		)
 		(property "Value" "3.3V"
-			(at 72.39 31.7499 90)
+			(at 64.77 31.7499 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6371,7 +6655,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 76.2 31.75 0)
+			(at 68.58 31.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6380,7 +6664,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 76.2 31.75 0)
+			(at 68.58 31.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6389,7 +6673,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"VBUS\""
-			(at 76.2 31.75 0)
+			(at 68.58 31.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6571,7 +6855,7 @@
 				)
 			)
 		)
-		(property "Footprint" "footprints:SOT26_AP3445_DIO"
+		(property "Footprint" "PSAT_Library:SOT26_AP3445_DIO-L"
 			(at 200.66 119.38 0)
 			(effects
 				(font
@@ -6927,7 +7211,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Fuse:Fuse_0805_2012Metric"
 			(at 113.03 54.61 0)
 			(effects
 				(font
@@ -7111,7 +7395,7 @@
 	)
 	(symbol
 		(lib_id "power:VBUS")
-		(at 76.2 46.99 90)
+		(at 66.04 48.26 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -7119,7 +7403,7 @@
 		(dnp no)
 		(uuid "8e76f53b-128e-47d0-a327-4882cc8ef3e5")
 		(property "Reference" "#PWR02"
-			(at 80.01 46.99 0)
+			(at 69.85 48.26 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7128,7 +7412,7 @@
 			)
 		)
 		(property "Value" "Vcharger"
-			(at 73.406 46.736 90)
+			(at 63.246 48.006 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7137,7 +7421,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 76.2 46.99 0)
+			(at 66.04 48.26 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7146,7 +7430,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 76.2 46.99 0)
+			(at 66.04 48.26 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7155,7 +7439,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"VBUS\""
-			(at 76.2 46.99 0)
+			(at 66.04 48.26 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7309,6 +7593,92 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:D")
+		(at 71.12 46.99 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "91457753-d26c-4c63-abd7-1038d0ce6e44")
+		(property "Reference" "D5"
+			(at 71.12 49.784 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "D"
+			(at 71.12 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Footprint" ""
+			(at 71.12 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 71.12 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Diode"
+			(at 71.12 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Device" "D"
+			(at 71.12 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Pins" "1=K 2=A"
+			(at 71.12 46.99 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "a0c0ccce-79c1-423f-8d90-1b23d4148450")
+		)
+		(pin "2"
+			(uuid "cb8e8085-bf74-4865-bd08-d88fbe14aea0")
+		)
+		(instances
+			(project ""
+				(path "/cfc5ecac-396a-430d-b465-b4fb30a46c19"
+					(reference "D5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:VBUS")
 		(at 44.45 99.06 90)
 		(unit 1)
@@ -7377,7 +7747,7 @@
 	)
 	(symbol
 		(lib_id "power:VBUS")
-		(at 76.2 34.29 90)
+		(at 68.58 34.29 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -7386,7 +7756,7 @@
 		(fields_autoplaced yes)
 		(uuid "974a99bf-485e-4d21-8811-c2a694087c54")
 		(property "Reference" "#PWR026"
-			(at 80.01 34.29 0)
+			(at 72.39 34.29 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7395,7 +7765,7 @@
 			)
 		)
 		(property "Value" "5V"
-			(at 72.39 34.2899 90)
+			(at 64.77 34.2899 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7404,7 +7774,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 76.2 34.29 0)
+			(at 68.58 34.29 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7413,7 +7783,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 76.2 34.29 0)
+			(at 68.58 34.29 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7422,7 +7792,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"VBUS\""
-			(at 76.2 34.29 0)
+			(at 68.58 34.29 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8244,6 +8614,92 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:D")
+		(at 72.39 31.75 180)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "b2e2426b-640c-430c-be35-ce80dec73226")
+		(property "Reference" "D3"
+			(at 75.438 30.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "D"
+			(at 72.39 27.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Footprint" "Diode_SMD:D_0805_2012Metric"
+			(at 72.39 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 72.39 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Diode"
+			(at 72.39 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Device" "D"
+			(at 72.39 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Pins" "1=K 2=A"
+			(at 72.39 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "71d92ea4-e144-4993-a203-c85bde2b85b6")
+		)
+		(pin "2"
+			(uuid "4b6c2a1b-e70a-4a5d-959a-8843f85f9b74")
+		)
+		(instances
+			(project ""
+				(path "/cfc5ecac-396a-430d-b465-b4fb30a46c19"
+					(reference "D3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:C")
 		(at 182.88 38.1 90)
 		(unit 1)
@@ -8541,7 +8997,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x08_P2.54mm_Vertical"
 			(at 81.28 36.83 0)
 			(effects
 				(font
@@ -8629,7 +9085,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Fuse:Fuse_0805_2012Metric"
 			(at 190.5 22.86 0)
 			(effects
 				(font
@@ -9301,7 +9757,7 @@
 				)
 			)
 		)
-		(property "Footprint" "footprints:SOT26_AP3445_DIO"
+		(property "Footprint" "PSAT_Library:SOT26_AP3445_DIO-L"
 			(at 203.2 54.61 0)
 			(effects
 				(font
@@ -9667,7 +10123,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Fuse:Fuse_0805_2012Metric"
 			(at 127 148.59 0)
 			(effects
 				(font
@@ -9737,7 +10193,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "B2B-PH-K-S:JST_B2B-PH-K-S"
+		(property "Footprint" "Connector_JST:JST_PH_B2B-PH-K_1x02_P2.00mm_Vertical"
 			(at 130.81 57.15 0)
 			(effects
 				(font
@@ -10158,7 +10614,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Fuse:Fuse_0805_2012Metric"
 			(at 187.96 87.63 0)
 			(effects
 				(font
@@ -10329,6 +10785,92 @@
 			(project "PSU"
 				(path "/cfc5ecac-396a-430d-b465-b4fb30a46c19"
 					(reference "#PWR047")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:D")
+		(at 72.39 34.29 180)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "fedb72a8-91bb-4b37-939d-08a8b2962f8f")
+		(property "Reference" "D4"
+			(at 75.438 33.274 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "D"
+			(at 72.39 30.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Footprint" "Diode_SMD:D_0805_2012Metric"
+			(at 72.39 34.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 72.39 34.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Diode"
+			(at 72.39 34.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Device" "D"
+			(at 72.39 34.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Pins" "1=K 2=A"
+			(at 72.39 34.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "fa91ef96-f1d3-4a51-a629-7d00332bef38")
+		)
+		(pin "2"
+			(uuid "bcd9ab29-8d55-48c2-8ad4-9452d223be42")
+		)
+		(instances
+			(project ""
+				(path "/cfc5ecac-396a-430d-b465-b4fb30a46c19"
+					(reference "D4")
 					(unit 1)
 				)
 			)
