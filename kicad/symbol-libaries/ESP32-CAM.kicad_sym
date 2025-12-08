@@ -322,6 +322,8 @@
 					)
 				)
 			)
+		)
+		(symbol "ESP32-CAM_1_0"
 			(pin bidirectional line
 				(at 15.24 15.24 180)
 				(length 5.08)
@@ -332,7 +334,7 @@
 						)
 					)
 				)
-				(number "16"
+				(number "9"
 					(effects
 						(font
 							(size 1.016 1.016)
@@ -350,7 +352,7 @@
 						)
 					)
 				)
-				(number "15"
+				(number "10"
 					(effects
 						(font
 							(size 1.016 1.016)
@@ -368,7 +370,7 @@
 						)
 					)
 				)
-				(number "14"
+				(number "11"
 					(effects
 						(font
 							(size 1.016 1.016)
@@ -386,7 +388,7 @@
 						)
 					)
 				)
-				(number "13"
+				(number "12"
 					(effects
 						(font
 							(size 1.016 1.016)
@@ -404,7 +406,7 @@
 						)
 					)
 				)
-				(number "12"
+				(number "13"
 					(effects
 						(font
 							(size 1.016 1.016)
@@ -422,7 +424,7 @@
 						)
 					)
 				)
-				(number "11"
+				(number "14"
 					(effects
 						(font
 							(size 1.016 1.016)
@@ -440,7 +442,7 @@
 						)
 					)
 				)
-				(number "10"
+				(number "15"
 					(effects
 						(font
 							(size 1.016 1.016)
@@ -458,7 +460,7 @@
 						)
 					)
 				)
-				(number "9"
+				(number "16"
 					(effects
 						(font
 							(size 1.016 1.016)
