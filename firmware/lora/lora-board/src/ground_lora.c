@@ -98,7 +98,7 @@ void GroundOnRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr )
             printf("Payload size: %u\r\n", size);
             memcpy(&g_packetStateData, &g_packetRecv.data, g_packetRecv.m_dataSize);
             PrintState(&g_packetStateData);
-            break
+            break;
         default:
             break;
     }

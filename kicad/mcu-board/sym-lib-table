@@ -1,0 +1,9 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "PSAT_Library")(type "KiCad")(uri "${KIPRJMOD}/symbol-libaries/PSAT_Library.kicad_sym")(options "")(descr ""))
+  (lib (name "Lora1276-C1-868")(type "KiCad")(uri "${KIPRJMOD}/external-libraries/Lora1276-C1-868.kicad_sym")(options "")(descr ""))
+  (lib (name "ProLib_pcs_2025-12-07")(type "EasyEDA (JLCEDA) Pro")(uri "${KIPRJMOD}/external-libraries/ProLib_pcs_2025-12-07.elibz")(options "")(descr ""))
+  (lib (name "ESP32-S3-WROOM-1U-N16R8")(type "KiCad")(uri "${KIPRJMOD}/external-libraries/ESP32-S3-WROOM-1U-N16R8.kicad_sym")(options "")(descr ""))
+  (lib (name "2025-12-08_14-39-30")(type "KiCad")(uri "${KIPRJMOD}/external-libraries/KiCADv6/2025-12-08_14-39-30.kicad_sym")(options "")(descr ""))
+  (lib (name "UJ20-C-H-G-SMT-P16-TR")(type "KiCad")(uri "${KIPRJMOD}/symbol-libaries/UJ20-C-H-G-SMT-P16-TR.kicad_sym")(options "")(descr ""))
+)
