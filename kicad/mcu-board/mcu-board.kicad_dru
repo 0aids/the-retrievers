@@ -53,7 +53,9 @@
 
 # 2-layer standard
 (rule "Minimum Via Diameter and Hole Size"
-(constraint hole_size (min 0.3mm))
+#(constraint hole_size (min 0.3mm))
+# allegedly can do 0.2mm, and is required to do so for the esp32...
+(constraint hole_size (min 0.2mm)) 
 (constraint via_diameter (min 0.5mm))
 (condition "A.Type == 'via'"))
 
@@ -93,8 +95,12 @@
 (condition "A.Type == 'pad' && !A.isPlated()"))
 
 (rule "Pad Size"
-(constraint hole_size (min 0.5mm))
-(constraint annular_width (min 0.25mm))
+#(constraint hole_size (min 0.5mm))
+# This needs to be the actuall drill size.
+(constraint hole_size (min 0.2mm))
+# (constraint annular_width (min 0.25mm))
+# Same here
+(constraint annular_width (min 0.15mm))
 (condition "A.Type == 'Pad' && A.isPlated()"))
 
 (rule "Minimum Castellated Hole Size"
@@ -164,6 +170,7 @@
 (layer "?.Silkscreen"))
 
 (rule "Pad to Silkscreen"
-(constraint silk_clearance (min 0.15mm))
+# Changed from 0.15mm -> 0.1mm
+(constraint silk_clearance (min 0.1mm))
 (layer outer)
 (condition "A.Type == 'pad' && (B.Type == 'text' || B.Type == 'graphic')"))
