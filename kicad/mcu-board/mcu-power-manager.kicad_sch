@@ -524,7 +524,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "Connector:Conn_01x09_Pin"
+		(symbol "Connector_Generic:Conn_01x06"
 			(pin_names
 				(offset 1.016)
 				(hide yes)
@@ -532,25 +532,23 @@
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
-			(property "Reference" "J2"
-				(at -1.27 -1.2701 0)
+			(property "Reference" "J"
+				(at 0 7.62 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
-					(justify right)
 				)
 			)
-			(property "Value" "Conn_01x09_Pin"
-				(at -1.27 1.2699 0)
+			(property "Value" "Conn_01x06"
+				(at 0 -10.16 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
-					(justify right)
 				)
 			)
-			(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x09_P2.54mm_Vertical"
+			(property "Footprint" ""
 				(at 0 0 0)
 				(effects
 					(font
@@ -568,21 +566,13 @@
 					(hide yes)
 				)
 			)
-			(property "Description" "Generic connector, single row, 01x09, script generated"
+			(property "Description" "Generic connector, single row, 01x06, script generated (kicad-library-utils/schlib/autogen/connector/)"
 				(at 0 0 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
 					(hide yes)
-				)
-			)
-			(property "ki_locked" ""
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
 				)
 			)
 			(property "ki_keywords" "connector"
@@ -603,216 +593,86 @@
 					(hide yes)
 				)
 			)
-			(symbol "Conn_01x09_Pin_1_1"
+			(symbol "Conn_01x06_1_1"
 				(rectangle
-					(start 0 -10.033)
-					(end 0.8636 -10.287)
+					(start -1.27 6.35)
+					(end 1.27 -8.89)
 					(stroke
-						(width 0.1524)
+						(width 0.254)
 						(type default)
 					)
 					(fill
-						(type outline)
+						(type background)
 					)
 				)
 				(rectangle
-					(start 0.8636 10.287)
-					(end 0 10.033)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(rectangle
-					(start 0.8636 7.747)
-					(end 0 7.493)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(rectangle
-					(start 0.8636 5.207)
+					(start -1.27 5.207)
 					(end 0 4.953)
 					(stroke
 						(width 0.1524)
 						(type default)
 					)
 					(fill
-						(type outline)
+						(type none)
 					)
 				)
 				(rectangle
-					(start 0.8636 2.667)
+					(start -1.27 2.667)
 					(end 0 2.413)
 					(stroke
 						(width 0.1524)
 						(type default)
 					)
 					(fill
-						(type outline)
+						(type none)
 					)
 				)
 				(rectangle
-					(start 0.8636 0.127)
+					(start -1.27 0.127)
 					(end 0 -0.127)
 					(stroke
 						(width 0.1524)
 						(type default)
 					)
 					(fill
-						(type outline)
+						(type none)
 					)
 				)
 				(rectangle
-					(start 0.8636 -2.413)
+					(start -1.27 -2.413)
 					(end 0 -2.667)
 					(stroke
 						(width 0.1524)
 						(type default)
 					)
 					(fill
-						(type outline)
+						(type none)
 					)
 				)
 				(rectangle
-					(start 0.8636 -4.953)
+					(start -1.27 -4.953)
 					(end 0 -5.207)
 					(stroke
 						(width 0.1524)
 						(type default)
 					)
 					(fill
-						(type outline)
+						(type none)
 					)
 				)
 				(rectangle
-					(start 0.8636 -7.493)
+					(start -1.27 -7.493)
 					(end 0 -7.747)
 					(stroke
 						(width 0.1524)
 						(type default)
 					)
 					(fill
-						(type outline)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 10.16) (xy 0.8636 10.16)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
 						(type none)
 					)
 				)
-				(polyline
-					(pts
-						(xy 1.27 7.62) (xy 0.8636 7.62)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 5.08) (xy 0.8636 5.08)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 2.54) (xy 0.8636 2.54)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 0) (xy 0.8636 0)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 -2.54) (xy 0.8636 -2.54)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 -5.08) (xy 0.8636 -5.08)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 -7.62) (xy 0.8636 -7.62)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 -10.16) (xy 0.8636 -10.16)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(pin power_in line
-					(at 5.08 10.16 180)
+				(pin passive line
+					(at -5.08 5.08 0)
 					(length 3.81)
 					(name "Pin_1"
 						(effects
@@ -830,7 +690,7 @@
 					)
 				)
 				(pin passive line
-					(at 5.08 7.62 180)
+					(at -5.08 2.54 0)
 					(length 3.81)
 					(name "Pin_2"
 						(effects
@@ -848,7 +708,7 @@
 					)
 				)
 				(pin passive line
-					(at 5.08 5.08 180)
+					(at -5.08 0 0)
 					(length 3.81)
 					(name "Pin_3"
 						(effects
@@ -866,7 +726,7 @@
 					)
 				)
 				(pin passive line
-					(at 5.08 2.54 180)
+					(at -5.08 -2.54 0)
 					(length 3.81)
 					(name "Pin_4"
 						(effects
@@ -884,7 +744,7 @@
 					)
 				)
 				(pin passive line
-					(at 5.08 0 180)
+					(at -5.08 -5.08 0)
 					(length 3.81)
 					(name "Pin_5"
 						(effects
@@ -901,8 +761,8 @@
 						)
 					)
 				)
-				(pin power_out line
-					(at 5.08 -2.54 180)
+				(pin passive line
+					(at -5.08 -7.62 0)
 					(length 3.81)
 					(name "Pin_6"
 						(effects
@@ -912,60 +772,6 @@
 						)
 					)
 					(number "6"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin power_out line
-					(at 5.08 -5.08 180)
-					(length 3.81)
-					(name "Pin_7"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "7"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin power_out line
-					(at 5.08 -7.62 180)
-					(length 3.81)
-					(name "Pin_8"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "8"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin power_out line
-					(at 5.08 -10.16 180)
-					(length 3.81)
-					(name "Pin_9"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "9"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2086,14 +1892,6 @@
 		(color 0 0 0 0)
 		(uuid "ecc7ff0f-b08b-47d6-be6b-70539cd25b63")
 	)
-	(no_connect
-		(at 144.78 39.37)
-		(uuid "80b5b1d5-eb90-4cca-a870-4a0f338fff34")
-	)
-	(no_connect
-		(at 144.78 41.91)
-		(uuid "f4f0715a-df0e-4c52-a507-9a1e0870b762")
-	)
 	(wire
 		(pts
 			(xy 215.9 52.07) (xy 215.9 46.99)
@@ -2136,6 +1934,16 @@
 	)
 	(wire
 		(pts
+			(xy 124.46 39.37) (xy 144.78 39.37)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2e4b6f78-09ac-4911-99fc-43bae4013ae5")
+	)
+	(wire
+		(pts
 			(xy 264.16 40.64) (xy 264.16 43.18)
 		)
 		(stroke
@@ -2143,16 +1951,6 @@
 			(type default)
 		)
 		(uuid "2e779e08-4396-4208-bcb2-de54ef701381")
-	)
-	(wire
-		(pts
-			(xy 124.46 44.45) (xy 144.78 44.45)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "31a944d5-cdb2-4d43-8e4c-0ee754e6ff39")
 	)
 	(wire
 		(pts
@@ -2415,6 +2213,16 @@
 		(uuid "fa001d85-3732-46f1-832e-463372e2251d")
 	)
 	(label "V_BAT{slash}2"
+		(at 124.46 39.37 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "3885ac2f-a039-4daa-be95-20fe7d5ce5bf")
+	)
+	(label "V_BAT{slash}2"
 		(at 157.48 80.01 180)
 		(effects
 			(font
@@ -2433,16 +2241,6 @@
 			(justify right bottom)
 		)
 		(uuid "5fd0db81-625d-47bc-8e7f-502c7456c1a0")
-	)
-	(label "V_BAT{slash}2"
-		(at 124.46 44.45 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "6f0090a5-8ceb-4671-8b6a-b5e0bcd7daeb")
 	)
 	(label "POWER_ST"
 		(at 96.52 43.18 180)
@@ -2529,7 +2327,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "0380fc3b-e682-406b-a79d-4e3157dbf7ed")
-		(property "Reference" "C11"
+		(property "Reference" "C5"
 			(at 211.074 53.848 90)
 			(effects
 				(font
@@ -2581,7 +2379,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "C11")
+					(reference "C5")
 					(unit 1)
 				)
 			)
@@ -2596,7 +2394,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "045438f6-78d4-47f8-af1f-25899c7fac06")
-		(property "Reference" "R12"
+		(property "Reference" "R7"
 			(at 208.28 40.64 90)
 			(effects
 				(font
@@ -2648,7 +2446,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "R12")
+					(reference "R7")
 					(unit 1)
 				)
 			)
@@ -2664,7 +2462,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "0e9d0e12-1d6c-48b0-8224-9595e2efa12b")
-		(property "Reference" "#PWR021"
+		(property "Reference" "#PWR048"
 			(at 196.85 31.75 0)
 			(effects
 				(font
@@ -2715,7 +2513,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "#PWR021")
+					(reference "#PWR048")
 					(unit 1)
 				)
 			)
@@ -2731,7 +2529,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "13d63129-e46f-4e02-8b8b-c4783b48cd8e")
-		(property "Reference" "#PWR08"
+		(property "Reference" "#PWR035"
 			(at 92.71 50.8 0)
 			(effects
 				(font
@@ -2782,7 +2580,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "#PWR08")
+					(reference "#PWR035")
 					(unit 1)
 				)
 			)
@@ -2798,7 +2596,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "1519635d-2adc-41cd-b521-b626236ab1c7")
-		(property "Reference" "#PWR029"
+		(property "Reference" "#PWR036"
 			(at 95.25 78.74 0)
 			(effects
 				(font
@@ -2848,97 +2646,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "#PWR029")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:Conn_01x09_Pin")
-		(at 149.86 36.83 180)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "16b73e7f-ccef-4333-b482-a33a35a117df")
-		(property "Reference" "J2"
-			(at 151.13 35.5599 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Value" "Conn_01x09_Pin"
-			(at 151.13 38.0999 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x09_P2.54mm_Vertical"
-			(at 149.86 36.83 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 149.86 36.83 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Generic connector, single row, 01x09, script generated"
-			(at 149.86 36.83 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "4"
-			(uuid "a37500fd-68cf-42f1-9eca-06c7908d1aea")
-		)
-		(pin "9"
-			(uuid "344996ed-8d39-4b82-bdfe-090eeb39ea5b")
-		)
-		(pin "7"
-			(uuid "1cbfe022-14d9-45dd-b1d6-9e64dd560c33")
-		)
-		(pin "6"
-			(uuid "74d062b5-caa6-41bf-89dd-4c753ab03804")
-		)
-		(pin "3"
-			(uuid "421f18dd-eb7d-4fc3-9f3d-42410ef80ee9")
-		)
-		(pin "2"
-			(uuid "a3b2528f-6c51-4a87-89a0-5d9d87fd8484")
-		)
-		(pin "8"
-			(uuid "dc36558b-6bfb-4093-9462-6fa90c5f9bee")
-		)
-		(pin "1"
-			(uuid "42d76193-c1b0-476d-bcc3-bb2f3d99215a")
-		)
-		(pin "5"
-			(uuid "6adff475-2073-41f9-96e0-7e0d467f45c4")
-		)
-		(instances
-			(project "mcu-board"
-				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "J2")
+					(reference "#PWR036")
 					(unit 1)
 				)
 			)
@@ -2954,7 +2662,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "18477595-cba9-4ab7-b833-276540c45002")
-		(property "Reference" "C8"
+		(property "Reference" "C4"
 			(at 193.04 35.56 90)
 			(effects
 				(font
@@ -3006,7 +2714,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "C8")
+					(reference "C4")
 					(unit 1)
 				)
 			)
@@ -3022,7 +2730,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "1a7dd95f-52ec-4c82-88df-86008934af78")
-		(property "Reference" "R7"
+		(property "Reference" "R9"
 			(at 266.7 45.7199 0)
 			(effects
 				(font
@@ -3076,7 +2784,7 @@
 		(instances
 			(project ""
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "R7")
+					(reference "R9")
 					(unit 1)
 				)
 			)
@@ -3092,7 +2800,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "1b2212ff-4883-4c79-8270-4eecec13ded4")
-		(property "Reference" "#PWR053"
+		(property "Reference" "#PWR044"
 			(at 143.51 76.2 0)
 			(effects
 				(font
@@ -3143,7 +2851,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "#PWR053")
+					(reference "#PWR044")
 					(unit 1)
 				)
 			)
@@ -3159,7 +2867,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "1bbcd448-82ab-4f5d-9872-42abf515cff1")
-		(property "Reference" "#PWR027"
+		(property "Reference" "#PWR040"
 			(at 138.43 36.83 0)
 			(effects
 				(font
@@ -3210,74 +2918,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "#PWR027")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:+3V3")
-		(at 144.78 26.67 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "1c85b4b2-f264-4b32-a355-5cb18fad9c43")
-		(property "Reference" "#PWR034"
-			(at 148.59 26.67 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "+1V8_PSU_FUSED"
-			(at 140.97 26.6699 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 144.78 26.67 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 144.78 26.67 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+3V3\""
-			(at 144.78 26.67 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "ecf050fe-0577-43d3-8768-8838acf3a021")
-		)
-		(instances
-			(project "mcu-board"
-				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "#PWR034")
+					(reference "#PWR040")
 					(unit 1)
 				)
 			)
@@ -3293,7 +2934,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "2138aba0-d499-4286-864d-e070b65ed7ba")
-		(property "Reference" "#PWR011"
+		(property "Reference" "#PWR043"
 			(at 152.4 68.58 0)
 			(effects
 				(font
@@ -3344,7 +2985,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "#PWR011")
+					(reference "#PWR043")
 					(unit 1)
 				)
 			)
@@ -3360,7 +3001,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "28a9a55b-bbc9-4733-acd1-390922f4177f")
-		(property "Reference" "#FLG02"
+		(property "Reference" "#FLG04"
 			(at 77.47 80.645 0)
 			(effects
 				(font
@@ -3410,7 +3051,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "#FLG02")
+					(reference "#FLG04")
 					(unit 1)
 				)
 			)
@@ -3418,7 +3059,7 @@
 	)
 	(symbol
 		(lib_id "power:+3V3")
-		(at 144.78 46.99 90)
+		(at 144.78 41.91 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -3426,8 +3067,8 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "2db243dd-1750-495b-83f2-b12ec0f31599")
-		(property "Reference" "#PWR02"
-			(at 148.59 46.99 0)
+		(property "Reference" "#PWR041"
+			(at 148.59 41.91 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3436,7 +3077,7 @@
 			)
 		)
 		(property "Value" "V_USB"
-			(at 140.97 46.9899 90)
+			(at 140.97 41.9099 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3445,7 +3086,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 144.78 46.99 0)
+			(at 144.78 41.91 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3454,7 +3095,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 144.78 46.99 0)
+			(at 144.78 41.91 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3463,7 +3104,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"+3V3\""
-			(at 144.78 46.99 0)
+			(at 144.78 41.91 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3477,7 +3118,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "#PWR02")
+					(reference "#PWR041")
 					(unit 1)
 				)
 			)
@@ -3493,7 +3134,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "2f0c9ace-4c1d-4093-8f53-50cd1bbb1bc5")
-		(property "Reference" "#PWR033"
+		(property "Reference" "#PWR037"
 			(at 148.59 29.21 0)
 			(effects
 				(font
@@ -3544,7 +3185,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "#PWR033")
+					(reference "#PWR037")
 					(unit 1)
 				)
 			)
@@ -3560,7 +3201,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "3757e662-fdda-439d-a6d6-8a6ccbb8943b")
-		(property "Reference" "#PWR035"
+		(property "Reference" "#PWR039"
 			(at 148.59 34.29 0)
 			(effects
 				(font
@@ -3611,7 +3252,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "#PWR035")
+					(reference "#PWR039")
 					(unit 1)
 				)
 			)
@@ -3627,7 +3268,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "3b548716-5a39-4aca-a526-f3786a0d372b")
-		(property "Reference" "C13"
+		(property "Reference" "C6"
 			(at 262.89 69.8499 0)
 			(effects
 				(font
@@ -3681,7 +3322,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "C13")
+					(reference "C6")
 					(unit 1)
 				)
 			)
@@ -3697,7 +3338,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "4a9c95fa-170c-49b6-8e9e-a8a29f227934")
-		(property "Reference" "#PWR016"
+		(property "Reference" "#PWR052"
 			(at 259.08 81.28 0)
 			(effects
 				(font
@@ -3747,7 +3388,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "#PWR016")
+					(reference "#PWR052")
 					(unit 1)
 				)
 			)
@@ -3763,7 +3404,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "4f6800da-e8d8-4550-91c8-9d7a8ddf096c")
-		(property "Reference" "#PWR030"
+		(property "Reference" "#PWR038"
 			(at 148.59 31.75 0)
 			(effects
 				(font
@@ -3814,7 +3455,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "#PWR030")
+					(reference "#PWR038")
 					(unit 1)
 				)
 			)
@@ -3830,7 +3471,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "505000d6-3cc7-40fa-ad8c-fb0bc2ad3c7a")
-		(property "Reference" "L2"
+		(property "Reference" "L1"
 			(at 191.262 59.69 0)
 			(effects
 				(font
@@ -3848,7 +3489,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "Inductor_SMD:L_1210_3225Metric"
+		(property "Footprint" "PSAT_Library:IND_SPM6530T-1R5M100"
 			(at 198.12 60.96 0)
 			(effects
 				(font
@@ -3884,7 +3525,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "L2")
+					(reference "L1")
 					(unit 1)
 				)
 			)
@@ -3900,7 +3541,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "5997ada0-5263-4b93-a753-a33953bc62d4")
-		(property "Reference" "#PWR024"
+		(property "Reference" "#PWR054"
 			(at 262.89 64.77 0)
 			(effects
 				(font
@@ -3951,7 +3592,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "#PWR024")
+					(reference "#PWR054")
 					(unit 1)
 				)
 			)
@@ -3967,7 +3608,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "60c7cabf-cf14-4597-bb06-42fd3f6dcca0")
-		(property "Reference" "#PWR07"
+		(property "Reference" "#PWR030"
 			(at 39.37 50.8 0)
 			(effects
 				(font
@@ -4018,7 +3659,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "#PWR07")
+					(reference "#PWR030")
 					(unit 1)
 				)
 			)
@@ -4034,7 +3675,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "6396f07e-1773-46fe-9168-45119c27a5f3")
-		(property "Reference" "#PWR028"
+		(property "Reference" "#PWR032"
 			(at 77.47 78.74 0)
 			(effects
 				(font
@@ -4084,7 +3725,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "#PWR028")
+					(reference "#PWR032")
 					(unit 1)
 				)
 			)
@@ -4100,7 +3741,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "67452d30-3b4d-4411-bb3d-c71f57f1c758")
-		(property "Reference" "#PWR020"
+		(property "Reference" "#PWR029"
 			(at 49.53 48.26 0)
 			(effects
 				(font
@@ -4151,7 +3792,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "#PWR020")
+					(reference "#PWR029")
 					(unit 1)
 				)
 			)
@@ -4167,7 +3808,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "6a760b8c-4c7d-4e53-bf8f-05cb1f681ffc")
-		(property "Reference" "#PWR06"
+		(property "Reference" "#PWR027"
 			(at 39.37 43.18 0)
 			(effects
 				(font
@@ -4218,7 +3859,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "#PWR06")
+					(reference "#PWR027")
 					(unit 1)
 				)
 			)
@@ -4234,7 +3875,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "74237a72-7440-4010-bdfe-84d796337aea")
-		(property "Reference" "#PWR037"
+		(property "Reference" "#PWR028"
 			(at 49.53 45.72 0)
 			(effects
 				(font
@@ -4285,7 +3926,89 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "#PWR037")
+					(reference "#PWR028")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector_Generic:Conn_01x06")
+		(at 149.86 34.29 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "75aaca08-3801-47f1-bc4c-3ff0d1fd026f")
+		(property "Reference" "J13"
+			(at 152.4 34.2899 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "Conn_01x06"
+			(at 152.4 36.8299 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical"
+			(at 149.86 34.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 149.86 34.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Generic connector, single row, 01x06, script generated (kicad-library-utils/schlib/autogen/connector/)"
+			(at 149.86 34.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "5"
+			(uuid "5da5d2f2-dbe7-4d31-a12a-74ed8962f62f")
+		)
+		(pin "1"
+			(uuid "5af199b3-f76b-41fa-b9d7-2b04816d9115")
+		)
+		(pin "6"
+			(uuid "3841da15-1210-4508-89db-6d2cbccc2f7a")
+		)
+		(pin "4"
+			(uuid "abf4a769-edd6-4cfb-be02-2a8c54f6179b")
+		)
+		(pin "3"
+			(uuid "d8a944b5-f8bb-4d32-853a-f055d3ed2177")
+		)
+		(pin "2"
+			(uuid "26ac2446-4f59-456e-a3e4-c492fdb79593")
+		)
+		(instances
+			(project ""
+				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
+					(reference "J13")
 					(unit 1)
 				)
 			)
@@ -4301,7 +4024,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "7d4f2fee-73ef-44ab-8ee0-49de422a95ad")
-		(property "Reference" "#PWR044"
+		(property "Reference" "#PWR051"
 			(at 237.49 46.99 0)
 			(effects
 				(font
@@ -4352,7 +4075,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "#PWR044")
+					(reference "#PWR051")
 					(unit 1)
 				)
 			)
@@ -4447,7 +4170,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "97b1bc12-9180-4721-a294-9e90a0815751")
-		(property "Reference" "#PWR026"
+		(property "Reference" "#PWR031"
 			(at 59.69 78.74 0)
 			(effects
 				(font
@@ -4497,7 +4220,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "#PWR026")
+					(reference "#PWR031")
 					(unit 1)
 				)
 			)
@@ -4513,7 +4236,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "97e75f03-73b7-418c-972e-4adb199decc8")
-		(property "Reference" "#PWR031"
+		(property "Reference" "#PWR046"
 			(at 182.88 31.75 0)
 			(effects
 				(font
@@ -4564,7 +4287,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "#PWR031")
+					(reference "#PWR046")
 					(unit 1)
 				)
 			)
@@ -4580,7 +4303,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "a99de2b6-8fbc-4f76-90ba-e0df908ead37")
-		(property "Reference" "#PWR017"
+		(property "Reference" "#PWR033"
 			(at 82.55 45.72 0)
 			(effects
 				(font
@@ -4631,7 +4354,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "#PWR017")
+					(reference "#PWR033")
 					(unit 1)
 				)
 			)
@@ -4647,7 +4370,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "afbdf43a-bb07-406b-a51c-55778f0f4936")
-		(property "Reference" "#PWR019"
+		(property "Reference" "#PWR034"
 			(at 82.55 48.26 0)
 			(effects
 				(font
@@ -4698,7 +4421,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "#PWR019")
+					(reference "#PWR034")
 					(unit 1)
 				)
 			)
@@ -4714,7 +4437,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "b9615cc0-116d-4c25-999f-3e496d881b28")
-		(property "Reference" "#PWR023"
+		(property "Reference" "#PWR053"
 			(at 260.35 40.64 0)
 			(effects
 				(font
@@ -4765,7 +4488,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "#PWR023")
+					(reference "#PWR053")
 					(unit 1)
 				)
 			)
@@ -4781,7 +4504,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "ba3605c0-b577-492b-a426-2eee2e4fa030")
-		(property "Reference" "#PWR039"
+		(property "Reference" "#PWR050"
 			(at 207.01 62.23 0)
 			(effects
 				(font
@@ -4832,7 +4555,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "#PWR039")
+					(reference "#PWR050")
 					(unit 1)
 				)
 			)
@@ -4848,7 +4571,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "ba40ec61-1f94-49c8-9224-2303e276ecee")
-		(property "Reference" "C7"
+		(property "Reference" "C3"
 			(at 193.04 24.13 90)
 			(effects
 				(font
@@ -4900,7 +4623,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "C7")
+					(reference "C3")
 					(unit 1)
 				)
 			)
@@ -4916,7 +4639,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "bb89a929-310c-4a4c-a1d6-e27a30145cad")
-		(property "Reference" "U4"
+		(property "Reference" "U3"
 			(at 66.04 33.02 0)
 			(effects
 				(font
@@ -4988,7 +4711,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "U4")
+					(reference "U3")
 					(unit 1)
 				)
 			)
@@ -5004,7 +4727,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "c08ecdd4-f689-41a8-9caa-dabf2922d1fa")
-		(property "Reference" "#PWR040"
+		(property "Reference" "#PWR045"
 			(at 143.51 83.82 0)
 			(effects
 				(font
@@ -5055,7 +4778,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "#PWR040")
+					(reference "#PWR045")
 					(unit 1)
 				)
 			)
@@ -5071,7 +4794,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "c27e67f5-230d-47c7-bdb9-0a16f0294828")
-		(property "Reference" "#PWR018"
+		(property "Reference" "#PWR042"
 			(at 142.24 64.77 0)
 			(effects
 				(font
@@ -5122,7 +4845,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "#PWR018")
+					(reference "#PWR042")
 					(unit 1)
 				)
 			)
@@ -5138,7 +4861,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "c5b79631-cc03-4ac5-9cea-9a857fbf682a")
-		(property "Reference" "#FLG01"
+		(property "Reference" "#FLG03"
 			(at 59.69 80.645 0)
 			(effects
 				(font
@@ -5188,7 +4911,7 @@
 		(instances
 			(project ""
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "#FLG01")
+					(reference "#FLG03")
 					(unit 1)
 				)
 			)
@@ -5203,7 +4926,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "d62d0f9f-6b90-450b-8037-ef40dd5e66db")
-		(property "Reference" "R14"
+		(property "Reference" "R8"
 			(at 223.266 50.038 90)
 			(effects
 				(font
@@ -5255,7 +4978,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "R14")
+					(reference "R8")
 					(unit 1)
 				)
 			)
@@ -5271,7 +4994,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "d759befd-7994-4329-b253-03eee1aff109")
-		(property "Reference" "#FLG03"
+		(property "Reference" "#FLG05"
 			(at 95.25 80.645 0)
 			(effects
 				(font
@@ -5321,7 +5044,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "#FLG03")
+					(reference "#FLG05")
 					(unit 1)
 				)
 			)
@@ -5337,7 +5060,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "f7ee5342-fc43-41af-b881-c31bab8c1d55")
-		(property "Reference" "#PWR032"
+		(property "Reference" "#PWR047"
 			(at 182.88 43.18 0)
 			(effects
 				(font
@@ -5388,7 +5111,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "#PWR032")
+					(reference "#PWR047")
 					(unit 1)
 				)
 			)
@@ -5403,7 +5126,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "fb8154b7-3a9b-4fa9-b392-949b2d10b1f2")
-		(property "Reference" "U1"
+		(property "Reference" "U4"
 			(at 234.696 71.12 0)
 			(effects
 				(font
@@ -5469,7 +5192,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "U1")
+					(reference "U4")
 					(unit 1)
 				)
 			)
@@ -5485,7 +5208,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "fe8fdc4e-0226-43d4-90f0-71e9ce49426e")
-		(property "Reference" "#PWR025"
+		(property "Reference" "#PWR049"
 			(at 217.17 59.69 0)
 			(effects
 				(font
@@ -5536,7 +5259,7 @@
 		(instances
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
-					(reference "#PWR025")
+					(reference "#PWR049")
 					(unit 1)
 				)
 			)
