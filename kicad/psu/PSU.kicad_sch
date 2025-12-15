@@ -3529,6 +3529,10 @@
 		(color 0 0 0 0)
 		(uuid "f10ffe00-faf1-48f1-a665-47375d8caaa5")
 	)
+	(no_connect
+		(at 154.94 181.61)
+		(uuid "26ff9d96-12c6-42d2-8fa1-8d478213daa4")
+	)
 	(wire
 		(pts
 			(xy 184.15 149.86) (xy 184.15 161.29)
@@ -4924,7 +4928,7 @@
 			)
 		)
 	)
-	(global_label "3.3V_T"
+	(global_label "3.3V"
 		(shape input)
 		(at 68.58 31.75 180)
 		(fields_autoplaced yes)
@@ -4936,7 +4940,7 @@
 		)
 		(uuid "0d5ef57a-037b-4efc-9b1f-9224c5424b64")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 59.5472 31.75 0)
+			(at 61.4824 31.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5074,28 +5078,6 @@
 					(size 1.27 1.27)
 				)
 				(justify right)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "Vcharger_USB"
-		(shape input)
-		(at 154.94 181.61 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "92792492-29c1-4a2d-aa71-11ddb8538301")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 170.988 181.61 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
 				(hide yes)
 			)
 		)
