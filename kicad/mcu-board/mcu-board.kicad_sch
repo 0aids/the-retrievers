@@ -8,7 +8,7 @@
 		(title "MCU Board Main")
 		(date "2025-12-10")
 		(rev "V1")
-		(company "The Retrievers")
+		(company "The Retrievers | Designed by aids")
 	)
 	(lib_symbols
 		(symbol "Connector:TestPoint"

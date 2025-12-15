@@ -5,9 +5,10 @@
 	(uuid "3db833d2-5334-4ba7-898d-4c4dcad20d03")
 	(paper "A4")
 	(title_block
+		(title "Power Management")
 		(date "2025-12-10")
 		(rev "V1")
-		(company "The Retrievers")
+		(company "The Retrievers | Designed by aids")
 	)
 	(lib_symbols
 		(symbol "2025-11-28_22-50-25:AP3445LW6-7"
@@ -4109,7 +4110,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "LED_SMD:LED_0805_2012Metric"
+		(property "Footprint" "LED_SMD:LED_0603_1608Metric"
 			(at 264.16 54.61 0)
 			(effects
 				(font
