@@ -4,4 +4,6 @@
   (lib (name "PSAT_Library")(type "KiCad")(uri "${KIPRJMOD}/../symbol-libraries/PSAT_Library.kicad_sym")(options "")(descr ""))
   (lib (name "CD-PA1616D")(type "KiCad")(uri "/Users/sid/Downloads/CD-PA1616D/CD-PA1616D.kicad_sym")(options "")(descr ""))
   (lib (name "ESP32-CAM")(type "KiCad")(uri "/Users/sid/Desktop/Coding/Other/PSAT/the-retrievers/kicad/symbol-libaries/ESP32-CAM.kicad_sym")(options "")(descr ""))
+  (lib (name "LSM6DSOX")(type "KiCad")(uri "/Users/sid/Desktop/Coding/Other/PSAT/the-retrievers/kicad/symbol-libaries/LSM6DSOX.kicad_sym")(options "")(descr ""))
+  (lib (name "adxl345")(type "KiCad")(uri "/Users/sid/Desktop/Coding/Other/PSAT/the-retrievers/kicad/symbol-libaries/adxl345.kicad_sym")(options "")(descr ""))
 )

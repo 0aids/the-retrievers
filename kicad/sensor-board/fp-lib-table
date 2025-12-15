@@ -6,4 +6,7 @@
   (lib (name "ADXL375")(type "KiCad")(uri "/Users/sid/Desktop/Coding/Other/PSAT/the-retrievers/kicad/footprint-libraries/ADXL375.pretty")(options "")(descr ""))
   (lib (name "PSAT_Library")(type "KiCad")(uri "/Users/sid/Desktop/Coding/Other/PSAT/the-retrievers/kicad/footprint-libraries/PSAT_Library.pretty")(options "")(descr ""))
   (lib (name "board_shape")(type "KiCad")(uri "/Users/sid/Desktop/Coding/Other/PSAT/the-retrievers/kicad/footprint-libraries/board_shape.pretty")(options "")(descr ""))
+  (lib (name "LSM6DSOX")(type "KiCad")(uri "/Users/sid/Desktop/Coding/Other/PSAT/the-retrievers/kicad/footprint-libraries/LSM6DSOX.pretty")(options "")(descr ""))
+  (lib (name "adxl345")(type "KiCad")(uri "${KIPRJMOD}/adxl345.pretty")(options "")(descr ""))
+  (lib (name "ADXL345")(type "KiCad")(uri "/Users/sid/Desktop/Coding/Other/PSAT/the-retrievers/kicad/footprint-libraries/ADXL345.pretty")(options "")(descr ""))
 )

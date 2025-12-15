@@ -1,4 +1,4 @@
-(footprint "PQFN80P500X300X100-14N"
+(footprint "adxl375"
 	(version 20241229)
 	(generator "pcbnew")
 	(generator_version "9.0")
@@ -14,7 +14,7 @@
 			)
 		)
 	)
-	(property "Value" "PQFN80P500X300X100-14N"
+	(property "Value" "adxl375"
 		(at 7.1908 3.4564 0)
 		(layer "F.Fab")
 		(uuid "54c34479-b97a-4f01-b9a7-557818ba0a12")
