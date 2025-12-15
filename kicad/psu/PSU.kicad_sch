@@ -243,6 +243,280 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "2025-12-15_03-55-30:LM66200DRLR"
+			(pin_names
+				(offset 0.254)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "U"
+				(at 20.32 10.16 0)
+				(effects
+					(font
+						(size 1.524 1.524)
+					)
+				)
+			)
+			(property "Value" "LM66200DRLR"
+				(at 20.32 7.62 0)
+				(effects
+					(font
+						(size 1.524 1.524)
+					)
+				)
+			)
+			(property "Footprint" "SOT-5X3_DRL_TEX"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+						(italic yes)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "https://www.ti.com/lit/gpn/lm66200"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+						(italic yes)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_locked" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "LM66200DRLR"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "SOT-5X3_DRL_TEX SOT-5X3_DRL_TEX-M SOT-5X3_DRL_TEX-L"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "LM66200DRLR_0_1"
+				(polyline
+					(pts
+						(xy 7.62 5.08) (xy 7.62 -12.7)
+					)
+					(stroke
+						(width 0.127)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 7.62 -12.7) (xy 33.02 -12.7)
+					)
+					(stroke
+						(width 0.127)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 33.02 5.08) (xy 7.62 5.08)
+					)
+					(stroke
+						(width 0.127)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 33.02 -12.7) (xy 33.02 5.08)
+					)
+					(stroke
+						(width 0.127)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(pin power_out line
+					(at 0 0 0)
+					(length 7.62)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 0 -2.54 0)
+					(length 7.62)
+					(name "VOUT"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at 0 -5.08 0)
+					(length 7.62)
+					(name "VIN1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at 0 -7.62 0)
+					(length 7.62)
+					(name "ON"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 40.64 0 180)
+					(length 7.62)
+					(name "ST"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "8"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 40.64 -2.54 180)
+					(length 7.62)
+					(name "VOUT"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "7"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at 40.64 -5.08 180)
+					(length 7.62)
+					(name "VIN2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin power_out line
+					(at 40.64 -7.62 180)
+					(length 7.62)
+					(name "GND"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "B2B-PH-K-S:B2B-PH-K-S"
 			(pin_names
 				(offset 1.016)
@@ -3238,12 +3512,6 @@
 		(uuid "e11a6603-a7d6-4a78-9bb0-76ded2fbe986")
 	)
 	(junction
-		(at 149.86 39.37)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "e9082c93-d1fc-4907-9956-1ba6f5f8c981")
-	)
-	(junction
 		(at 121.92 39.37)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -4612,6 +4880,28 @@
 		)
 		(uuid "f1442403-80ac-4818-9139-e0cef7aad47b")
 	)
+	(global_label "Vcharger_USB"
+		(shape input)
+		(at 114.3 186.69 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "06df43be-b78a-470c-a8db-5b304c4010f9")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 98.252 186.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "3.3V_T"
 		(shape input)
 		(at 68.58 29.21 180)
@@ -4766,6 +5056,50 @@
 			)
 		)
 	)
+	(global_label "Vcharger"
+		(shape input)
+		(at 114.3 184.15 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "7c740e70-784e-4e1c-83cb-eb818ce04f47")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 103.0296 184.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "Vcharger_USB"
+		(shape input)
+		(at 154.94 181.61 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "92792492-29c1-4a2d-aa71-11ddb8538301")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 170.988 181.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "1.8V"
 		(shape input)
 		(at 68.58 26.67 180)
@@ -4784,6 +5118,28 @@
 					(size 1.27 1.27)
 				)
 				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "Vcharger_USB"
+		(shape input)
+		(at 148.59 39.37 90)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "9f1bd7d9-f5ef-41db-ae6a-b11e02741381")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 148.59 23.322 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
 				(hide yes)
 			)
 		)
@@ -4872,6 +5228,50 @@
 					(size 1.27 1.27)
 				)
 				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "Vcharger"
+		(shape input)
+		(at 154.94 184.15 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "be5330be-1598-4c63-83e2-ff61773cd0d8")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 166.2104 184.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "Vcharger_MCU"
+		(shape input)
+		(at 66.04 48.26 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "c18e0c71-3eb4-422b-a0b7-59e86e6d2fc2")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 49.7501 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
 				(hide yes)
 			)
 		)
@@ -4982,6 +5382,28 @@
 					(size 1.27 1.27)
 				)
 				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "Vcharger_MCU"
+		(shape input)
+		(at 154.94 186.69 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "d9c40592-60f9-4ba9-9fc3-1d1cbff9fe0e")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 171.2299 186.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
 				(hide yes)
 			)
 		)
@@ -8198,72 +8620,6 @@
 		)
 	)
 	(symbol
-		(lib_id "power:VBUS")
-		(at 66.04 48.26 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "8e76f53b-128e-47d0-a327-4882cc8ef3e5")
-		(property "Reference" "#PWR02"
-			(at 69.85 48.26 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "Vcharger"
-			(at 63.246 48.006 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 66.04 48.26 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 66.04 48.26 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"VBUS\""
-			(at 66.04 48.26 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "35010c68-359f-43b5-a4cf-120e6ba6ae3c")
-		)
-		(instances
-			(project ""
-				(path "/cfc5ecac-396a-430d-b465-b4fb30a46c19"
-					(reference "#PWR02")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:GND")
 		(at 31.75 107.95 0)
 		(unit 1)
@@ -8458,6 +8814,94 @@
 			(project ""
 				(path "/cfc5ecac-396a-430d-b465-b4fb30a46c19"
 					(reference "#PWR06")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "2025-12-15_03-55-30:LM66200DRLR")
+		(at 114.3 181.61 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "935e62d0-9873-40bb-baa6-19b6b81f8ca1")
+		(property "Reference" "U5"
+			(at 134.62 171.45 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Value" "LM66200DRLR"
+			(at 134.62 173.99 0)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+			)
+		)
+		(property "Footprint" "SOT-5X3_DRL_TEX"
+			(at 114.3 181.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://www.ti.com/lit/gpn/lm66200"
+			(at 114.3 181.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" ""
+			(at 114.3 181.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "3a6460ab-a5cd-4418-9939-98c7c58068d0")
+		)
+		(pin "4"
+			(uuid "8f659e73-386e-40e0-885a-6a7dae972bff")
+		)
+		(pin "6"
+			(uuid "9e794e87-1e5f-4c4f-a1b8-0e0c19488be0")
+		)
+		(pin "1"
+			(uuid "c8c813fa-d776-41f8-ad0d-6050a38e09bd")
+		)
+		(pin "3"
+			(uuid "a51edd41-fd25-4a1a-9cdd-8cdf2788a329")
+		)
+		(pin "8"
+			(uuid "f3951309-2cb1-4dc7-a5b9-ea1bbf7b760f")
+		)
+		(pin "7"
+			(uuid "39dc46e1-2c91-420c-b459-6c4f0e8ecee8")
+		)
+		(pin "5"
+			(uuid "6a9a8bc4-db1b-44f2-8cde-c6cbd4ecac66")
+		)
+		(instances
+			(project ""
+				(path "/cfc5ecac-396a-430d-b465-b4fb30a46c19"
+					(reference "U5")
 					(unit 1)
 				)
 			)
@@ -8933,17 +9377,17 @@
 		)
 	)
 	(symbol
-		(lib_id "power:VBUS")
-		(at 149.86 39.37 0)
+		(lib_id "power:GND")
+		(at 154.94 189.23 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "a10ec3be-0b2d-4b54-806a-5a9b3b39e803")
+		(uuid "a3ab0de5-3a83-451b-86f3-cc7c954e1c76")
 		(property "Reference" "#PWR013"
-			(at 149.86 43.18 0)
+			(at 161.29 189.23 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8951,16 +9395,17 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "Vcharger"
-			(at 149.86 34.29 0)
+		(property "Value" "GND"
+			(at 158.75 189.2299 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify right)
 			)
 		)
 		(property "Footprint" ""
-			(at 149.86 39.37 0)
+			(at 154.94 189.23 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8969,7 +9414,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 149.86 39.37 0)
+			(at 154.94 189.23 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8977,8 +9422,8 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Power symbol creates a global label with name \"VBUS\""
-			(at 149.86 39.37 0)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 154.94 189.23 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8987,7 +9432,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "9cc35c8b-3ad1-4107-9e3c-9dc332b7193a")
+			(uuid "130afbb4-6698-4153-990e-0ed17e65e39a")
 		)
 		(instances
 			(project ""
@@ -9728,6 +10173,73 @@
 			(project "PSU"
 				(path "/cfc5ecac-396a-430d-b465-b4fb30a46c19"
 					(reference "C7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 114.3 181.61 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "ba903503-a76c-4f65-9677-269e9ce0f54a")
+		(property "Reference" "#PWR019"
+			(at 107.95 181.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 110.49 181.6099 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" ""
+			(at 114.3 181.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 114.3 181.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 114.3 181.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "6475fca4-2094-40e6-9819-77db32934757")
+		)
+		(instances
+			(project ""
+				(path "/cfc5ecac-396a-430d-b465-b4fb30a46c19"
+					(reference "#PWR019")
 					(unit 1)
 				)
 			)
@@ -11193,6 +11705,73 @@
 			(project ""
 				(path "/cfc5ecac-396a-430d-b465-b4fb30a46c19"
 					(reference "R7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 114.3 189.23 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "e02faf77-be1e-4b8c-bcae-ed26de6e44b1")
+		(property "Reference" "#PWR02"
+			(at 107.95 189.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 110.49 189.2299 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" ""
+			(at 114.3 189.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 114.3 189.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 114.3 189.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "f3076f51-0cfa-4e52-8ffa-e5ea0479c12a")
+		)
+		(instances
+			(project ""
+				(path "/cfc5ecac-396a-430d-b465-b4fb30a46c19"
+					(reference "#PWR02")
 					(unit 1)
 				)
 			)

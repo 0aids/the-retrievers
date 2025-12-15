@@ -8,5 +8,7 @@
   (lib (name "RT4812GJ8F")(type "KiCad")(uri "C:/Dev/Local APSS/RT4812GJ8F.kicad_sym")(options "")(descr ""))
   (lib (name "SPM6530T-1R5M100")(type "KiCad")(uri "C:/Dev/Local APSS/SPM6530T-1R5M100.kicad_sym")(options " pwr_sym_only")(descr ""))
   (lib (name "B2B-PH-K-S")(type "KiCad")(uri "C:/Dev/Local APSS/B2B-PH-K-S.kicad_sym")(options "")(descr ""))
-  (lib (name "PSAT_Library")(type "KiCad")(uri "C:/Users/Zac/Documents/GitHub/the-retrievers/kicad/symbol-libaries/PSAT_Library.kicad_sym")(options "")(descr ""))
+  (lib (name "PSAT_Library")(type "KiCad")(uri "C:/Users/Zac/Documents/GitHub/the-retrievers/kicad/symbol-libaries/PSAT_Library.kicad_sym")(options "")(descr "")(disabled)(hidden))
+  (lib (name "2025-12-15_03-55-30")(type "KiCad")(uri "C:/Dev/Local APSS/LM66200DRLR/KiCADv6/2025-12-15_03-55-30.kicad_sym")(options "")(descr ""))
+  (lib (name "PSAT_Library PC")(type "KiCad")(uri "C:/Dev/APSS/the-retrievers/kicad/symbol-libaries/PSAT_Library.kicad_sym")(options "")(descr ""))
 )
