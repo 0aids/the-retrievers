@@ -58,7 +58,32 @@
           "width": 0.0
         }
       ],
-      "drc_exclusions": [],
+      "drc_exclusions": [
+        [
+          "courtyards_overlap|160350689|97727537|b004fd5e-f138-438a-bc03-5f00117ff790|c5b2cf3b-e3ae-48f2-8fbe-9b35cfdccaa6",
+          "ldr isnt that big"
+        ],
+        [
+          "courtyards_overlap|163335514|103275346|b004fd5e-f138-438a-bc03-5f00117ff790|fc0e07c1-005b-4bab-bd4a-178b24ccaa47",
+          "ldr isnt that big"
+        ],
+        [
+          "courtyards_overlap|165880000|101880000|b004fd5e-f138-438a-bc03-5f00117ff790|d61c3ca5-59e3-416d-97c8-a053e4575e17",
+          "ldr isnt that big"
+        ],
+        [
+          "courtyards_overlap|166930000|97605000|8ab89981-9c23-44ac-9cb3-cecb37a060c6|b004fd5e-f138-438a-bc03-5f00117ff790",
+          "ldr isnt that big"
+        ],
+        [
+          "silk_edge_clearance|144050000|70054653|f5312e1a-ea9a-4d22-a807-336d704c6a2c|02d7be26-2205-418b-a2e9-e09e7985081d",
+          ""
+        ],
+        [
+          "silk_edge_clearance|152000000|71775368|f5312e1a-ea9a-4d22-a807-336d704c6a2c|7e3c61b5-b4e8-4614-9a3e-048483f08219",
+          ""
+        ]
+      ],
       "meta": {
         "version": 2
       },
@@ -640,7 +665,7 @@
       "workbook_filename": ""
     },
     "page_layout_descr_file": "",
-    "plot_directory": "",
+    "plot_directory": "/Users/sid/Downloads/",
     "space_save_all_events": true,
     "spice_current_sheet_as_root": false,
     "spice_external_command": "spice \"%I\"",
