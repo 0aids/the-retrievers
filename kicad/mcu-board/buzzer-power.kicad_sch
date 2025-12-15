@@ -5,9 +5,10 @@
 	(uuid "9beaa07b-60e6-4034-aa2f-a31511b4f24e")
 	(paper "A4")
 	(title_block
+		(title "Buzzer Power")
 		(date "2025-12-10")
 		(rev "V1")
-		(company "The Retrievers")
+		(company "The Retrievers | Designed by aids")
 	)
 	(lib_symbols
 		(symbol "Device:R"
