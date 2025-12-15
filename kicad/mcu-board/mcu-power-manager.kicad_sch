@@ -1876,6 +1876,12 @@
 		(uuid "5830624a-8be9-4b3d-962a-069a4418c6ff")
 	)
 	(junction
+		(at 90.17 43.18)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "92620fce-1a8a-4670-a5bd-51153d1d46de")
+	)
+	(junction
 		(at 200.66 43.18)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -1992,6 +1998,16 @@
 			(type default)
 		)
 		(uuid "533f062f-ff30-4367-a049-e6635a7ed2aa")
+	)
+	(wire
+		(pts
+			(xy 90.17 43.18) (xy 86.36 43.18)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5ad9da80-71ab-4f98-82a5-b0c1bf7c4929")
 	)
 	(wire
 		(pts
@@ -2175,7 +2191,7 @@
 	)
 	(wire
 		(pts
-			(xy 96.52 43.18) (xy 86.36 43.18)
+			(xy 102.87 43.18) (xy 90.17 43.18)
 		)
 		(stroke
 			(width 0)
@@ -2244,7 +2260,7 @@
 		(uuid "5fd0db81-625d-47bc-8e7f-502c7456c1a0")
 	)
 	(label "POWER_ST"
-		(at 96.52 43.18 180)
+		(at 102.87 43.18 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -4016,6 +4032,71 @@
 		)
 	)
 	(symbol
+		(lib_id "power:+3V3")
+		(at 90.17 35.56 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "7d24c2e7-762b-424b-9b13-e36d2bab4aeb")
+		(property "Reference" "#PWR058"
+			(at 90.17 39.37 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3_OUT_UNFUSED"
+			(at 101.6 34.544 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 90.17 35.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 90.17 35.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 90.17 35.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "573c7550-f4c2-44dc-aea0-2225d5782a86")
+		)
+		(instances
+			(project "mcu-board"
+				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
+					(reference "#PWR058")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:GND")
 		(at 231.14 46.99 90)
 		(unit 1)
@@ -5046,6 +5127,73 @@
 			(project "mcu-board"
 				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
 					(reference "#FLG05")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 90.17 39.37 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "eebec7f2-5457-40ab-a6ff-78b6640fa786")
+		(property "Reference" "R12"
+			(at 87.63 39.37 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "5.1k"
+			(at 90.424 39.37 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
+			(at 88.392 39.37 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 90.17 39.37 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 90.17 39.37 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "f110d019-3547-47c7-8288-23c491df9baf")
+		)
+		(pin "2"
+			(uuid "9f260862-56d3-45d3-9c3e-4401097c3e6b")
+		)
+		(instances
+			(project "mcu-board"
+				(path "/f6735569-a094-4d1f-804a-28898efbaebf/79b10459-455e-4cf2-8906-0ddec7d8d7a7"
+					(reference "R12")
 					(unit 1)
 				)
 			)
