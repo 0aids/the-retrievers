@@ -1,3 +1,6 @@
 [submodule "firmware/lora/lora-board/external/Ai-Thinker-LoRaWAN-Ra-08"]
 	path = firmware/lora/lora-board/external/Ai-Thinker-LoRaWAN-Ra-08
 	url = https://github.com/Ai-Thinker-Open/Ai-Thinker-LoRaWAN-Ra-08.git
+[submodule "pdr-firmware-archived/lora/lora-board/external/Ai-Thinker-LoRaWAN-Ra-08"]
+	path = pdr-firmware-archived/lora/lora-board/external/Ai-Thinker-LoRaWAN-Ra-08
+	url = https://github.com/Ai-Thinker-Open/Ai-Thinker-LoRaWAN-Ra-08.git
