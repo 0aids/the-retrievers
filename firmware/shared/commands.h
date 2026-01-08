@@ -4,7 +4,7 @@
 #define lora_defaultDataSize_d 64
 typedef char lora_uint8_t;
 // Shared commands
-enum lora_PacketTypes_e {
+typedef enum {
     lora_PacketTypes_Ping,
     lora_PacketTypes_Pong,
 
@@ -20,7 +20,7 @@ enum lora_PacketTypes_e {
     // For preflight checks and onthefly debugging
     lora_PacketTypes_TestReq,
     lora_PacketTypes_TestData,
-};
+} lora_PacketTypes_e;
 
 typedef struct {
 } GpsData_t;
