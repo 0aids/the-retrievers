@@ -4,3 +4,8 @@ cmake_minimum_required(VERSION 3.16)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 project(psat-station)
+idf_build_set_property(
+    INCLUDE_DIRECTORIES
+    "${CMAKE_SOURCE_DIR}/../shared"
+    APPEND
+)
