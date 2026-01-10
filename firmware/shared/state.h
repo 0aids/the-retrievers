@@ -1,5 +1,8 @@
 #pragma once
 
+#include <stdbool.h>
+#include <stdint.h>
+
 typedef enum {
     psatFSM_state_prelaunch,
     psatFSM_state_ascent,
@@ -33,3 +36,31 @@ typedef struct {
     int global;
     psatFSM_eventType_e type;
 } psatFSM_event_t;
+
+typedef struct {
+    float latitude;
+    float longitude;
+    float speedKnots;
+    float speedKph;
+    float courseDeg;
+    float hdop;
+    float altitude;
+    float geoidalSep;
+
+    int32_t day;
+    int32_t month;
+    int32_t year;
+
+    int32_t hours;
+    int32_t minutes;
+    int32_t seconds;
+
+    int32_t fixQuality;
+    int32_t satellitesTracked;
+    int32_t satsInView;
+
+    bool positionValid;  // lat, long
+    bool navValid;       // knots, kph & course
+    bool fixInfoValid;   // fix quality, sats tracked
+    bool altitudeValid;  // altitude, geoidal
+} gps_data_t;
