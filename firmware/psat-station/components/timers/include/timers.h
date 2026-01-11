@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-#include "state.h"
+#include "shared_state.h"
 
 typedef enum {
     timer_timerId_1s,

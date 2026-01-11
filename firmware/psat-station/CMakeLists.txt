@@ -6,6 +6,6 @@ include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 project(psat-station)
 idf_build_set_property(
     INCLUDE_DIRECTORIES
-    "${CMAKE_SOURCE_DIR}/../shared"
+    "${CMAKE_SOURCE_DIR}/../platform-agnostic/shared"
     APPEND
 )
