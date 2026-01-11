@@ -8,6 +8,7 @@
 #define QUEUE_SIZE 32
 static const char* TAG = "PSAT_FSM";
 
+static TaskHandle_t xHandleSM_s = NULL;
 static QueueHandle_t eventQueue_s = NULL;
 static volatile psatFSM_state_e currentState_s = psatFSM_state_prelaunch;
 
@@ -88,9 +89,24 @@ void psatFSM_mainLoop(void* arg) {
 void psatFSM_start() {
     eventQueue_s = xQueueCreate(QUEUE_SIZE, sizeof(psatFSM_event_t));
 
-    psatFSM_event_t startupEvent = {.type = psatFSM_state_prelaunch,
+    psatFSM_event_t startupEvent = {.type = psatFSM_eventType_startPrelaunch,
                                     .global = false};
     psatFSM_postEvent(&startupEvent);
 
     psatFSM_mainLoop(NULL);
+}
+
+void psatFSM_startAsTask() {
+    xTaskCreate(psatFSM_start, "fsm_task", 4096, NULL, 10, &xHandleSM_s);
+}
+
+void psatFSM_killTask() {
+    if (xHandleSM_s != NULL) {
+        vTaskDelete(xHandleSM_s);
+        xHandleSM_s = NULL;
+    }
+    if (eventQueue_s != NULL) {
+        vQueueDelete(eventQueue_s);
+        eventQueue_s = NULL;
+    }
 }
