@@ -29,6 +29,7 @@
                 uv
                 usbutils
                 screen
+                cmake-language-server
             ]
             ++ (
               if system == "aarch64-darwin"

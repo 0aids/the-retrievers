@@ -1,0 +1,1 @@
+external/Ai-Thinker-LoRaWAN-Ra-08/build/scripts/tremo_loader.py
