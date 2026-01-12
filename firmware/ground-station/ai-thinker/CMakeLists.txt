@@ -7,9 +7,9 @@ cmake_minimum_required(VERSION 3.23)
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 project(psat_lora LANGUAGES C CXX ASM)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_CXX_FLAGS 
-    "-fmacro-prefix-map=${CMAKE_SOURCE_DIR}=. -fdiagnostics-show-template-tree"
-)
+# set(CMAKE_CXX_FLAGS 
+#     "-fmacro-prefix-map=${CMAKE_SOURCE_DIR}=. -fdiagnostics-show-template-tree"
+# )
 
 add_compile_options(
     # -Os
@@ -29,50 +29,50 @@ add_compile_options(
 # Global Paths
 # =============================================================================
 
-set(ai_thinker_source_dir "external/Ai-Thinker-LoRaWAN-Ra-08")
+set(asr_lora_6601_source_dir "external/asr_lora_6601")
 set(linker_script "${CMAKE_CURRENT_SOURCE_DIR}/cfg/gcc.ld")
 
 # =============================================================================
-# Ai-Thinker SDK Sources
+# asr_lora_6601 SDK Sources
 # =============================================================================
 
-file(GLOB_RECURSE ai_thinker_c_src
-    "${ai_thinker_source_dir}/drivers/peripheral/src/*.c"
-    "${ai_thinker_source_dir}/lora/driver/*.c"
-    "${ai_thinker_source_dir}/lora/mac/*.c"
-    "${ai_thinker_source_dir}/lora/mac/region/*.c"
-    "${ai_thinker_source_dir}/lora/radio/sx126x/*.c"
-    "${ai_thinker_source_dir}/lora/system/*.c"
-    "${ai_thinker_source_dir}/lora/system/crypto/*.c"
-    "${ai_thinker_source_dir}/platform/system/*.c"
+file(GLOB_RECURSE asr_lora_6601_c_src
+    "${asr_lora_6601_source_dir}/drivers/peripheral/src/*.c"
+    "${asr_lora_6601_source_dir}/lora/driver/*.c"
+    "${asr_lora_6601_source_dir}/lora/mac/*.c"
+    "${asr_lora_6601_source_dir}/lora/mac/region/*.c"
+    "${asr_lora_6601_source_dir}/lora/radio/sx126x/*.c"
+    "${asr_lora_6601_source_dir}/lora/system/*.c"
+    "${asr_lora_6601_source_dir}/lora/system/crypto/*.c"
+    "${asr_lora_6601_source_dir}/platform/system/*.c"
 )
 
-list(APPEND ai_thinker_c_src
-    "${ai_thinker_source_dir}/platform/system/printf-stdarg.c"
+list(APPEND asr_lora_6601_c_src
+    "${asr_lora_6601_source_dir}/platform/system/printf-stdarg.c"
 )
 
 # =============================================================================
-# Ai-Thinker SDK Library Target
+# asr_lora_6601 SDK Library Target
 # =============================================================================
 
-add_library(ai_thinker_lib STATIC ${ai_thinker_c_src})
+add_library(asr_lora_6601_lib STATIC ${asr_lora_6601_c_src})
 
-target_include_directories(ai_thinker_lib PUBLIC
-    "${ai_thinker_source_dir}/drivers/peripheral/inc"
-    "${ai_thinker_source_dir}/drivers/crypto/inc"
-    "${ai_thinker_source_dir}/lora/driver"
-    "${ai_thinker_source_dir}/lora/mac"
-    "${ai_thinker_source_dir}/lora/mac/region"
-    "${ai_thinker_source_dir}/lora/radio"
-    "${ai_thinker_source_dir}/lora/radio/sx126x"
-    "${ai_thinker_source_dir}/lora/system"
-    "${ai_thinker_source_dir}/lora/system/crypto"
-    "${ai_thinker_source_dir}/platform/CMSIS"
-    "${ai_thinker_source_dir}/platform/system"
+target_include_directories(asr_lora_6601_lib PUBLIC
+    "${asr_lora_6601_source_dir}/drivers/peripheral/inc"
+    "${asr_lora_6601_source_dir}/drivers/crypto/inc"
+    "${asr_lora_6601_source_dir}/lora/driver"
+    "${asr_lora_6601_source_dir}/lora/mac"
+    "${asr_lora_6601_source_dir}/lora/mac/region"
+    "${asr_lora_6601_source_dir}/lora/radio"
+    "${asr_lora_6601_source_dir}/lora/radio/sx126x"
+    "${asr_lora_6601_source_dir}/lora/system"
+    "${asr_lora_6601_source_dir}/lora/system/crypto"
+    "${asr_lora_6601_source_dir}/platform/CMSIS"
+    "${asr_lora_6601_source_dir}/platform/system"
     "${CMAKE_CURRENT_SOURCE_DIR}/inc"
 )
 
-target_compile_options(ai_thinker_lib PUBLIC
+target_compile_options(asr_lora_6601_lib PUBLIC
     -Wall
     -Os
     # -ggdb
@@ -83,7 +83,7 @@ target_compile_options(ai_thinker_lib PUBLIC
     -Wno-format-truncation
 )
 
-target_compile_definitions(ai_thinker_lib PUBLIC
+target_compile_definitions(asr_lora_6601_lib PUBLIC
     CONFIG_DEBUG_UART=UART0
     USE_MODEM_LORA
     REGION_AU915
@@ -95,11 +95,24 @@ target_compile_definitions(ai_thinker_lib PUBLIC
 file(GLOB_RECURSE impls_files_c "impls/*.c")
 message("-- impls_lib_files: ${impls_files_c}")
 add_library(impls_lib STATIC ${impls_files_c})
-target_link_libraries(impls_lib PRIVATE ai_thinker_lib)
+target_link_libraries(impls_lib PRIVATE asr_lora_6601_lib)
 target_include_directories(
     impls_lib PUBLIC
     "../../platform-agnostic/required-impls/"
 )
+
+# =============================================================================
+# Shared
+# =============================================================================
+set(platform_agnostic_dir "../../platform-agnostic/shared/")
+file(GLOB_RECURSE shared_files_c "${platform_agnostic_dir}/*.c")
+message("-- shared_files_c: ${shared_files_c}")
+add_library(shared_lib STATIC ${shared_files_c})
+target_link_libraries(shared_lib PRIVATE impls_lib)
+target_compile_options(shared_lib PUBLIC
+    -fmacro-prefix-map=${platform_agnostic_dir}=.
+)
+target_include_directories(shared_lib PUBLIC ${platform_agnostic_dir})
 
 # =============================================================================
 # Application Support Library
@@ -112,8 +125,9 @@ target_include_directories(src_lib PUBLIC
     "./inc/"
 )
 target_link_libraries(src_lib PRIVATE 
-    ai_thinker_lib
+    asr_lora_6601_lib
     impls_lib
+    shared_lib
 )
 
 # =============================================================================
@@ -131,16 +145,17 @@ foreach(exe_dir IN LISTS exe_dirs)
     message("-- Exe filename component: ${exe_name}")
     add_executable(${exe_name}
         ${exe_files_c}
-        "${ai_thinker_source_dir}/platform/system/startup_cm4.S"
+        "${asr_lora_6601_source_dir}/platform/system/startup_cm4.S"
     )
     target_compile_options(${exe_name} PUBLIC
         -ffreestanding # Custom entrypoint so freestanding.
     )
     # Target Linking
     target_link_libraries(${exe_name} PRIVATE
-        ai_thinker_lib
+        asr_lora_6601_lib
         impls_lib
         src_lib
+        shared_lib
     )
 
     # Linker Options
@@ -153,6 +168,7 @@ foreach(exe_dir IN LISTS exe_dirs)
         -Wl,--wrap=printf
         -Wl,--wrap=sprintf
         -Wl,--wrap=snprintf
+        -Wl,--wrap=vprintf
         -Wl,-Map=${CMAKE_BINARY_DIR}/main.map
         -ffreestanding
     )
