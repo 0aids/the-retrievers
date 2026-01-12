@@ -3,6 +3,9 @@ It will just essentially forward all data directly to the computer via uart,
 and a specialised c program on the laptop will actually parse everything.
 And vice versa, any packets it receives over uart will be sent to lora immediately.
 
+The testing will be able to send data to the lora, and we'll double check everything is correct
+from there.
+
 # Setup the environment
 0. Required packages: \
     **THE PACKAGE NAMES MIGHT DIFFER**\
