@@ -1,92 +1,107 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include "loraImpl.h"
 #include "shared_lora.h"
+#include <inttypes.h>
 #include <sys/prctl.h>
+#include <string.h>
 
-// ---------------------------------------------
-// Test Payload
-// ---------------------------------------------
-// Large enough to force fragmentation (assuming LoRa packet limit < 100)
-char test_msg[] = "This is a long message that should be fragmented into multiple packets to test the reconstruction logic of the shared_lora driver.";
+int8_t     isServer = -1;
+const char serverSendMsg[] =
+    "This is a long message being sent by the server";
+const char  servermsg[]  = "[Server]";
+const char  clientmsg[]  = "[Client]";
+const char* whoami       = servermsg;
+char        buffer[2049] = {};
 
-// ---------------------------------------------
-// Sender Logic (Parent)
-// ---------------------------------------------
-void run_sender() {
-    setenv("NODE_ID", "0", 1);
-    printf("[Sender] Starting...\n");
+uint16_t interPacketDelayMS = 5;
 
-    // Initialize YOUR driver
-    // Note: You might need to call lora_init() if you have a wrapper, 
-    // but here we call the impl init and assume you manually setup the logic
-    lora_init(); 
-    
-    // We need to wait a moment for the receiver to spin up
-    usleep(100000); 
+#define dprint(...) {printf("%s ", whoami); printf(__VA_ARGS__);}
 
-    // Trigger the send using YOUR high-level logic
-    // (Assuming lora_send calls loraImpl_send underneath)
-    printf("[Sender] Sending %lu bytes...\n", sizeof(test_msg));
-    lora_send((uint8_t*)test_msg, sizeof(test_msg));
+void RXDoneCallback(uint8_t* payload, uint16_t size, int16_t rssi,
+                    int8_t snr)
+{
+    memcpy(buffer, payload, size);
+    buffer[size] = 0;
+    dprint("Received: %s\n", buffer);
+    dprint("Rssi: %" PRId16 ", snr: %" PRId8 "\n", rssi, snr);
+}
 
-    // Pump the loop to handle states
-    for (int i = 0; i < 50; i++) {
-        lora_IRQProcess(); 
-        usleep(10000); // 10ms tick
-    }
-    
+void TXDoneCallback(void)
+{
+    dprint("RXDone!\n");
+}
+void RXTimeoutCallback(void)
+{
+    dprint("RxTimeout!\n");
+}
+void TXTimeoutCallback(void)
+{
+    dprint("TXTimeout!\n");
+}
+void RXErrorCallback(void)
+{
+    dprint("RXError!\n");
+}
+
+// Run on separate forks.
+void runServer()
+{
+    isServer = 1;
+    lora_init();
+    lora_setCallbacks(TXDoneCallback, RXDoneCallback,
+                      TXTimeoutCallback, RXTimeoutCallback,
+                      RXErrorCallback);
+    sleep(3);
+    dprint("Sending message!\n");
+    lora_send((uint8_t*)serverSendMsg, sizeof(serverSendMsg));
+    lora_IRQProcess();
+    sleep(6);
     lora_deinit();
 }
 
-// ---------------------------------------------
-// Receiver Logic (Child)
-// ---------------------------------------------
-// We need to hook into the high-level callbacks to see if it worked
-void on_app_rx_complete(uint8_t* payload, uint16_t size, int16_t rssi, int8_t snr) {
-    printf("\n[Receiver] SUCCESS! Data Reconstructed:\n");
-    printf(">> %.*s\n", size, payload);
-    exit(0); // Exit child on success
-}
-
-void run_receiver() {
-    setenv("NODE_ID", "1", 1);
-    printf("[Receiver] Listening...\n");
-
+// Run on separate forks.
+void runClient()
+{
+    isServer = 0;
+    whoami   = clientmsg;
     lora_init();
-    
-    // Hook up High Level Callbacks
-    lora_setCallbacks(NULL, on_app_rx_complete, NULL, NULL, NULL);
-
-    // Run loop indefinitely until we get data
-    while(1) {
-        lora_IRQProcess();
-        usleep(1000); // 1ms tick
-    }
+    lora_setCallbacks(TXDoneCallback, RXDoneCallback,
+                      TXTimeoutCallback, RXTimeoutCallback,
+                      RXErrorCallback);
+    lora_setRX(0);
+    sleep(2);
+    dprint("Waiting for msg!\n");
+    lora_IRQProcess();
+    sleep(1);
+    lora_IRQProcess();
+    sleep(1);
+    lora_IRQProcess();
+    sleep(1);
+    lora_deinit();
 }
 
-// ---------------------------------------------
-// Main Fork Entry
-// ---------------------------------------------
-int main() {
-    pid_t pid = fork();
-
-    if (pid == -1) {
-        perror("Fork failed");
-        return 1;
+int main()
+{
+    pid_t clientProcess = fork();
+    if (clientProcess < 0)
+    {
+        perror("Failed to fork client process!");
     }
-
-    if (pid == 0) {
+    if (clientProcess == 0)
+    {
         if (prctl(PR_SET_PDEATHSIG, SIGKILL) == -1)
         {
             perror("prctl failed");
             exit(EXIT_FAILURE);
         }
-        run_receiver();
-    } else {
-        run_sender();
+
+        runClient();
+        _exit(127);
     }
 
-    return 0;
+    runServer();
 }

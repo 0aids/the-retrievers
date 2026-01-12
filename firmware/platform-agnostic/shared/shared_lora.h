@@ -134,6 +134,8 @@ lora_footerPacket_t lora_createFooterPacket(uint8_t* payload,
 void                lora_IRQProcess(void);
 void                lora_queryState(void);
 
+void lora_setRX(uint16_t ms);
+
 // Receiving is always done via the Rx Done callback.
 void lora_setCallbacks(void (*onTxDone)(void),
                        void (*onRxDone)(uint8_t* payload,

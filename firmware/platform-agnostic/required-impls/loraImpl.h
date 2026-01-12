@@ -68,9 +68,9 @@ void loraImpl_IRQProcess(void);
 // the rx timeout callback,
 // rxdone callback
 // or do nothing because timeout hasn't been reached and no packet has been received
-void loraImpl_SetRX(uint32_t milliseconds);
+void loraImpl_setRX(uint32_t milliseconds);
 
-void loraImpl_SetIdle();
+void loraImpl_setIdle();
 
 // Holds the actual temporary packet data.
 typedef struct

@@ -49,10 +49,16 @@ static bool _lora_waitUntilTXDone(void)
 void lora_init()
 {
     loraImpl_init();
+    loraImpl_setRX(0);
     loraImpl_setCallbacks(
         _lora_backendTXDoneCallback, _lora_backendRXDoneCallback,
         _lora_backendTXTimeoutCallback,
         _lora_backendRXTimeoutCallback, _lora_backendRXErrorCallback);
+}
+
+void lora_setRX(uint16_t ms)
+{
+    loraImpl_setRX(ms);
 }
 
 void lora_deinit()
@@ -411,7 +417,7 @@ void _lora_backendRXDoneCallback(uint8_t* payload, uint16_t size,
                 lora_globalState_g.RXState =
                     lora_RXStates_WaitingForDataOrFooter;
                 // non-blocking??? Might be a source of error.
-                loraImpl_SetRX(lora_interPacketTimeout_d);
+                loraImpl_setRX(lora_interPacketTimeout_d);
                 break;
             }
             else
@@ -428,7 +434,7 @@ void _lora_backendRXDoneCallback(uint8_t* payload, uint16_t size,
 
                 lora_globalState_g.RXState = lora_RXStates_RxDone;
 
-                loraImpl_SetIdle();
+                loraImpl_setIdle();
                 return;
             }
             else if (payload[0] == lora_dataPacketPreamble_d)
@@ -437,7 +443,7 @@ void _lora_backendRXDoneCallback(uint8_t* payload, uint16_t size,
                     goto _lora_backendRxDoneCallback_error_gt;
 
                 // Continue receiving.
-                loraImpl_SetRX(lora_interPacketTimeout_d);
+                loraImpl_setRX(lora_interPacketTimeout_d);
             }
             else
                 goto _lora_backendRxDoneCallback_error_gt;
