@@ -5,7 +5,7 @@
 
 // Defined in the utils.c of your implementation.
 #include <stdint.h>
-extern void utils_sleepms(uint16_t ms);
+extern void utils_sleepMs(uint16_t milliseconds);
 
 // Unimplemented for now.
 extern void utils_log();

@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/prctl.h>
-#include <string.h>
 
 #include "shared_lora.h"
 #include "test_helpers.h"
@@ -14,18 +13,18 @@ int8_t isServer = -1;
 uint16_t interPacketDelayMS = 5;
 
 // Keep track of which callback was last fired
-volatile int callback_fired = 0; // 0=none, 1=RXDone, 2=TXDone, 3=RXTimeout, 4=TXTimeout, 5=RXError
+volatile int callbackFired = 0; // 0=none, 1=RXDone, 2=TXDone, 3=RXTimeout, 4=TXTimeout, 5=RXError
 
 const char serverSendMsg[] = "This is a long message where one packet will be lost.";
 const char* whoami = "[Serv]";
 
 #define dprint(...) {printf("%s ", whoami); printf(__VA_ARGS__);}
 
-void RXDoneCallback(uint8_t* p, uint16_t s, int16_t r, int8_t snr) { callback_fired = 1; }
-void TXDoneCallback(void) { /* This will be fired multiple times, not useful for this test */ }
-void RXTimeoutCallback(void) { callback_fired = 3; }
-void TXTimeoutCallback(void) { callback_fired = 4; }
-void RXErrorCallback(void) { callback_fired = 5; }
+void rxDoneCallback(uint8_t* p, uint16_t s, int16_t r, int8_t snr) { callbackFired = 1; }
+void txDoneCallback(void) { /* This will be fired multiple times, not useful for this test */ }
+void rxTimeoutCallback(void) { callbackFired = 3; }
+void txTimeoutCallback(void) { callbackFired = 4; }
+void rxErrorCallback(void) { callbackFired = 5; }
 
 // Client process (receiver)
 void runClient()
@@ -33,26 +32,26 @@ void runClient()
     isServer = 0;
     whoami   = "[Clnt]";
     lora_init();
-    lora_setCallbacks(TXDoneCallback, RXDoneCallback, TXTimeoutCallback, RXTimeoutCallback, RXErrorCallback);
+    lora_setCallbacks(txDoneCallback, rxDoneCallback, txTimeoutCallback, rxTimeoutCallback, rxErrorCallback);
     
     // Set a 2 second overall timeout. We expect the inter-packet timeout to fire first.
-    lora_setRX(2000);
+    lora_setRx(2000);
 
     dprint("Waiting for a partial message...\n");
-    // The lora_IRQProcess will call the backend RXDone, which will set the 
+    // The lora_irqProcess will call the backend RXDone, which will set the 
     // inter-packet timeout. We just need to wait for it to fire.
-    while(callback_fired == 0) {
-        lora_IRQProcess();
+    while(callbackFired == 0) {
+        lora_irqProcess();
         usleep(10000);
     }
 
     lora_deinit();
 
-    if (callback_fired == 3) {
-        dprint("SUCCESS: RXTimeout callback fired as expected after packet loss.\n");
+    if (callbackFired == 3) {
+        dprint("SUCCESS: rxTimeoutCallback fired as expected after packet loss.\n");
         _exit(0); // Success
     } else {
-        dprint("FAIL: Incorrect callback fired. Expected RXTimeout (3), got %d\n", callback_fired);
+        dprint("FAIL: Incorrect callback fired. Expected rxTimeoutCallback (3), got %d\n", callbackFired);
         _exit(1);
     }
 }
@@ -62,14 +61,14 @@ void runServer()
 {
     isServer = 1;
     lora_init();
-    lora_setCallbacks(TXDoneCallback, RXDoneCallback, TXTimeoutCallback, RXTimeoutCallback, RXErrorCallback);
+    lora_setCallbacks(txDoneCallback, rxDoneCallback, txTimeoutCallback, rxTimeoutCallback, rxErrorCallback);
     
     sleep(1);
 
     dprint("Sending a message, but dropping the 2nd packet (first data packet).\n");
     
     // Set the test configuration to drop the 2nd packet sent by lora_send
-    test_helpers_drop_packet_number(2);
+    testHelpers_dropPacketNumber(2);
     
     lora_send((uint8_t*)serverSendMsg, sizeof(serverSendMsg));
     dprint("Message sequence sent (with one packet dropped).\n");
@@ -80,7 +79,7 @@ void runServer()
 int main()
 {
     printf("\n--- Running Test 003: RX Packet Loss ---\n");
-    test_helpers_reset_all_configs();
+    testHelpers_resetAllConfigs();
 
     pid_t clientProcess = fork();
     if (clientProcess < 0)

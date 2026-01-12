@@ -14,18 +14,18 @@ int8_t isServer = -1;
 uint16_t interPacketDelayMS = 5;
 
 // Keep track of which callback was last fired
-volatile int callback_fired = 0; // 0=none, 1=RXDone, 2=TXDone, 3=RXTimeout, 4=TXTimeout, 5=RXError
+volatile int callbackFired = 0; // 0=none, 1=RXDone, 2=TXDone, 3=RXTimeout, 4=TXTimeout, 5=RXError
 
 const char serverSendMsg[] = "This message's packets are sent too slowly.";
 const char* whoami = "[Serv]";
 
 #define dprint(...) {printf("%s ", whoami); printf(__VA_ARGS__);}
 
-void RXDoneCallback(uint8_t* p, uint16_t s, int16_t r, int8_t snr) { callback_fired = 1; }
-void TXDoneCallback(void) { /* Not useful for this test */ }
-void RXTimeoutCallback(void) { callback_fired = 3; }
-void TXTimeoutCallback(void) { callback_fired = 4; }
-void RXErrorCallback(void) { callback_fired = 5; }
+void rxDoneCallback(uint8_t* p, uint16_t s, int16_t r, int8_t snr) { callbackFired = 1; }
+void txDoneCallback(void) { /* Not useful for this test */ }
+void rxTimeoutCallback(void) { callbackFired = 3; }
+void txTimeoutCallback(void) { callbackFired = 4; }
+void rxErrorCallback(void) { callbackFired = 5; }
 
 // Client process (receiver)
 void runClient()
@@ -33,26 +33,26 @@ void runClient()
     isServer = 0;
     whoami   = "[Clnt]";
     lora_init();
-    lora_setCallbacks(TXDoneCallback, RXDoneCallback, TXTimeoutCallback, RXTimeoutCallback, RXErrorCallback);
+    lora_setCallbacks(txDoneCallback, rxDoneCallback, txTimeoutCallback, rxTimeoutCallback, rxErrorCallback);
     
     // Set a 2 second overall timeout. The inter-packet timeout should fire first.
-    lora_setRX(2000);
+    lora_setRx(2000);
 
     dprint("Waiting for a slow message...\n");
     // After the header is received, the shared_lora code will set an inter-packet
     // timeout of 500ms. We expect that to fire.
-    while(callback_fired == 0) {
-        lora_IRQProcess();
+    while(callbackFired == 0) {
+        lora_irqProcess();
         usleep(10000);
     }
 
     lora_deinit();
 
-    if (callback_fired == 3) {
-        dprint("SUCCESS: RXTimeout callback fired as expected due to inter-packet delay.\n");
+    if (callbackFired == 3) {
+        dprint("SUCCESS: rxTimeoutCallback fired as expected due to inter-packet delay.\n");
         _exit(0); // Success
     } else {
-        dprint("FAIL: Incorrect callback fired. Expected RXTimeout (3), got %d\n", callback_fired);
+        dprint("FAIL: Incorrect callback fired. Expected rxTimeoutCallback (3), got %d\n", callbackFired);
         _exit(1);
     }
 }
@@ -62,14 +62,14 @@ void runServer()
 {
     isServer = 1;
     lora_init();
-    lora_setCallbacks(TXDoneCallback, RXDoneCallback, TXTimeoutCallback, RXTimeoutCallback, RXErrorCallback);
+    lora_setCallbacks(txDoneCallback, rxDoneCallback, txTimeoutCallback, rxTimeoutCallback, rxErrorCallback);
     
     sleep(1);
 
     dprint("Sending a message with a long delay between packets.\n");
     
     // The inter-packet timeout in shared_lora is 500ms. Set a delay longer than that.
-    test_helpers_set_tx_delay_ms(600);
+    testHelpers_setTxDelayMs(600);
     
     lora_send((uint8_t*)serverSendMsg, sizeof(serverSendMsg));
     dprint("Slow message sequence sent.\n");
@@ -80,7 +80,7 @@ void runServer()
 int main()
 {
     printf("\n--- Running Test 004: RX Inter-Packet Timeout ---\n");
-    test_helpers_reset_all_configs();
+    testHelpers_resetAllConfigs();
 
     pid_t clientProcess = fork();
     if (clientProcess < 0)

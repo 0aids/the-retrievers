@@ -17,23 +17,23 @@
 #include "loraImpl_testing_config.h"
 
 // --- loraImpl.c Test Configuration Defaults ---
-bool loraImpl_testing_force_tx_timeout = false;
-bool loraImpl_testing_force_rx_error = false;
-uint8_t loraImpl_testing_packet_loss_percent = 0;
-uint32_t loraImpl_testing_tx_delay_ms = 0;
-uint32_t loraImpl_testing_drop_packet_number = 0; // 0 is disabled
-loraImpl_testing_mangling_type_e loraImpl_testing_mangling_type = LORAIMPL_MANGLING_NONE;
+bool loraImpl_testing_forceTxTimeout = false;
+bool loraImpl_testing_forceRxError = false;
+uint8_t loraImpl_testing_packetLossPercent = 0;
+uint32_t loraImpl_testing_txDelayMs = 0;
+uint32_t loraImpl_testing_dropPacketNumber = 0; // 0 is disabled
+loraImpl_testing_manglingType_e loraImpl_testing_manglingType = loraImpl_manglingType_none;
 
 // Internal counter for deterministic packet dropping
-static uint32_t send_counter = 0;
+static uint32_t sendCounter = 0;
 
 // Global State
 loraImpl_globalState_t loraImpl_globalState_g = {
-    .onRXDone               = NULL,
-    .onTXDone               = NULL,
-    .onRXError              = NULL,
-    .onRXTimeout            = NULL,
-    .onTXTimeout            = NULL,
+    .onTxDone               = NULL,
+    .onRxDone               = NULL,
+    .onRxError              = NULL,
+    .onRxTimeout            = NULL,
+    .onTxTimeout            = NULL,
     .dataBuffer             = {},
     .dataCurrentContentSize = {},
     .rssi                   = {},
@@ -45,14 +45,14 @@ loraImpl_globalState_t loraImpl_globalState_g = {
 #define SOCK_BUFFER_SIZE (2 << 10)
 
 // Unified Global Variables (Refactored)
-static int                mySock_fd = -1;
+static int                mySockFd = -1;
 static struct sockaddr_in myAddr =
     {}; // Address this process binds to
 static struct sockaddr_in peerAddr =
     {}; // Address this process sends to
 static char    rxBuffer[SOCK_BUFFER_SIZE] = {};
 
-static int64_t lastSetRXTime = 0;
+static int64_t lastSetRxTime = 0;
 static int64_t rxDuration = 0;
 
 // Set externally (e.g., via command line args in main.c)
@@ -60,8 +60,8 @@ extern int8_t isServer;
 extern uint16_t interPacketDelayMS;
 
 // Function to reset the send counter, exposed via test_helpers
-void loraImpl_reset_send_counter() {
-    send_counter = 0;
+void loraImpl_resetSendCounter() {
+    sendCounter = 0;
 }
 
 // --- Helper Macros ---
@@ -73,7 +73,7 @@ void loraImpl_reset_send_counter() {
         }                                                            \
     }
 
-static int64_t getTimeMS()
+static int64_t getTimeMs()
 {
     struct timespec tms;
     if (timespec_get(&tms, TIME_UTC) == 0)
@@ -91,10 +91,10 @@ void loraImpl_init(void)
 {
     // Seed random number generator for packet loss simulation
     srand(time(NULL) ^ getpid());
-    loraImpl_reset_send_counter();
+    loraImpl_resetSendCounter();
 
     // 1. Create the socket
-    if ((mySock_fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
+    if ((mySockFd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
     {
         perror("loraImpl: Failed to create socket");
         exit(EXIT_FAILURE);
@@ -131,10 +131,10 @@ void loraImpl_init(void)
 
     // 3. Bind the socket
     int opt = 1;
-    setsockopt(mySock_fd, SOL_SOCKET, SO_REUSEADDR, &opt,
+    setsockopt(mySockFd, SOL_SOCKET, SO_REUSEADDR, &opt,
                sizeof(opt));
 
-    if (bind(mySock_fd, (struct sockaddr*)&myAddr, sizeof(myAddr)) <
+    if (bind(mySockFd, (struct sockaddr*)&myAddr, sizeof(myAddr)) <
         0)
     {
         perror("loraImpl: Failed to bind socket");
@@ -142,8 +142,8 @@ void loraImpl_init(void)
     }
 
     // 4. Set socket to non-blocking
-    int flags = fcntl(mySock_fd, F_GETFL, 0);
-    fcntl(mySock_fd, F_SETFL, flags | O_NONBLOCK);
+    int flags = fcntl(mySockFd, F_GETFL, 0);
+    fcntl(mySockFd, F_SETFL, flags | O_NONBLOCK);
 
     // Clear buffer
     memset(rxBuffer, 0, sizeof(rxBuffer));
@@ -151,10 +151,10 @@ void loraImpl_init(void)
 
 void loraImpl_deinit(void)
 {
-    if (mySock_fd >= 0)
+    if (mySockFd >= 0)
     {
-        close(mySock_fd);
-        mySock_fd = -1;
+        close(mySockFd);
+        mySockFd = -1;
     }
     memset(&myAddr, 0, sizeof(myAddr));
     memset(&peerAddr, 0, sizeof(peerAddr));
@@ -168,46 +168,46 @@ void loraImpl_setCallbacks(void (*onTxDone)(void),
                            void (*onRxTimeout)(void),
                            void (*onRxError)(void))
 {
-    loraImpl_globalState_g.onTXDone    = onTxDone;
-    loraImpl_globalState_g.onRXDone    = onRxDone;
-    loraImpl_globalState_g.onTXTimeout = onTxTimeout;
-    loraImpl_globalState_g.onRXTimeout = onRxTimeout;
-    loraImpl_globalState_g.onRXError   = onRxError;
+    loraImpl_globalState_g.onTxDone    = onTxDone;
+    loraImpl_globalState_g.onRxDone    = onRxDone;
+    loraImpl_globalState_g.onTxTimeout = onTxTimeout;
+    loraImpl_globalState_g.onRxTimeout = onRxTimeout;
+    loraImpl_globalState_g.onRxError   = onRxError;
 }
 
 void loraImpl_send(uint8_t* payload, uint16_t payloadSize)
 {
-    if (mySock_fd < 0)
+    if (mySockFd < 0)
         return;
     
-    send_counter++;
+    sendCounter++;
 
     // --- EDGE CASE: TX Timeout ---
-    if (loraImpl_testing_force_tx_timeout)
+    if (loraImpl_testing_forceTxTimeout)
     {
-        loraImpl_testing_force_tx_timeout = false; // Reset flag
-        runCallback(loraImpl_globalState_g.onTXTimeout);
+        loraImpl_testing_forceTxTimeout = false; // Reset flag
+        runCallback(loraImpl_globalState_g.onTxTimeout);
         return;
     }
 
     // --- EDGE CASE: TX Latency/Delay ---
-    if (loraImpl_testing_tx_delay_ms > 0)
+    if (loraImpl_testing_txDelayMs > 0)
     {
-        usleep(loraImpl_testing_tx_delay_ms * 1000);
+        usleep(loraImpl_testing_txDelayMs * 1000);
     }
 
     // --- EDGE CASE: Deterministic Packet Loss ---
-    if (loraImpl_testing_drop_packet_number > 0 && send_counter == loraImpl_testing_drop_packet_number) {
-        runCallback(loraImpl_globalState_g.onTXDone); // Pretend it sent
+    if (loraImpl_testing_dropPacketNumber > 0 && sendCounter == loraImpl_testing_dropPacketNumber) {
+        runCallback(loraImpl_globalState_g.onTxDone); // Pretend it sent
         return;
     }
 
     // --- EDGE CASE: Percentage Packet Loss ---
-    if (loraImpl_testing_packet_loss_percent > 0)
+    if (loraImpl_testing_packetLossPercent > 0)
     {
-        if ((rand() % 100) < loraImpl_testing_packet_loss_percent)
+        if ((rand() % 100) < loraImpl_testing_packetLossPercent)
         {
-            runCallback(loraImpl_globalState_g.onTXDone); // Pretend it sent
+            runCallback(loraImpl_globalState_g.onTxDone); // Pretend it sent
             return;
         }
     }
@@ -217,16 +217,16 @@ void loraImpl_send(uint8_t* payload, uint16_t payloadSize)
     memcpy(mangledPayload, payload, payloadSize);
 
     // --- EDGE CASE: Packet Mangling ---
-    if (loraImpl_testing_mangling_type != LORAIMPL_MANGLING_NONE)
+    if (loraImpl_testing_manglingType != loraImpl_manglingType_none)
     {
-        switch (loraImpl_testing_mangling_type)
+        switch (loraImpl_testing_manglingType)
         {
-            case LORAIMPL_MANGLING_BAD_PREAMBLE:
+            case loraImpl_manglingType_badPreamble:
                 if (finalPayloadSize > 0) {
                     mangledPayload[0] = ~mangledPayload[0]; // Flip the bits of the preamble
                 }
                 break;
-            case LORAIMPL_MANGLING_BAD_SIZE:
+            case loraImpl_manglingType_badSize:
                 if (finalPayloadSize > 0) {
                     finalPayloadSize -= 1; // Send one less byte
                 }
@@ -234,13 +234,13 @@ void loraImpl_send(uint8_t* payload, uint16_t payloadSize)
             default:
                 break;
         }
-        loraImpl_testing_mangling_type = LORAIMPL_MANGLING_NONE; // Reset flag
+        loraImpl_testing_manglingType = loraImpl_manglingType_none; // Reset flag
     }
 
 
     // Unified send function using the pre-calculated peerAddr
     ssize_t sent =
-        sendto(mySock_fd, mangledPayload, finalPayloadSize, 0,
+        sendto(mySockFd, mangledPayload, finalPayloadSize, 0,
                (struct sockaddr*)&peerAddr, sizeof(peerAddr));
     usleep(5000);
 
@@ -251,7 +251,7 @@ void loraImpl_send(uint8_t* payload, uint16_t payloadSize)
     else
     {
         // Simulate immediate TX completion
-        runCallback(loraImpl_globalState_g.onTXDone);
+        runCallback(loraImpl_globalState_g.onTxDone);
     }
 }
 
@@ -259,7 +259,7 @@ static void flushRecvBuffer()
 {
     while (1)
     {
-        ssize_t n = recvfrom(mySock_fd, rxBuffer, sizeof(rxBuffer),
+        ssize_t n = recvfrom(mySockFd, rxBuffer, sizeof(rxBuffer),
                              MSG_DONTWAIT, NULL, NULL);
         if (n < 0)
         {
@@ -270,41 +270,41 @@ static void flushRecvBuffer()
     }
 }
 
-void loraImpl_IRQProcess(void)
+void loraImpl_irqProcess(void)
 {
-    if (lastSetRXTime == 0)
+    if (lastSetRxTime == 0)
     {
         flushRecvBuffer();
     }
     else
     {
-        int64_t timeSinceSetRX = getTimeMS() - lastSetRXTime;
-        if (rxDuration > 0 && timeSinceSetRX > rxDuration)
+        int64_t timeSinceSetRx = getTimeMs() - lastSetRxTime;
+        if (rxDuration > 0 && timeSinceSetRx > rxDuration)
         {
             flushRecvBuffer();
-            runCallback(loraImpl_globalState_g.onRXTimeout);
-            lastSetRXTime = 0;
+            runCallback(loraImpl_globalState_g.onRxTimeout);
+            lastSetRxTime = 0;
         } 
         else {
             struct sockaddr_in senderAddr;
             socklen_t          addrLen = sizeof(senderAddr);
 
-            ssize_t len = recvfrom(mySock_fd, rxBuffer, SOCK_BUFFER_SIZE, 0,
+            ssize_t len = recvfrom(mySockFd, rxBuffer, SOCK_BUFFER_SIZE, 0,
                                    (struct sockaddr*)&senderAddr, &addrLen);
             flushRecvBuffer();
 
             if (len > 0)
             {
-                if (loraImpl_testing_force_rx_error) {
-                    loraImpl_testing_force_rx_error = false; // Reset flag
-                    runCallback(loraImpl_globalState_g.onRXError);
+                if (loraImpl_testing_forceRxError) {
+                    loraImpl_testing_forceRxError = false; // Reset flag
+                    runCallback(loraImpl_globalState_g.onRxError);
                     return;
                 }
 
                 int16_t fakeRssi = -40;
                 int8_t  fakeSnr  = 10;
 
-                runCallback(loraImpl_globalState_g.onRXDone,
+                runCallback(loraImpl_globalState_g.onRxDone,
                             (uint8_t*)rxBuffer, (uint16_t)len, fakeRssi,
                             fakeSnr);
             }
@@ -312,15 +312,15 @@ void loraImpl_IRQProcess(void)
     }
 }
 
-void loraImpl_setRX(uint32_t milliseconds)
+void loraImpl_setRx(uint32_t milliseconds)
 {
-    lastSetRXTime = getTimeMS();
+    lastSetRxTime = getTimeMs();
     rxDuration    = milliseconds;
 }
 
 void loraImpl_setIdle()
 {
-    lastSetRXTime = 0;
+    lastSetRxTime = 0;
 }
 
 void loraImpl_queryState(void)

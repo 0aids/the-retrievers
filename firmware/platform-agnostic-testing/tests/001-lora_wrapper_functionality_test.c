@@ -14,36 +14,37 @@ int8_t isServer = -1;
 uint16_t interPacketDelayMS = 5;
 
 // Keep track of which callback was last fired
-volatile int callback_fired = 0; // 0=none, 1=RXDone, 2=TXDone, 3=RXTimeout, 4=TXTimeout, 5=RXError
+volatile int callbackFired = 0; // 0=none, 1=RXDone, 2=TXDone, 3=RXTimeout, 4=TXTimeout, 5=RXError
 
 const char serverSendMsg[] = "This is a long message being sent by the server to test the happy path.";
 const char* whoami = "[Serv]";
-char received_buffer[2049] = {};
+char receivedBuffer[2049] = {};
 
 #define dprint(...) {printf("%s ", whoami); printf(__VA_ARGS__);}
 
-void RXDoneCallback(uint8_t* payload, uint16_t size, int16_t rssi, int8_t snr)
+void rxDoneCallback(uint8_t* payload, uint16_t size, int16_t rssi,
+                    int8_t snr)
 {
-    memcpy(received_buffer, payload, size);
-    received_buffer[size] = 0;
-    callback_fired = 1;
+    memcpy(receivedBuffer, payload, size);
+    receivedBuffer[size] = 0;
+    callbackFired = 1;
 }
 
-void TXDoneCallback(void)
+void txDoneCallback(void)
 {
-    callback_fired = 2;
+    callbackFired = 2;
 }
-void RXTimeoutCallback(void)
+void rxTimeoutCallback(void)
 {
-    callback_fired = 3;
+    callbackFired = 3;
 }
-void TXTimeoutCallback(void)
+void txTimeoutCallback(void)
 {
-    callback_fired = 4;
+    callbackFired = 4;
 }
-void RXErrorCallback(void)
+void rxErrorCallback(void)
 {
-    callback_fired = 5;
+    callbackFired = 5;
 }
 
 // Client process (receiver)
@@ -52,28 +53,28 @@ void runClient()
     isServer = 0;
     whoami   = "[Clnt]";
     lora_init();
-    lora_setCallbacks(TXDoneCallback, RXDoneCallback, TXTimeoutCallback, RXTimeoutCallback, RXErrorCallback);
+    lora_setCallbacks(txDoneCallback, rxDoneCallback, txTimeoutCallback, rxTimeoutCallback, rxErrorCallback);
     
     // Listen for a message for up to 5 seconds
-    lora_setRX(5000);
+    lora_setRx(5000);
 
     dprint("Waiting for message...\n");
-    while(callback_fired == 0) {
-        lora_IRQProcess();
+    while(callbackFired == 0) {
+        lora_irqProcess();
         usleep(10000); // Poll every 10ms
     }
 
     lora_deinit();
 
-    if (callback_fired != 1) {
-        dprint("FAIL: Incorrect callback fired. Expected RXDone (1), got %d\n", callback_fired);
+    if (callbackFired != 1) {
+        dprint("FAIL: Incorrect callback fired. Expected rxDoneCallback (1), got %d\n", callbackFired);
         _exit(1);
     }
     
-    if (strcmp(received_buffer, serverSendMsg) != 0) {
+    if (strcmp(receivedBuffer, serverSendMsg) != 0) {
         dprint("FAIL: Received message does not match sent message.\n");
         dprint("   Sent:     %s\n", serverSendMsg);
-        dprint("   Received: %s\n", received_buffer);
+        dprint("   Received: %s\n", receivedBuffer);
         _exit(2);
     }
 
@@ -86,7 +87,7 @@ void runServer()
 {
     isServer = 1;
     lora_init();
-    lora_setCallbacks(TXDoneCallback, RXDoneCallback, TXTimeoutCallback, RXTimeoutCallback, RXErrorCallback);
+    lora_setCallbacks(txDoneCallback, rxDoneCallback, txTimeoutCallback, rxTimeoutCallback, rxErrorCallback);
     
     // Give the client time to start listening
     sleep(1);
@@ -102,7 +103,7 @@ int main()
 {
     printf("\n--- Running Test 001: Happy Path ---\n");
     // Reset all testing configurations to ensure a clean run
-    test_helpers_reset_all_configs();
+    testHelpers_resetAllConfigs();
 
     pid_t clientProcess = fork();
     if (clientProcess < 0)
@@ -140,13 +141,13 @@ int main()
         }
         else
         {
-            printf("--- Test 001 FAILED (Client exit code: %d) ---\n", exit_code);
+            printf("--- Test 001 FAILED (Client exit code: %d)\n---", exit_code);
             exit(EXIT_FAILURE);
         }
     }
     else
     {
-        printf("--- Test 001 FAILED (Client did not exit normally) ---\n");
+        printf("--- Test 001 FAILED (Client did not exit normally)\n---");
         exit(EXIT_FAILURE);
     }
 }

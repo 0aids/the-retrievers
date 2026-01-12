@@ -1,9 +1,9 @@
 #include "utilsImpl.h"
 #include <unistd.h>
 
-void utils_sleepms(uint16_t ms) 
+void utils_sleepMs(uint16_t milliseconds) 
 {
-    usleep(ms * 1000);
+    usleep(milliseconds * 1000);
 }
 
 void utils_log()

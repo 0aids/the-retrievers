@@ -5,7 +5,7 @@
 // Shared stuff for lora, just a whole bunch of defines.
 // clang-format off
 #define loraImpl_frequency_d 915000000                 // Hz
-#define loraImpl_TXOutputPower_d 14                    // dBm
+#define loraImpl_txOutputPower_d 14                    // dBm
                                                    //
 #define loraImpl_bandwidth_d 0                         // [0: 125 kHz,
                                                    //  1: 250 kHz,
@@ -22,14 +22,14 @@
 #define loraImpl_preambleLength_d 8                    // Same for Tx and Rx
 #define loraImpl_symbolTimeout_d 0                     // Symbols
 #define loraImpl_fixLengthPayloadOn_d false
-#define loraImpl_IQInversionOn_d false
+#define loraImpl_iqInversionOn_d false
 
-#define lora_headerPacketPreamble_d 0xff // 0b11111111
-#define lora_dataPacketPreamble_d 0xaa   // 0b10101010
-#define lora_footerPacketPreamble_d 0xcc // 0b11001100
+#define loraImpl_headerPacketPreamble_d 0xff // 0b11111111
+#define loraImpl_dataPacketPreamble_d 0xaa   // 0b10101010
+#define loraImpl_footerPacketPreamble_d 0xcc // 0b11001100
 
 // TODO: Figure out how low this can go.
-#define lora_interPacketTimeout_d 500 //ms
+#define loraImpl_interPacketTimeout_d 500 //ms
 
 // clang-format on
 
@@ -62,13 +62,13 @@ void loraImpl_queryState(void);
 // Process non-blocking peripherals
 // Also checks the time since last RX to allow for non-blocking SetRX
 // Please run this once per main loop.
-void loraImpl_IRQProcess(void);
+void loraImpl_irqProcess(void);
 
 // Non blocking, when the IRQ process is run it will either run
 // the rx timeout callback,
 // rxdone callback
 // or do nothing because timeout hasn't been reached and no packet has been received
-void loraImpl_setRX(uint32_t milliseconds);
+void loraImpl_setRx(uint32_t milliseconds);
 
 void loraImpl_setIdle();
 
@@ -76,14 +76,14 @@ void loraImpl_setIdle();
 typedef struct
 {
     // This will always point to the
-    void (*onTXDone)(void);
+    void (*onTxDone)(void);
     // This is maximum 60 byte packet (well actually 255 is the max but bandwidth
     //                                 problems at long range so 60 to be safe)
-    void (*onRXDone)(uint8_t* payload, uint16_t size, int16_t rssi,
+    void (*onRxDone)(uint8_t* payload, uint16_t size, int16_t rssi,
                      int8_t snr);
-    void (*onTXTimeout)(void);
-    void (*onRXTimeout)(void);
-    void (*onRXError)(void);
+    void (*onTxTimeout)(void);
+    void (*onRxTimeout)(void);
+    void (*onRxError)(void);
 
     uint8_t dataBuffer[loraImpl_numBufferBytes_d];
     // Number of bytes that the dataBuffer currently contains

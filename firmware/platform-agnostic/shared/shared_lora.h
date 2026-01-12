@@ -1,8 +1,8 @@
 #ifndef shared_lora_h_INCLUDED
 #define shared_lora_h_INCLUDED
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <string.h>
 #include "loraImpl.h"
 
@@ -18,73 +18,73 @@
 // The esp32-s3-wroom-1u-n16r8 has 8mb of ram, 16mb flash.
 #define lora_numBufferBytes_d ((uint16_t)(2048))
 
-enum lora_RXStates_e
+typedef enum
 {
-    lora_RXStates_WaitingForHeader,
-    lora_RXStates_ProcessingHeader,
-    lora_RXStates_WaitingForDataOrFooter,
-    lora_RXStates_ProcessingData,
-    lora_RXStates_ProcessFooter,
-    lora_RXStates_RxTimeout,
-    lora_RXStates_RxError,
-    lora_RXStates_RxDone,
-};
+    lora_rxStates_waitingForHeader,
+    lora_rxStates_processingHeader,
+    lora_rxStates_waitingForDataOrFooter,
+    lora_rxStates_processingData,
+    lora_rxStates_processFooter,
+    lora_rxStates_rxTimeout,
+    lora_rxStates_rxError,
+    lora_rxStates_rxDone,
+} lora_rxStates_e;
 
-enum lora_RXErrorTypes_e
+typedef enum
 {
-    lora_RXErrorTypes_none = 0,
-    lora_RXErrorTypes_failedToAppend,
-    lora_RXErrorTypes_spuriousError, // If the hal encounters an error.
-    lora_RXErrorTypes_headerPacketNumberIsNot1,
-    lora_RXErrorTypes_headerPacketSizeMismatch,
-    lora_RXErrorTypes_dataPacketSizeMismatch,
-    lora_RXErrorTypes_dataPacketNumPacketsMismatch,
-    lora_RXErrorTypes_dataPacketNotConsecutive,
-    lora_RXErrorTypes_footerPacketSizeMismatch,
-    lora_RXErrorTypes_footerPacketNumPacketsMismatch,
-    lora_RXErrorTypes_footerPacketIsNotLast,
-    lora_RXErrorTypes_footerPacketIsNotConsecutive,
-};
+    lora_rxErrorTypes_none = 0,
+    lora_rxErrorTypes_failedToAppend,
+    lora_rxErrorTypes_spuriousError, // If the hal encounters an error.
+    lora_rxErrorTypes_headerPacketNumberIsNot1,
+    lora_rxErrorTypes_headerPacketSizeMismatch,
+    lora_rxErrorTypes_dataPacketSizeMismatch,
+    lora_rxErrorTypes_dataPacketNumPacketsMismatch,
+    lora_rxErrorTypes_dataPacketNotConsecutive,
+    lora_rxErrorTypes_footerPacketSizeMismatch,
+    lora_rxErrorTypes_footerPacketNumPacketsMismatch,
+    lora_rxErrorTypes_footerPacketIsNotLast,
+    lora_rxErrorTypes_footerPacketIsNotConsecutive,
+} lora_rxErrorTypes_e;
 
 // This is for the collection of packets (frames)
 typedef struct
 {
     // When a frame is sent
-    void (*onTXDone)(void);
+    void (*onTxDone)(void);
     // When a frame is received
-    void (*onRXDone)(uint8_t* payload, uint16_t size, int16_t rssi,
+    void (*onRxDone)(uint8_t* payload, uint16_t size, int16_t rssi,
                      int8_t snr);
     // When a frame timeouts/fails to send
-    void (*onTXTimeout)(void);
+    void (*onTxTimeout)(void);
     // When a frame fails to be received due to inter-packet delay being too long
     // or just no receiving any more packets unexpectedly.
-    void (*onRXTimeout)(void);
+    void (*onRxTimeout)(void);
     // When a frame fails to be received due to some drastic error.
-    void (*onRXError)(void);
+    void (*onRxError)(void);
 
     // Internal metrics for keeping track of packets during construction of the frame.
     uint16_t                      currentTotalPacketCount;
     uint16_t                      currentPacketNumber;
-    volatile enum lora_RXStates_e RXState;
+    volatile lora_rxStates_e      rxState;
 
     // Same as what's given by the implementation.
-    volatile int16_t backendRSSI;
-    volatile int8_t  backendSNR;
+    volatile int16_t backendRssi;
+    volatile int8_t  backendSnr;
 
     // Stuff for ensuring callbacks are called
     // These are only set to true via callbacks to the implementation
     // and false whenever we start trying to recv or send.
-    volatile bool backendRXDone;
-    volatile bool backendTXDone;
-    volatile bool backendRXError;
-    volatile bool backendRXTimeout;
-    volatile bool backendTXTimeout;
+    volatile bool backendRxDone;
+    volatile bool backendTxDone;
+    volatile bool backendRxError;
+    volatile bool backendRxTimeout;
+    volatile bool backendTxTimeout;
 
     // Is true when the databuffer is fully formed
     bool     dataReceived;
     uint16_t dataCurrentContentSize;
     uint8_t  dataBuffer[lora_numBufferBytes_d];
-    enum lora_RXErrorTypes_e errorType;
+    lora_rxErrorTypes_e errorType;
 } lora_globalState_t;
 
 extern lora_globalState_t lora_globalState_g;
@@ -131,10 +131,10 @@ lora_dataPacket_t   lora_createDataPacket(uint8_t* payload,
 lora_footerPacket_t lora_createFooterPacket(uint8_t* payload,
                                             uint16_t payloadSize);
 
-void                lora_IRQProcess(void);
+void                lora_irqProcess(void);
 void                lora_queryState(void);
 
-void lora_setRX(uint16_t ms);
+void lora_setRx(uint16_t ms);
 
 // Receiving is always done via the Rx Done callback.
 void lora_setCallbacks(void (*onTxDone)(void),
@@ -149,12 +149,12 @@ void lora_setCallbacks(void (*onTxDone)(void),
 void lora_send(uint8_t* payload, const uint16_t payloadSize);
 
 // Internal callbacks exposed for the Implementation layer if needed
-void _lora_backendRXDoneCallback(uint8_t* payload, uint16_t size,
+void _lora_backendRxDoneCallback(uint8_t* payload, uint16_t size,
                                  int16_t rssi, int8_t snr);
-void _lora_backendTXDoneCallback(void);
-void _lora_backendRXTimeoutCallback(void);
-void _lora_backendTXTimeoutCallback(void);
-void _lora_backendRXErrorCallback(void);
+void _lora_backendTxDoneCallback(void);
+void _lora_backendRxTimeoutCallback(void);
+void _lora_backendTxTimeoutCallback(void);
+void _lora_backendRxErrorCallback(void);
 
 // These 3 functions confirm that the packets are in the correct format,
 // and if so, will do their respective actions

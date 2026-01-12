@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/prctl.h>
-#include <string.h>
 
 #include "shared_lora.h"
 #include "test_helpers.h"
@@ -14,18 +13,18 @@ int8_t isServer = -1;
 uint16_t interPacketDelayMS = 5;
 
 // Keep track of which callback was last fired
-volatile int callback_fired = 0; // 0=none, 1=RXDone, 2=TXDone, 3=RXTimeout, 4=TXTimeout, 5=RXError
+volatile int callbackFired = 0; // 0=none, 1=RXDone, 2=TXDone, 3=RXTimeout, 4=TXTimeout, 5=RXError
 
 const char serverSendMsg[] = "This message will be corrupted.";
 const char* whoami = "[Serv]";
 
 #define dprint(...) {printf("%s ", whoami); printf(__VA_ARGS__);}
 
-void RXDoneCallback(uint8_t* p, uint16_t s, int16_t r, int8_t snr) { callback_fired = 1; }
-void TXDoneCallback(void) { /* Not useful for this test */ }
-void RXTimeoutCallback(void) { callback_fired = 3; }
-void TXTimeoutCallback(void) { callback_fired = 4; }
-void RXErrorCallback(void) { callback_fired = 5; }
+void rxDoneCallback(uint8_t* p, uint16_t s, int16_t r, int8_t snr) { callbackFired = 1; }
+void txDoneCallback(void) { /* Not useful for this test */ }
+void rxTimeoutCallback(void) { callbackFired = 3; }
+void txTimeoutCallback(void) { callbackFired = 4; }
+void rxErrorCallback(void) { callbackFired = 5; }
 
 // Client process (receiver)
 void runClient()
@@ -33,24 +32,24 @@ void runClient()
     isServer = 0;
     whoami   = "[Clnt]";
     lora_init();
-    lora_setCallbacks(TXDoneCallback, RXDoneCallback, TXTimeoutCallback, RXTimeoutCallback, RXErrorCallback);
+    lora_setCallbacks(txDoneCallback, rxDoneCallback, txTimeoutCallback, rxTimeoutCallback, rxErrorCallback);
     
     // Set a 2 second overall timeout. The error should be detected almost instantly.
-    lora_setRX(2000);
+    lora_setRx(2000);
 
     dprint("Waiting for a corrupted message...\n");
-    while(callback_fired == 0) {
-        lora_IRQProcess();
+    while(callbackFired == 0) {
+        lora_irqProcess();
         usleep(10000);
     }
 
     lora_deinit();
 
-    if (callback_fired == 5) {
-        dprint("SUCCESS: RXError callback fired as expected for corrupted packet.\n");
+    if (callbackFired == 5) {
+        dprint("SUCCESS: rxErrorCallback fired as expected for corrupted packet.\n");
         _exit(0); // Success
     } else {
-        dprint("FAIL: Incorrect callback fired. Expected RXError (5), got %d\n", callback_fired);
+        dprint("FAIL: Incorrect callback fired. Expected rxErrorCallback (5), got %d\n", callbackFired);
         _exit(1);
     }
 }
@@ -60,14 +59,14 @@ void runServer()
 {
     isServer = 1;
     lora_init();
-    lora_setCallbacks(TXDoneCallback, RXDoneCallback, TXTimeoutCallback, RXTimeoutCallback, RXErrorCallback);
+    lora_setCallbacks(txDoneCallback, rxDoneCallback, txTimeoutCallback, rxTimeoutCallback, rxErrorCallback);
     
     sleep(1);
 
     dprint("Sending a message, but mangling the first packet (header).\n");
     
     // Corrupt the preamble of the next packet sent. In lora_send, this will be the header.
-    test_helpers_set_mangling_type(LORAIMPL_MANGLING_BAD_PREAMBLE);
+    testHelpers_setManglingType(loraImpl_manglingType_badPreamble);
     
     lora_send((uint8_t*)serverSendMsg, sizeof(serverSendMsg));
     dprint("Corrupted message sequence sent.\n");
@@ -78,7 +77,7 @@ void runServer()
 int main()
 {
     printf("\n--- Running Test 005: RX Packet Corruption ---\n");
-    test_helpers_reset_all_configs();
+    testHelpers_resetAllConfigs();
 
     pid_t clientProcess = fork();
     if (clientProcess < 0)
