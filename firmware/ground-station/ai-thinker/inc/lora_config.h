@@ -19,35 +19,18 @@ extern "C" {
 
 #endif
 
+void aiLora_init();
+
+void aiLora_onTxDone( void );
+
+void aiLora_onRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr);
+
+void aiLora_onTxTimeout( void );
+
+void aiLora_onRxTimeout( void );
+
+void aiLora_onRxError( void );
+
 // Defining our stuff here.
-
-// /*!
-//  * \brief Function to be executed on Radio Tx Done event
-//  */
-// void lora_onTxDone( void );
-
-// /*!
-//  * \brief Function to be executed on Radio Rx Done event
-//  */
-// void lora_onRxDone( uint8_t *payload, uint16_t size, int16_t rssi, int8_t snr
-// );
-
-// /*!
-//  * \brief Function executed on Radio Tx Timeout event
-//  */
-// void lora_onTxTimeout( void );
-
-// /*!
-//  * \brief Function executed on Radio Rx Timeout event
-//  */
-// void lora_onRxTimeout( void );
-
-// /*!
-//  * \brief Function executed on Radio Rx Error event
-//  */
-// void lora_onRxError( void );
-
-// clang-format off
-// clang-format on
 
 #endif /* __LORA_CONFIG_H */

@@ -6,6 +6,11 @@ And vice versa, any packets it receives over uart will be sent to lora immediate
 The testing will be able to send data to the lora, and we'll double check everything is correct
 from there.
 
+# fucking hell warning
+Warning - LoRa will be severely broken IF you do not setup the interrupts in the
+tremo_it.c!!!!!!!!!!!!!!! I spent 3 hours figuring this out. No interrupts means that
+it will crash whenever an interrupt is called!!!!
+
 # Setup the environment
 0. Required packages: \
     **THE PACKAGE NAMES MIGHT DIFFER**\

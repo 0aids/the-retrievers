@@ -1,6 +1,7 @@
 // Stuff for configuring the lora
 #include <stdint.h>
 
+
 void aiLora_onTxDone( void )
 {
 }

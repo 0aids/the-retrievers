@@ -7,11 +7,22 @@ cmake_minimum_required(VERSION 3.23)
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 project(psat_lora LANGUAGES C CXX ASM)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_FLAGS 
+    "-fmacro-prefix-map=${CMAKE_SOURCE_DIR}=. -fdiagnostics-show-template-tree"
+)
 
 add_compile_options(
+    # -Os
     -Wall 
     -Wextra 
     $<$<COMPILE_LANGUAGE:C>:-std=c23>
+    -ffunction-sections
+    -fdata-sections
+    -fno-common
+    -mfpu=fpv4-sp-d16
+    -mfloat-abi=softfp
+    -mcpu=cortex-m4
+    -mthumb
 )
 
 # =============================================================================
@@ -64,14 +75,7 @@ target_include_directories(ai_thinker_lib PUBLIC
 target_compile_options(ai_thinker_lib PUBLIC
     -Wall
     -Os
-    -ggdb
-    -ffunction-sections
-    -fdata-sections
-    -fno-common
-    -mfpu=fpv4-sp-d16
-    -mfloat-abi=softfp
-    -mcpu=cortex-m4
-    -mthumb
+    # -ggdb
     -fno-builtin-printf
     -fno-builtin-sprintf
     -fno-builtin-snprintf
@@ -82,9 +86,20 @@ target_compile_options(ai_thinker_lib PUBLIC
 target_compile_definitions(ai_thinker_lib PUBLIC
     CONFIG_DEBUG_UART=UART0
     USE_MODEM_LORA
-    REGION_CN470
+    REGION_AU915
 )
 
+# =============================================================================
+# Implementation
+# =============================================================================
+file(GLOB_RECURSE impls_files_c "impls/*.c")
+message("-- impls_lib_files: ${impls_files_c}")
+add_library(impls_lib STATIC ${impls_files_c})
+target_link_libraries(impls_lib PRIVATE ai_thinker_lib)
+target_include_directories(
+    impls_lib PUBLIC
+    "../../platform-agnostic/required-impls/"
+)
 
 # =============================================================================
 # Application Support Library
@@ -95,7 +110,10 @@ file(GLOB_RECURSE src_lib_c "src/*")
 add_library(src_lib STATIC ${src_lib_c})
 target_include_directories(src_lib PUBLIC
     "./inc/"
-    "../../platform-agnostic/required-impls/"
+)
+target_link_libraries(src_lib PRIVATE 
+    ai_thinker_lib
+    impls_lib
 )
 
 # =============================================================================
@@ -103,7 +121,7 @@ target_include_directories(src_lib PUBLIC
 # =============================================================================
 
 file(GLOB exe_dirs "exes/*")
-message("-- Exes: ${exe_files_c}")
+message("-- Exes: ${exe_dirs}")
 foreach(exe_dir IN LISTS exe_dirs)
     if(NOT IS_DIRECTORY ${exe_dir})
         continue()
@@ -115,9 +133,14 @@ foreach(exe_dir IN LISTS exe_dirs)
         ${exe_files_c}
         "${ai_thinker_source_dir}/platform/system/startup_cm4.S"
     )
+    target_compile_options(${exe_name} PUBLIC
+        -ffreestanding # Custom entrypoint so freestanding.
+    )
     # Target Linking
     target_link_libraries(${exe_name} PRIVATE
         ai_thinker_lib
+        impls_lib
+        src_lib
     )
 
     # Linker Options

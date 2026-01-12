@@ -27,7 +27,12 @@
 #define loraImpl_headerPacketPreamble_d 0xff // 0b11111111
 #define loraImpl_dataPacketPreamble_d 0xaa   // 0b10101010
 #define loraImpl_footerPacketPreamble_d 0xcc // 0b11001100
+#define loraImpl_txTimeout_d 3000
+#define loraImpl_crcOn_d true
+#define loraImpl_freqHop_d 0 // No frequency hopping (would get better range if yes?)
+#define loraImpl_hopPeriod_d 0 // No frequency hopping (would get better range if yes?)
 
+// TODO This should be lora_interPacketTimeout, not loraImpl.
 // TODO: Figure out how low this can go.
 #define loraImpl_interPacketTimeout_d 500 //ms
 
