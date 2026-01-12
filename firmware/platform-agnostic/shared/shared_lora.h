@@ -35,6 +35,7 @@ typedef enum
     lora_rxErrorTypes_none = 0,
     lora_rxErrorTypes_failedToAppend,
     lora_rxErrorTypes_spuriousError, // If the hal encounters an error.
+    lora_rxErrorTypes_firstPacketWasNotHeader,
     lora_rxErrorTypes_headerPacketNumberIsNot1,
     lora_rxErrorTypes_headerPacketSizeMismatch,
     lora_rxErrorTypes_dataPacketSizeMismatch,
@@ -44,6 +45,7 @@ typedef enum
     lora_rxErrorTypes_footerPacketNumPacketsMismatch,
     lora_rxErrorTypes_footerPacketIsNotLast,
     lora_rxErrorTypes_footerPacketIsNotConsecutive,
+    lora_rxErrorTypes_expectedDataOrFooterGotUnknown,
 } lora_rxErrorTypes_e;
 
 // This is for the collection of packets (frames)

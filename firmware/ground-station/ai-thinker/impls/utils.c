@@ -1,10 +1,11 @@
-#include "stdio.h"
-#include "utilsImpl.h"
-#include <unistd.h>
+#include <stdint.h>
+#include <utilsImpl.h>
+#include <delay.h>
+#include <stdio.h>
 
-void utils_sleepMs(uint16_t milliseconds) 
+void utils_sleepMs(uint16_t ms) 
 {
-    usleep(milliseconds * 1000);
+    DelayMs(ms);
 }
 
 void utils_log(const char* format, ...)
@@ -14,3 +15,4 @@ void utils_log(const char* format, ...)
     vprintf(format, args);
     va_end(args);
 }
+
