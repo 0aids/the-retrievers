@@ -13,6 +13,20 @@
 #include <sys/types.h>
 #include <netdb.h>
 
+// Testing configuration
+#include "loraImpl_testing_config.h"
+
+// --- loraImpl.c Test Configuration Defaults ---
+bool loraImpl_testing_force_tx_timeout = false;
+bool loraImpl_testing_force_rx_error = false;
+uint8_t loraImpl_testing_packet_loss_percent = 0;
+uint32_t loraImpl_testing_tx_delay_ms = 0;
+uint32_t loraImpl_testing_drop_packet_number = 0; // 0 is disabled
+loraImpl_testing_mangling_type_e loraImpl_testing_mangling_type = LORAIMPL_MANGLING_NONE;
+
+// Internal counter for deterministic packet dropping
+static uint32_t send_counter = 0;
+
 // Global State
 loraImpl_globalState_t loraImpl_globalState_g = {
     .onRXDone               = NULL,
@@ -45,6 +59,11 @@ static int64_t rxDuration = 0;
 extern int8_t isServer;
 extern uint16_t interPacketDelayMS;
 
+// Function to reset the send counter, exposed via test_helpers
+void loraImpl_reset_send_counter() {
+    send_counter = 0;
+}
+
 // --- Helper Macros ---
 #define runCallback(callback, ...)                                   \
     {                                                                \
@@ -70,6 +89,10 @@ static int64_t getTimeMS()
 
 void loraImpl_init(void)
 {
+    // Seed random number generator for packet loss simulation
+    srand(time(NULL) ^ getpid());
+    loraImpl_reset_send_counter();
+
     // 1. Create the socket
     if ((mySock_fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
     {
@@ -92,16 +115,12 @@ void loraImpl_init(void)
         // Server: Bind to ANY interface, Send to Localhost (Client)
         myAddr.sin_addr.s_addr   = htonl(INADDR_ANY);
         peerAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
-        printf("loraImpl: Initializing as SERVER (Bind: ANY, Peer: "
-               "127.0.0.1)\n");
     }
     else if (isServer == 0)
     {
         // Client: Bind to Localhost, Send to Localhost (Server)
         myAddr.sin_addr.s_addr   = inet_addr("127.0.0.1");
         peerAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
-        printf("loraImpl: Initializing as CLIENT (Bind: 127.0.0.1, "
-               "Peer: 127.0.0.1)\n");
     }
     else
     {
@@ -111,7 +130,6 @@ void loraImpl_init(void)
     }
 
     // 3. Bind the socket
-    // Optional: Set SO_REUSEADDR to allow fast restarts or multiple bindings on some OSs
     int opt = 1;
     setsockopt(mySock_fd, SOL_SOCKET, SO_REUSEADDR, &opt,
                sizeof(opt));
@@ -123,7 +141,7 @@ void loraImpl_init(void)
         exit(EXIT_FAILURE);
     }
 
-    // 4. Set socket to non-blocking (Standard for LoRa emulation loops)
+    // 4. Set socket to non-blocking
     int flags = fcntl(mySock_fd, F_GETFL, 0);
     fcntl(mySock_fd, F_SETFL, flags | O_NONBLOCK);
 
@@ -161,10 +179,68 @@ void loraImpl_send(uint8_t* payload, uint16_t payloadSize)
 {
     if (mySock_fd < 0)
         return;
+    
+    send_counter++;
+
+    // --- EDGE CASE: TX Timeout ---
+    if (loraImpl_testing_force_tx_timeout)
+    {
+        loraImpl_testing_force_tx_timeout = false; // Reset flag
+        runCallback(loraImpl_globalState_g.onTXTimeout);
+        return;
+    }
+
+    // --- EDGE CASE: TX Latency/Delay ---
+    if (loraImpl_testing_tx_delay_ms > 0)
+    {
+        usleep(loraImpl_testing_tx_delay_ms * 1000);
+    }
+
+    // --- EDGE CASE: Deterministic Packet Loss ---
+    if (loraImpl_testing_drop_packet_number > 0 && send_counter == loraImpl_testing_drop_packet_number) {
+        runCallback(loraImpl_globalState_g.onTXDone); // Pretend it sent
+        return;
+    }
+
+    // --- EDGE CASE: Percentage Packet Loss ---
+    if (loraImpl_testing_packet_loss_percent > 0)
+    {
+        if ((rand() % 100) < loraImpl_testing_packet_loss_percent)
+        {
+            runCallback(loraImpl_globalState_g.onTXDone); // Pretend it sent
+            return;
+        }
+    }
+
+    uint16_t finalPayloadSize = payloadSize;
+    uint8_t mangledPayload[payloadSize];
+    memcpy(mangledPayload, payload, payloadSize);
+
+    // --- EDGE CASE: Packet Mangling ---
+    if (loraImpl_testing_mangling_type != LORAIMPL_MANGLING_NONE)
+    {
+        switch (loraImpl_testing_mangling_type)
+        {
+            case LORAIMPL_MANGLING_BAD_PREAMBLE:
+                if (finalPayloadSize > 0) {
+                    mangledPayload[0] = ~mangledPayload[0]; // Flip the bits of the preamble
+                }
+                break;
+            case LORAIMPL_MANGLING_BAD_SIZE:
+                if (finalPayloadSize > 0) {
+                    finalPayloadSize -= 1; // Send one less byte
+                }
+                break;
+            default:
+                break;
+        }
+        loraImpl_testing_mangling_type = LORAIMPL_MANGLING_NONE; // Reset flag
+    }
+
 
     // Unified send function using the pre-calculated peerAddr
     ssize_t sent =
-        sendto(mySock_fd, payload, payloadSize, 0,
+        sendto(mySock_fd, mangledPayload, finalPayloadSize, 0,
                (struct sockaddr*)&peerAddr, sizeof(peerAddr));
     usleep(5000);
 
@@ -183,7 +259,6 @@ static void flushRecvBuffer()
 {
     while (1)
     {
-        // Flush the buffer by reading.
         ssize_t n = recvfrom(mySock_fd, rxBuffer, sizeof(rxBuffer),
                              MSG_DONTWAIT, NULL, NULL);
         if (n < 0)
@@ -197,14 +272,12 @@ static void flushRecvBuffer()
 
 void loraImpl_IRQProcess(void)
 {
-    // If we haven't been put in RX mode via loraImpl_SetRX, ignore incoming data
     if (lastSetRXTime == 0)
     {
         flushRecvBuffer();
     }
     else
     {
-        // Check if we timed out
         int64_t timeSinceSetRX = getTimeMS() - lastSetRXTime;
         if (rxDuration > 0 && timeSinceSetRX > rxDuration)
         {
@@ -216,15 +289,18 @@ void loraImpl_IRQProcess(void)
             struct sockaddr_in senderAddr;
             socklen_t          addrLen = sizeof(senderAddr);
 
-            // Non-blocking receive
             ssize_t len = recvfrom(mySock_fd, rxBuffer, SOCK_BUFFER_SIZE, 0,
                                    (struct sockaddr*)&senderAddr, &addrLen);
-            // Simulate losing everything else because only one packet at a time on lora.
             flushRecvBuffer();
 
             if (len > 0)
             {
-                // Simulate RSSI/SNR values
+                if (loraImpl_testing_force_rx_error) {
+                    loraImpl_testing_force_rx_error = false; // Reset flag
+                    runCallback(loraImpl_globalState_g.onRXError);
+                    return;
+                }
+
                 int16_t fakeRssi = -40;
                 int8_t  fakeSnr  = 10;
 
@@ -234,15 +310,10 @@ void loraImpl_IRQProcess(void)
             }
         }
     }
-
 }
 
-// Minimal implementation of state controls
 void loraImpl_setRX(uint32_t milliseconds)
 {
-    // In a real implementation, 'milliseconds' might set a timeout timer.
-    // For now, non-zero indicates we are listening.
-    // Use current system time or a flag.
     lastSetRXTime = getTimeMS();
     rxDuration    = milliseconds;
 }
