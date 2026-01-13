@@ -1,0 +1,18 @@
+{
+    "ignorePaths": ["*minmea.c", "*minmea.h"],
+    "words": [
+        "LOGI",
+        "LOGW",
+        "LOGD",
+        "HDOP",
+        "NMEA",
+        "GPGGA",
+        "GPRMC",
+        "GPGSA",
+        "GPGSV",
+        "GPVTG",
+        "GPZDA",
+        "minmea",
+        "FLOWCTRL"
+    ]
+}
