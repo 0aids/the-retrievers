@@ -14,7 +14,6 @@
 #define GPS_UART_BAUD 9600
 #define UART_READ_CHUNK 128
 #define GPS_TASK_STACK 4096
-#define GPS_UART_NUM UART_NUM_1
 #define GPS_RX_BUFFER_SIZE 2048
 
 static TaskHandle_t gpsTask_s = NULL;
@@ -25,8 +24,8 @@ static void gps_task(void* arg) {
 
     while (1) {
         uint8_t data[UART_READ_CHUNK];
-        int len = uart_read_bytes(GPS_UART_NUM, data, sizeof(data),
-                                  TIMEOUT / portTICK_PERIOD_MS);
+        int len = uart_read_bytes(config_getPinConfig()->gpsUartNum, data,
+                                  sizeof(data), TIMEOUT / portTICK_PERIOD_MS);
 
         if (len == 0) {
             vTaskDelay(pdMS_TO_TICKS(10));
@@ -76,12 +75,13 @@ void gps_init() {
                                  .stop_bits = UART_STOP_BITS_1,
                                  .flow_ctrl = UART_HW_FLOWCTRL_DISABLE};
 
-    ESP_ERROR_CHECK(uart_param_config(GPS_UART_NUM, &uart_config));
-    ESP_ERROR_CHECK(uart_set_pin(GPS_UART_NUM, config_getPinConfig()->gpsTxPin,
+    uart_port_t gpsUartNum = config_getPinConfig()->gpsUartNum;
+    ESP_ERROR_CHECK(uart_param_config(gpsUartNum, &uart_config));
+    ESP_ERROR_CHECK(uart_set_pin(gpsUartNum, config_getPinConfig()->gpsTxPin,
                                  config_getPinConfig()->gpsRxPin,
                                  UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE));
     ESP_ERROR_CHECK(
-        uart_driver_install(GPS_UART_NUM, GPS_RX_BUFFER_SIZE, 0, 0, NULL, 0));
+        uart_driver_install(gpsUartNum, GPS_RX_BUFFER_SIZE, 0, 0, NULL, 0));
 }
 
 void gps_startTask() {
@@ -93,7 +93,7 @@ void gps_startTask() {
 void gps_killTask() {
     ESP_LOGI("GPS", "Killing GPS Task");
     if (gpsTask_s) {
-        uart_flush(GPS_UART_NUM);
+        uart_flush(config_getPinConfig()->gpsUartNum);
         vTaskDelete(gpsTask_s);
         gpsTask_s = NULL;
     }
