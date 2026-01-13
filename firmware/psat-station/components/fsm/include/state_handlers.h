@@ -9,5 +9,5 @@ psatFSM_state_e psatFSM_deployedStateHandler(const psatFSM_event_t* event);
 psatFSM_state_e psatFSM_descentStateHandler(const psatFSM_event_t* event);
 psatFSM_state_e psatFSM_landingStateHandler(const psatFSM_event_t* event);
 psatFSM_state_e psatFSM_recoveryStateHandler(const psatFSM_event_t* event);
-psatFSM_state_e psatFSM_lowpwrStateHandler(const psatFSM_event_t* event);
+psatFSM_state_e psatFSM_lowPowerStateHandler(const psatFSM_event_t* event);
 psatFSM_state_e psatFSM_errorStateHandler(const psatFSM_event_t* event);

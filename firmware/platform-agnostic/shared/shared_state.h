@@ -10,7 +10,7 @@
     X(psatFSM_state_descent)   \
     X(psatFSM_state_landing)   \
     X(psatFSM_state_recovery)  \
-    X(psatFSM_state_lowpwr)    \
+    X(psatFSM_state_lowPower)  \
     X(psatFSM_state_error)
 
 #define PSAT_FSM_EVENT_TYPE_LIST             \

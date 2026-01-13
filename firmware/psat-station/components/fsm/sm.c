@@ -76,8 +76,8 @@ void psatFSM_mainLoop(void* arg) {
             case psatFSM_state_recovery:
                 nextState = psatFSM_recoveryStateHandler(&currentEvent);
                 break;
-            case psatFSM_state_lowpwr:
-                nextState = psatFSM_lowpwrStateHandler(&currentEvent);
+            case psatFSM_state_lowPower:
+                nextState = psatFSM_lowPowerStateHandler(&currentEvent);
                 break;
             case psatFSM_state_error:
                 nextState = psatFSM_errorStateHandler(&currentEvent);
