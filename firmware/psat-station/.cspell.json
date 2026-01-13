@@ -13,6 +13,8 @@
         "GPVTG",
         "GPZDA",
         "minmea",
-        "FLOWCTRL"
+        "FLOWCTRL",
+        "PSAT",
+        "lowpwr"
     ]
 }
