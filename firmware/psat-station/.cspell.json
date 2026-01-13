@@ -15,6 +15,6 @@
         "minmea",
         "FLOWCTRL",
         "PSAT",
-        "lowpwr"
+        "IRAM"
     ]
 }
