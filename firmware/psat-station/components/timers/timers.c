@@ -13,23 +13,28 @@ static const char* TAG = "TIMER";
 static const timer_config_t timer_config_c[timer_timerId__COUNT] = {
     [timer_timerId_1s] = {.period_ms = 1000,
                           .event = psatFSM_eventType_timer1s,
-                          .name = "t1s"},
+                          .name = "t1s",
+                          .global = false},
     [timer_timerId_5s] = {.period_ms = 5000,
                           .event = psatFSM_eventType_timer5s,
-                          .name = "t5s"},
+                          .name = "t5s",
+                          .global = false},
     [timer_timerId_10s] = {.period_ms = 10000,
                            .event = psatFSM_eventType_timer10s,
-                           .name = "t10s"},
+                           .name = "t10s",
+                           .global = false},
     [timer_timerId_mechanical] = {.period_ms =
                                       0,  // this one is a one time use timer
                                   .event = psatFSM_eventType_unfoldMechanism,
-                                  .name = "mechanical"},
+                                  .name = "mechanical",
+                                  .global = true},
 };
 static esp_timer_handle_t timers_s[timer_timerId__COUNT];
 
 static void timer_callback(void* arg) {
     timer_id_e id = *(timer_id_e*)arg;
-    psatFSM_event_t event = {.type = timer_config_c[id].event, .global = false};
+    psatFSM_event_t event = {.type = timer_config_c[id].event,
+                             .global = timer_config_c[id].global};
     psatFSM_postEvent(&event);
 }
 

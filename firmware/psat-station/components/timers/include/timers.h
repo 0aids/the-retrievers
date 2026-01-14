@@ -16,6 +16,7 @@ typedef enum {
 typedef struct {
     uint32_t period_ms;
     psatFSM_eventType_e event;
+    bool global;
     const char* name;
 } timer_config_t;
 
