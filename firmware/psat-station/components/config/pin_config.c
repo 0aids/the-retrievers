@@ -4,9 +4,9 @@ static const config_pinConfig_t board_cfg = {
     .gpsUartNum = UART_NUM_1,
     .gpsTxPin = 27,
     .gpsRxPin = 25,
-    .landingButtonPin = 19,
+    .landingButtonPin = 22,
     .prelaunchButtonPin = 21,
-    .light1Pin = 22,
+    .light1Pin = 19,
     .light2Channel = ADC2_CHANNEL_0,
     .servoPin = 13,
 };

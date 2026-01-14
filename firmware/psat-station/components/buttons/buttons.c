@@ -18,6 +18,11 @@ static button_config_t buttonConfig_c[button_id__COUNT] = {
             .intr_type = GPIO_INTR_NEGEDGE,
             .event = psatFSM_eventType_prelaunchComplete,
         },
+    [button_id_ldr] =
+        {
+            .intr_type = GPIO_INTR_NEGEDGE,
+            .event = psatFSM_eventType_deploymentPending,
+        },
 };
 
 static volatile TickType_t lastPressTick_s[button_id__COUNT];
@@ -41,6 +46,7 @@ void button_init(void) {
 
     buttonConfig_c[button_id_landing].pin = pins->landingButtonPin;
     buttonConfig_c[button_id_prelaunch].pin = pins->prelaunchButtonPin;
+    buttonConfig_c[button_id_ldr].pin = pins->light1Pin;
 
     gpio_install_isr_service(0);
 
