@@ -5,6 +5,7 @@
 void globalEventHandler(const psatFSM_event_t* event);
 psatFSM_state_e psatFSM_prelaunchStateHandler(const psatFSM_event_t* event);
 psatFSM_state_e psatFSM_ascentStateHandler(const psatFSM_event_t* event);
+psatFSM_state_e psatFSM_deployPendingStateHandler(const psatFSM_event_t* event);
 psatFSM_state_e psatFSM_deployedStateHandler(const psatFSM_event_t* event);
 psatFSM_state_e psatFSM_descentStateHandler(const psatFSM_event_t* event);
 psatFSM_state_e psatFSM_landingStateHandler(const psatFSM_event_t* event);

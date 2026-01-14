@@ -64,6 +64,9 @@ void psatFSM_mainLoop(void* arg) {
             case psatFSM_state_ascent:
                 nextState = psatFSM_ascentStateHandler(&currentEvent);
                 break;
+            case psatFSM_state_deployPending:
+                nextState = psatFSM_deployPendingStateHandler(&currentEvent);
+                break;
             case psatFSM_state_deployed:
                 nextState = psatFSM_deployedStateHandler(&currentEvent);
                 break;

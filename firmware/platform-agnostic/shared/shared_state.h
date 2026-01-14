@@ -3,19 +3,22 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#define PSAT_FSM_STATE_LIST    \
-    X(psatFSM_state_prelaunch) \
-    X(psatFSM_state_ascent)    \
-    X(psatFSM_state_deployed)  \
-    X(psatFSM_state_descent)   \
-    X(psatFSM_state_landing)   \
-    X(psatFSM_state_recovery)  \
-    X(psatFSM_state_lowPower)  \
+#define PSAT_FSM_STATE_LIST        \
+    X(psatFSM_state_prelaunch)     \
+    X(psatFSM_state_ascent)        \
+    X(psatFSM_state_deployPending) \
+    X(psatFSM_state_deployed)      \
+    X(psatFSM_state_descent)       \
+    X(psatFSM_state_landing)       \
+    X(psatFSM_state_recovery)      \
+    X(psatFSM_state_lowPower)      \
     X(psatFSM_state_error)
 
 #define PSAT_FSM_EVENT_TYPE_LIST             \
     X(psatFSM_eventType_startPrelaunch)      \
     X(psatFSM_eventType_prelaunchComplete)   \
+    X(psatFSM_eventType_deploymentPending)   \
+    X(psatFSM_eventType_deploymentTimeout)   \
     X(psatFSM_eventType_deploymentConfirmed) \
     X(psatFSM_eventType_timer1s)             \
     X(psatFSM_eventType_timer5s)             \
