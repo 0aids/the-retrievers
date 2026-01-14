@@ -9,9 +9,23 @@
 #include "freertos/task.h"
 #include "gps_driver.h"
 #include "ldr_task.h"
+#include "servo.h"
 #include "timers.h"
 
-void globalEventHandler(const psatFSM_event_t* event) {}
+static volatile servo_data_t servo;
+
+void globalEventHandler(const psatFSM_event_t* event) {
+    static const char* TAG = "PSAT_FSM-Global-Event";
+
+    switch (event->type) {
+        case psatFSM_eventType_unfoldMechanism:
+            servo_moveTo(&servo, 120, 60);
+            return;
+
+        default:
+            return;
+    }
+}
 
 psatFSM_state_e psatFSM_prelaunchStateHandler(const psatFSM_event_t* event) {
     static const char* TAG = "PSAT_FSM-Prelaunch";
@@ -31,6 +45,8 @@ psatFSM_state_e psatFSM_prelaunchStateHandler(const psatFSM_event_t* event) {
             button_enable(button_id_ldr);
 
             buzzer_init();
+
+            servo_init(&servo, GPIO_NUM_13);
             return psatFSM_state_prelaunch;
 
         case psatFSM_eventType_prelaunchComplete:
@@ -67,7 +83,7 @@ psatFSM_state_e psatFSM_deployPendingStateHandler(
             timer_stop(timer_timerId_10s);
             timer_start(timer_timerId_1s);
             timer_start(timer_timerId_5s);
-            timer_startOnce(timer_timerId_mechanical, 60000);
+            timer_startOnce(timer_timerId_mechanical, 10000);
 
             gps_startTask();
 
