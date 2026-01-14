@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 #include "buttons.h"
+#include "buzzer.h"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -29,7 +30,7 @@ psatFSM_state_e psatFSM_prelaunchStateHandler(const psatFSM_event_t* event) {
             button_enable(button_id_landing);
             button_enable(button_id_ldr);
 
-            // buzzer_init()
+            buzzer_init();
             return psatFSM_state_prelaunch;
 
         case psatFSM_eventType_prelaunchComplete:
@@ -72,7 +73,6 @@ psatFSM_state_e psatFSM_deployPendingStateHandler(
 
             ldr_killTask();
             button_disable(button_id_ldr);
-
             return psatFSM_state_deployed;
 
         case psatFSM_eventType_deploymentTimeout:
@@ -116,6 +116,8 @@ psatFSM_state_e psatFSM_landingStateHandler(const psatFSM_event_t* event) {
     static const char* TAG = "PSAT_FSM-Landing";
 
     switch (event->type) {
+        case psatFSM_eventType_timer5s:
+            return psatFSM_state_recovery;
         default:
             return psatFSM_state_landing;
     }
@@ -125,6 +127,9 @@ psatFSM_state_e psatFSM_recoveryStateHandler(const psatFSM_event_t* event) {
     static const char* TAG = "PSAT_FSM-Recovery";
 
     switch (event->type) {
+        case psatFSM_eventType_audioBeep:
+            buzzer_beep(2500);
+            return psatFSM_state_recovery;
         default:
             return psatFSM_state_recovery;
     }
