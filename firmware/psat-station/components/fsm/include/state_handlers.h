@@ -1,6 +1,6 @@
 #pragma once
 
-#include "state.h"
+#include "shared_state.h"
 
 void globalEventHandler(const psatFSM_event_t* event);
 psatFSM_state_e psatFSM_prelaunchStateHandler(const psatFSM_event_t* event);

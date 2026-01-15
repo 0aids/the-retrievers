@@ -1,9 +1,25 @@
 #include "state_handlers.h"
+#include <stdio.h>
+
+void globalEventHandler(const psatFSM_event_t* event) {}
 
 psatFSM_state_e psatFSM_prelaunchStateHandler(const psatFSM_event_t* event) {
     static const char* TAG = "PSAT_FSM-Prelaunch";
 
     switch (event->type) {
+        case psatFSM_eventType_timer1s:
+            printf("1s\n");
+            return psatFSM_state_prelaunch;
+        case psatFSM_eventType_timer5s:
+            printf("5s\n");
+            return psatFSM_state_prelaunch;
+        case psatFSM_eventType_timer10s:
+            printf("10s\n");
+            return psatFSM_state_prelaunch;
+        case psatFSM_eventType_unfoldMechanism:
+            printf("unfolding\n");
+            return psatFSM_state_prelaunch;
+
         default:
             return psatFSM_state_prelaunch;
     }
