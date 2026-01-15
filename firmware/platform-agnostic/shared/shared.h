@@ -1,10 +1,23 @@
 #ifndef commands_h_INCLUDED
 #define commands_h_INCLUDED
 
-#define lora_defaultDataSize_d 64
+// Shared commands
+
+typedef struct {
+} GpsData_t;
+
+typedef struct {
+} TestData_t;
+
+typedef struct {
+} StatusData_t;
+
+typedef enum {
+} psat_mainState_e;
+
 typedef char lora_uint8_t;
 // Shared commands
-enum lora_PacketTypes_e {
+typedef enum {
     lora_PacketTypes_Ping,
     lora_PacketTypes_Pong,
 
@@ -20,21 +33,6 @@ enum lora_PacketTypes_e {
     // For preflight checks and onthefly debugging
     lora_PacketTypes_TestReq,
     lora_PacketTypes_TestData,
-};
-
-typedef struct {
-} GpsData_t;
-
-typedef struct {
-} TestData_t;
-
-typedef struct {
-} StatusData_t;
-
-typedef struct {
-    lora_PacketTypes_e type;
-    lora_uint8_t dataLength;
-    lora_uint8_t data[lora_defaultDataSize_d];
-} lora_Packet_t;
+} lora_PacketTypes_e;
 
 #endif
