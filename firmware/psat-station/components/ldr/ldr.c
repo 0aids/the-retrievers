@@ -1,12 +1,6 @@
 #include "ldr.h"
 #include "freertos/idf_additions.h"
 
-//
-// Static Variables
-//
-
-static int adcRaw[2][10];
-static int voltage[2][10];
 
 //
 // Global Variables
@@ -33,7 +27,6 @@ static bool adcCalibrationInit(adc_unit_t unit, adc_channel_t channel, adc_atten
 
     // Sets the calibtration scheme to curve fitting and configures it
     if (!calibrated) {
-        ESP_LOGI(ldr_tag_c, "calibration scheme version is %s", "Line Fitting");
         adc_cali_line_fitting_config_t caliConfig = {
             .unit_id = unit,
             .atten = atten,
@@ -48,7 +41,7 @@ static bool adcCalibrationInit(adc_unit_t unit, adc_channel_t channel, adc_atten
     // Checks for errors
     *outHandle = handle;
     if (ret == ESP_OK) {
-        ESP_LOGI(ldr_tag_c, "Calibration Success");
+        ESP_LOGD(ldr_tag_c, "Calibration Success");
     } else if (ret == ESP_ERR_NOT_SUPPORTED || !calibrated) {
         ESP_LOGW(ldr_tag_c, "eFuse not burnt, skip software calibration");
     } else {
@@ -60,7 +53,7 @@ static bool adcCalibrationInit(adc_unit_t unit, adc_channel_t channel, adc_atten
 
 static void adcCalibrationDeinit(void)
 {
-    ESP_LOGI(ldr_tag_c, "deregister %s calibration scheme", "Line Fitting");
+    ESP_LOGD(ldr_tag_c, "deregister %s calibration scheme", "Line Fitting");
     ESP_ERROR_CHECK(adc_cali_delete_scheme_line_fitting(ldr_adcHandlers_g.adc1CaliChan0));
 }
 
@@ -100,13 +93,13 @@ void ldr_setup(void)
 
 int ldr_getVoltage(void)
 {
-    ESP_ERROR_CHECK(adc_oneshot_read(ldr_adcHandlers_g.adc1, ldr_adc1Chan0_d, &adcRaw[0][0]));
-    ESP_LOGI(ldr_tag_c, "ADC%d Channel[%d] Raw Data: %d", ADC_UNIT_1 + 1, ldr_adc1Chan0_d, adcRaw[0][0]);
-    //
-    ESP_ERROR_CHECK(adc_cali_raw_to_voltage(ldr_adcHandlers_g.adc1CaliChan0, adcRaw[0][0], &voltage[0][0]));
-    ESP_LOGI(ldr_tag_c, "ADC%d Channel[%d] Cali Voltage: %d mV", ADC_UNIT_1 + 1, ldr_adc1Chan0_d, voltage[0][0]);
+    int adcRaw;
+    int voltage;
 
-    return voltage[0][0];
+    ESP_ERROR_CHECK(adc_oneshot_read(ldr_adcHandlers_g.adc1, ldr_adc1Chan0_d, &adcRaw));
+    ESP_ERROR_CHECK(adc_cali_raw_to_voltage(ldr_adcHandlers_g.adc1CaliChan0, adcRaw, &voltage));
+
+    return voltage;
 }
 
 #define ldr_stateConfigurationBufferSize_d 1024

@@ -3,8 +3,8 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/idf_additions.h"
 #include "sm.h"
-#include "ldr.h"
 
 void app_main(void) {
     psatFSM_start();
 }
+    
