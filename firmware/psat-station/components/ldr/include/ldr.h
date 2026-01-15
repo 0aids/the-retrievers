@@ -13,7 +13,8 @@
 #include "soc/io_mux_reg.h"
 
 #define ADC_ATTEN           ADC_ATTEN_DB_12
-#define ADC1_CHAN0          ADC_CHANNEL_1       //This is GPIO1
+#define ADC1_CHAN0          ADC_CHANNEL_0       //This is GPIO19
+#define PIN_MASK            (1ULL << 4)
 const static char *TAG = "LDR";
 
 static int adc_raw[2][10];

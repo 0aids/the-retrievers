@@ -1,6 +1,7 @@
 #include "ldr.h"
 #include "freertos/idf_additions.h"
 
+#define PIN_MASK            (1ULL << 4)
 
 handlers_t ldr_adcHandlers_g = {};
 
@@ -13,14 +14,13 @@ static bool adc_calibration_init(adc_unit_t unit, adc_channel_t channel, adc_att
 
     // Sets the calibtration scheme to curve fitting and configures it
     if (!calibrated) {
-        ESP_LOGI(TAG, "calibration scheme version is Curve Fitting");
-        adc_cali_curve_fitting_config_t cali_config = {
+        ESP_LOGI(TAG, "calibration scheme version is %s", "Line Fitting");
+        adc_cali_line_fitting_config_t cali_config = {
             .unit_id = unit,
-            .chan = channel,
             .atten = atten,
             .bitwidth = ADC_BITWIDTH_DEFAULT,
         };
-        ret = adc_cali_create_scheme_curve_fitting(&cali_config, &handle);
+        ret = adc_cali_create_scheme_line_fitting(&cali_config, &handle);
         if (ret == ESP_OK) {
             calibrated = true;
         }
@@ -41,8 +41,8 @@ static bool adc_calibration_init(adc_unit_t unit, adc_channel_t channel, adc_att
 
 static void adc_calibration_deinit(void)
 {
-    ESP_LOGI(TAG, "deregister %s calibration scheme", "Curve Fitting");
-    ESP_ERROR_CHECK(adc_cali_delete_scheme_curve_fitting(ldr_adcHandlers_g.adc1_cali_chan0));
+    ESP_LOGI(TAG, "deregister %s calibration scheme", "Line Fitting");
+    ESP_ERROR_CHECK(adc_cali_delete_scheme_line_fitting(ldr_adcHandlers_g.adc1_cali_chan0));
 }
 
 void ldr_setup(void)
@@ -50,7 +50,7 @@ void ldr_setup(void)
     //-------------ADC1 Init---------------//
     // sets the handle and init_config1 initialises ADC1 and disables ULP mode 
     adc_oneshot_unit_init_cfg_t init_config1 = {
-        .unit_id = ADC_UNIT_1,
+        .unit_id = ADC_UNIT_2,
         .ulp_mode = ADC_ULP_MODE_DISABLE,
     };
     ESP_ERROR_CHECK(adc_oneshot_new_unit(&init_config1, &ldr_adcHandlers_g.adc1));
@@ -75,7 +75,7 @@ void ldr_setup(void)
     bool adc_chan0_calibrated = adc_calibration_init(ADC_UNIT_1, ADC1_CHAN0, ADC_ATTEN, &ldr_adcHandlers_g.adc1_cali_chan0);
 }
 
-int ldr_get_voltage(void)
+int ldr_getVoltage(void)
 {
     ESP_ERROR_CHECK(adc_oneshot_read(ldr_adcHandlers_g.adc1, ADC1_CHAN0, &adc_raw[0][0]));
     ESP_LOGI(TAG, "ADC%d Channel[%d] Raw Data: %d", ADC_UNIT_1 + 1, ADC1_CHAN0, adc_raw[0][0]);
@@ -103,7 +103,7 @@ ldr_state ldr_queryState(void) {
     }
 
     // This writes all the information we need to the stream
-    gpio_dump_io_configuration(mem_stream, SOC_GPIO_VALID_GPIO_MASK);
+    gpio_dump_io_configuration(mem_stream, PIN_MASK);
     // This flushes the unwritten data and updates the variables 'buffer' and 'size'
     fclose(mem_stream);
 
@@ -124,24 +124,4 @@ void ldr_deinit(void){
     //Tear Down
     ESP_ERROR_CHECK(adc_oneshot_del_unit(ldr_adcHandlers_g.adc1));
     adc_calibration_deinit();
-}
-
-
-void app_main(void){
-    printf("hello wrold!\r\n");
-    // while (1){
-    //     ESP_LOGI(TAG, "Hello world");
-    //     ldr_setup();
-    //     ldr_state state1 = ldr_queryState();
-    //     ESP_LOGI(TAG, "%s",state1.stateString);
-
-    //     ESP_LOGI(TAG, "voltage: %dmV", ldr_get_voltage());        
-    //     ldr_state state2 = ldr_queryState();
-    //     ESP_LOGI(TAG, "%s",state2.stateString);
-
-    //     ldr_deinit();
-    //     ldr_state state3 = ldr_queryState();
-    //     ESP_LOGI(TAG, "%s",state3.stateString);
-    // }
-    // vTaskDelay(1000);
 }
