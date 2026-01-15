@@ -1,5 +1,6 @@
 #include "sm.h"
 
+#include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 #include "freertos/task.h"
@@ -43,14 +44,18 @@ void psatFSM_mainLoop(void* arg) {
 
     while (1) {
         if (!xQueueReceive(eventQueue_s, &currentEvent, portMAX_DELAY))
-            continue;  // if no event recieved do nothing
-
-        // TODO: Print out recieved event
+            continue;  // if no event received do nothing
 
         if (currentEvent.global) {
-            // for events that don't care about current state
+            ESP_LOGI("FSM", "Received Global Event: %s",
+                     psatFSM_eventTypeToString(currentEvent.type));
+            // for events that are state agnostic, so will be handled or run
+            // regardless of what state we are in
             globalEventHandler(&currentEvent);
         }
+
+        ESP_LOGI("FSM", "Received Event: %s",
+                 psatFSM_eventTypeToString(currentEvent.type));
 
         switch (currentState_s) {
             case psatFSM_state_prelaunch:
@@ -58,6 +63,9 @@ void psatFSM_mainLoop(void* arg) {
                 break;
             case psatFSM_state_ascent:
                 nextState = psatFSM_ascentStateHandler(&currentEvent);
+                break;
+            case psatFSM_state_deployPending:
+                nextState = psatFSM_deployPendingStateHandler(&currentEvent);
                 break;
             case psatFSM_state_deployed:
                 nextState = psatFSM_deployedStateHandler(&currentEvent);
@@ -71,8 +79,8 @@ void psatFSM_mainLoop(void* arg) {
             case psatFSM_state_recovery:
                 nextState = psatFSM_recoveryStateHandler(&currentEvent);
                 break;
-            case psatFSM_state_lowpwr:
-                nextState = psatFSM_lowpwrStateHandler(&currentEvent);
+            case psatFSM_state_lowPower:
+                nextState = psatFSM_lowPowerStateHandler(&currentEvent);
                 break;
             case psatFSM_state_error:
                 nextState = psatFSM_errorStateHandler(&currentEvent);
@@ -80,7 +88,9 @@ void psatFSM_mainLoop(void* arg) {
         }
 
         if (nextState != currentState_s) {
-            // TODO: print out state transition
+            ESP_LOGI("FSM", "Transitioning from state: %s to new state: %s",
+                     psatFSM_stateToString(currentState_s),
+                     psatFSM_stateToString(nextState));
             currentState_s = nextState;
         }
     }
