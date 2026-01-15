@@ -15,8 +15,8 @@
 #include "soc/io_mux_reg.h"
 
 #define ldr_adcAtten_d           ADC_ATTEN_DB_12
-#define ldr_adc1Chan0_d          ADC_CHANNEL_0       //This is GPIO19
-#define ldr_pinMask_d            (1ULL << 4)
+#define ldr_adc1Chan0_d          ADC_CHANNEL_0       // This is GPIO4
+#define ldr_pinMask_d            (1ULL << 4)         // pin mask for GPIO 4
 
 const static char* ldr_tag_c = "LDR";
 
@@ -31,7 +31,7 @@ typedef struct {
     char *stateString;
 } ldr_state_t;
 
-//setup adc pins
+//setup adc pins for the ldr
 void ldr_setup(void);
 
 //gets voltage(mV) value of the ldr
