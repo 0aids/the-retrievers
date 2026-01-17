@@ -11,7 +11,7 @@
 #define TIMEOUT 50
 #define GPS_TASK_PRIO 5
 #define GPS_LINE_MAX 512
-#define GPS_UART_BAUD 9600
+#define GPS_UART_BAUD 115200  // for breadboard gps chip it is 9600
 #define UART_READ_CHUNK 128
 #define GPS_TASK_STACK 4096
 #define GPS_RX_BUFFER_SIZE 2048
@@ -57,6 +57,7 @@ static void gps_task(void* arg) {
                 }
 
                 gps_processLine(gpsBuffer);
+                ESP_LOGD("GPS", "%s", gpsBuffer);
 
                 gpsBufferPosition = 0;  // reset buffer pos to start
             }
