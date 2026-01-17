@@ -1,6 +1,7 @@
 #ifndef LDR_H
 #define LDR_H
 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,6 +14,8 @@
 #include "esp_adc/adc_cali_scheme.h"
 #include "driver/gpio.h"
 #include "soc/io_mux_reg.h"
+#include <stdbool.h> 
+#include "freertos/idf_additions.h"
 
 #define ldr_adcAtten_d           ADC_ATTEN_DB_12
 #define ldr_adc1Chan0_d          ADC_CHANNEL_0       // This is GPIO4
