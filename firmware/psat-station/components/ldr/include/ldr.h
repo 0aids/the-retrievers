@@ -23,6 +23,8 @@
 
 const static char* ldr_tag_c = "LDR";
 
+//Global structs
+
 typedef struct {
     adc_oneshot_unit_handle_t adc1;
     adc_cali_handle_t adc1CaliChan0;
@@ -34,16 +36,17 @@ typedef struct {
     char *stateString;
 } ldr_state_t;
 
-//setup adc pins for the ldr
+typedef struct {
+    ldr_state_t stateBefore;
+    ldr_state_t stateMiddle;
+    int sampleData;
+    ldr_state_t stateAfter;
+} ldr_preflightTest_t;
+
 void ldr_setup(void);
-
-//gets voltage(mV) value of the ldr
 int ldr_getVoltage(void);
-
-// gets the unit state, gpio state, and channel state
 ldr_state_t ldr_queryState(void);
-
-// deinitialises the ldr
 void ldr_deinit(void);
+ldr_preflightTest_t ldr_preflightTest(void);
 
 #endif // LDR_H

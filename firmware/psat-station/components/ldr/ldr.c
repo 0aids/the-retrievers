@@ -156,3 +156,16 @@ void ldr_deinit(void){
     ESP_LOGD(ldr_tag_c, "deregister %s calibration scheme", "Line Fitting");
     ESP_ERROR_CHECK(adc_cali_delete_scheme_line_fitting(ldr_adcHandlers_g.adc1CaliChan0));
 }
+
+ldr_preflightTest_t ldr_preflightTest(void) {
+    ldr_preflightTest_t test = {};
+    
+    test.stateBefore = ldr_queryState();
+    ldr_setup();
+    test.stateMiddle = ldr_queryState();
+    test.sampleData = ldr_getVoltage();
+    ldr_deinit();
+    test.stateAfter = ldr_queryState();
+
+    return test;
+}

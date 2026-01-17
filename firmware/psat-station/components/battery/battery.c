@@ -3,7 +3,7 @@
 // Global Variables
 
 battery_handlers_t battery_adcHandlers_g;
-adc_state_t battery_state;
+battery_state_t battery_state;
 
 // Static function definitions
 // This function sets the calibration scheme to be used when the raw adc data is converted to voltage
@@ -65,7 +65,7 @@ static bool adcCalibrationInit(adc_unit_t unit, adc_channel_t channel, adc_atten
 void battery_setup(void){
     // Initialises the ADC unit and disables ultra low power mode
     adc_oneshot_unit_init_cfg_t initConfigBattery = {
-        .unit_id = ADC_UNIT_1,
+        .unit_id = ADC_UNIT_2,
         .ulp_mode = ADC_ULP_MODE_DISABLE,
     };
     ESP_ERROR_CHECK(adc_oneshot_new_unit(&initConfigBattery,  &battery_adcHandlers_g.adcHandle));
@@ -98,7 +98,7 @@ int battery_getVoltage(void){
 
 char battery_stateConfigBuffer_g[battery_stateConfigBufferSize_d] = {0};
 
-adc_state_t battery_queryState(void){
+batterty_state_t battery_queryState(void){
     battery_state.stateString = 0;
     FILE* memStream;
     char* tempBuffer = {0};
@@ -132,4 +132,18 @@ void battery_deinit(void){
     ESP_ERROR_CHECK(adc_oneshot_del_unit(battery_adcHandlers_g.adcHandle));
     ESP_LOGD(battery_tag_c, "deregister %s calibration scheme", "Line Fitting");
     ESP_ERROR_CHECK(adc_cali_delete_scheme_line_fitting(battery_adcHandlers_g.adcCaliChan0));
+}
+
+
+battery_preflightTest_t battery_preflightTest(void) {
+    battery_preflightTest_t test = {};
+    
+    test.stateBefore = battery_queryState();
+    battery_setup();
+    test.stateMiddle = battery_queryState();
+    test.sampleData = battery_getVoltage();
+    battery_deinit();
+    test.stateAfter = battery_queryState();
+
+    return test;
 }

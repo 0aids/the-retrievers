@@ -14,13 +14,15 @@
 #include <stdbool.h> 
 #include "freertos/idf_additions.h"
 
+//Constants
 #define battery_adcAtten_d                      ADC_ATTEN_DB_12
-#define battery_adc1Chan0_d                     ADC_CHANNEL_1       // This is GPIO4
+#define battery_adc1Chan0_d                     ADC_CHANNEL_0       // This is GPIO4
 #define battery_pinMask_d                       (1ULL << 4)         // pin mask for GPIO 4
 #define battery_stateConfigBufferSize_d         (1024)
 
 const static char* battery_tag_c = "Battery";
 
+//Global struct variables
 typedef struct {
     adc_oneshot_unit_handle_t adcHandle;
     adc_cali_handle_t adcCaliChan0;
@@ -34,10 +36,20 @@ typedef struct {
     adc_ulp_mode_t ulpMode;
     adc_atten_t atten;
     adc_bitwidth_t bitwidth; 
-} adc_state_t;
-extern adc_state_t battery_state_g;
+} battery_state_t;
+
+extern battery_state_t battery_state_g;
+
+typedef struct {
+    battery_state_t stateBefore;
+    battery_state_t stateMiddle;
+    int sampleData;
+    battery_state_t stateAfter;
+} battery_preflightTest_t;
+
 
 void battery_setup(void);
 int battery_getVoltage(void);
-adc_state_t battery_queryState(void);
+battery_state_t battery_queryState(void);
 void battery_deinit(void);
+battery_preflightTest_t battery_preflightTest(void);

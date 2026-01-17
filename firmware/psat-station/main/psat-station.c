@@ -6,6 +6,5 @@
 
 void app_main(void) {
     psatFSM_start();
-
 }
     
