@@ -39,5 +39,5 @@ extern adc_state_t battery_state_g;
 
 void battery_setup(void);
 int battery_getVoltage(void);
-battery_state_t battery_queryState(void);
+adc_state_t battery_queryState(void);
 void battery_deinit(void);

@@ -124,7 +124,7 @@ adc_state_t battery_queryState(void){
     // Remember to free the dynamic variable
     free(tempBuffer);
     
-    battery_state.stateString = battery_stateConfigBuffer_g
+    battery_state.stateString = battery_stateConfigBuffer_g;
     return battery_state;
 }
 
