@@ -4,6 +4,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 #include "freertos/task.h"
+#include "shared_state.h"
 #include "state_handlers.h"
 
 #define QUEUE_SIZE 32
@@ -12,7 +13,6 @@ static const char* TAG = "PSAT_FSM";
 static TaskHandle_t xHandleSM_s = NULL;
 static QueueHandle_t eventQueue_s = NULL;
 static SemaphoreHandle_t stateMutex_s = NULL;
-static volatile psatFSM_state_e currentState_s = psatFSM_state_prelaunch;
 
 typedef psatFSM_state_e (*psatFSM_stateHandler_t)(const psatFSM_event_t* event);
 static psatFSM_stateHandler_t stateHandlerTable[] = {
@@ -49,7 +49,7 @@ void psatFSM_postEventISR(const psatFSM_event_t* event) {
 
 void psatFSM_setCurrentState(psatFSM_state_e newState) {
     if (stateMutex_s && xSemaphoreTake(stateMutex_s, portMAX_DELAY) == pdTRUE) {
-        currentState_s = newState;
+        psat_globalState.currentFSMState = newState;
         xSemaphoreGive(stateMutex_s);
     }
 }
@@ -58,7 +58,7 @@ psatFSM_state_e psatFSM_getCurrentState() {
     psatFSM_state_e state = psatFSM_state_error;
 
     if (stateMutex_s && xSemaphoreTake(stateMutex_s, portMAX_DELAY) == pdTRUE) {
-        state = currentState_s;
+        state = psat_globalState.currentFSMState;
         xSemaphoreGive(stateMutex_s);
     }
 
@@ -67,7 +67,7 @@ psatFSM_state_e psatFSM_getCurrentState() {
 
 void psatFSM_mainLoop(void* arg) {
     psatFSM_event_t currentEvent = {0};
-    psatFSM_state_e nextState = currentState_s;
+    psatFSM_state_e nextState = psat_globalState.currentFSMState;
 
     while (1) {
         if (!xQueueReceive(eventQueue_s, &currentEvent, portMAX_DELAY))
@@ -87,7 +87,7 @@ void psatFSM_mainLoop(void* arg) {
         psatFSM_state_e localState;
 
         xSemaphoreTake(stateMutex_s, portMAX_DELAY);
-        localState = currentState_s;
+        localState = psat_globalState.currentFSMState;
         xSemaphoreGive(stateMutex_s);
 
         if (stateHandlerTable[localState]) {
@@ -98,11 +98,11 @@ void psatFSM_mainLoop(void* arg) {
         }
 
         xSemaphoreTake(stateMutex_s, portMAX_DELAY);
-        if (nextState != currentState_s) {
+        if (nextState != psat_globalState.currentFSMState) {
             ESP_LOGI("FSM", "Transitioning from state: %s to new state: %s",
-                     psatFSM_stateToString(currentState_s),
+                     psatFSM_stateToString(psat_globalState.currentFSMState),
                      psatFSM_stateToString(nextState));
-            currentState_s = nextState;
+            psat_globalState.currentFSMState = nextState;
         }
         xSemaphoreGive(stateMutex_s);
 
