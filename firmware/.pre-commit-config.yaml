@@ -1,0 +1,38 @@
+fail_fast: false
+
+repos:
+  - repo: local
+    hooks:
+      - id: cppcheck
+        name: cppcheck
+        entry: cppcheck
+        language: system
+        types: [c]
+        args:
+          - --enable=warning,performance,style,portability
+          - --std=c23
+          - --suppress=missingIncludeSystem
+          - --error-exitcode=1
+          - --inline-suppr
+          - --suppress=*:firmware/platform-agnostic/shared/shared_state.h
+          - --suppress=*:firmware/psat-station/components/gps/include/minmea.h
+          - --suppress=*:firmware/psat-station/components/gps/minmea.c
+
+  - repo: local
+    hooks:
+      - id: cspell
+        name: cspell
+        entry: cspell
+        language: system
+        files: \.(c|h|md)$
+        args:
+          - --config
+          - firmware/psat-station/.cspell.json
+
+  - repo: local
+    hooks:
+      - id: idf-compile-check
+        name: ESP-IDF compile (no flash)
+        entry: bash -c 'cd firmware && nix develop --command sh -c "cd psat-station && idf.py build"'
+        language: system
+        pass_filenames: false
