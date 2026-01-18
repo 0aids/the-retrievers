@@ -95,3 +95,10 @@ static inline const char* psatFSM_eventTypeToString(psatFSM_eventType_e type) {
             return "Invalid State";
     }
 }
+
+typedef struct {
+    gps_data_t gpsData;
+    psatFSM_state_e currentFSMState;
+} psatGlobal_state_t;
+
+extern psatGlobal_state_t psat_globalState;
