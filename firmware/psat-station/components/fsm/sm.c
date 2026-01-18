@@ -1,5 +1,6 @@
 #include "sm.h"
 
+#include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 #include "freertos/task.h"
@@ -10,11 +11,30 @@ static const char* TAG = "PSAT_FSM";
 
 static TaskHandle_t xHandleSM_s = NULL;
 static QueueHandle_t eventQueue_s = NULL;
+static SemaphoreHandle_t stateMutex_s = NULL;
 static volatile psatFSM_state_e currentState_s = psatFSM_state_prelaunch;
+
+typedef psatFSM_state_e (*psatFSM_stateHandler_t)(const psatFSM_event_t* event);
+static psatFSM_stateHandler_t stateHandlerTable[] = {
+    [psatFSM_state_prelaunch] = psatFSM_prelaunchStateHandler,
+    [psatFSM_state_ascent] = psatFSM_ascentStateHandler,
+    [psatFSM_state_deployPending] = psatFSM_deployPendingStateHandler,
+    [psatFSM_state_deployed] = psatFSM_deployedStateHandler,
+    [psatFSM_state_descent] = psatFSM_descentStateHandler,
+    [psatFSM_state_landing] = psatFSM_landingStateHandler,
+    [psatFSM_state_recovery] = psatFSM_recoveryStateHandler,
+    [psatFSM_state_lowPower] = psatFSM_lowPowerStateHandler,
+    [psatFSM_state_error] = psatFSM_errorStateHandler,
+};
 
 void psatFSM_postEvent(const psatFSM_event_t* event) {
     if (!eventQueue_s || !event) return;
-    xQueueSend(eventQueue_s, event, 0);
+
+    if (xQueueSend(eventQueue_s, event, 0) != pdPASS) {
+        ESP_LOGW(
+            TAG,
+            "the event queue is full or something went wrong event dropped");
+    }
 }
 
 void psatFSM_postEventISR(const psatFSM_event_t* event) {
@@ -28,13 +48,21 @@ void psatFSM_postEventISR(const psatFSM_event_t* event) {
 }
 
 void psatFSM_setCurrentState(psatFSM_state_e newState) {
-    // TODO: Implement a mutex lock for this
-    currentState_s = newState;
+    if (stateMutex_s && xSemaphoreTake(stateMutex_s, portMAX_DELAY) == pdTRUE) {
+        currentState_s = newState;
+        xSemaphoreGive(stateMutex_s);
+    }
 }
 
 psatFSM_state_e psatFSM_getCurrentState() {
-    // TODO: Implement a mutex lock for this
-    return currentState_s;
+    psatFSM_state_e state = psatFSM_state_error;
+
+    if (stateMutex_s && xSemaphoreTake(stateMutex_s, portMAX_DELAY) == pdTRUE) {
+        state = currentState_s;
+        xSemaphoreGive(stateMutex_s);
+    }
+
+    return state;
 }
 
 void psatFSM_mainLoop(void* arg) {
@@ -43,51 +71,53 @@ void psatFSM_mainLoop(void* arg) {
 
     while (1) {
         if (!xQueueReceive(eventQueue_s, &currentEvent, portMAX_DELAY))
-            continue;  // if no event recieved do nothing
-
-        // TODO: Print out recieved event
+            continue;  // if no event received do nothing
 
         if (currentEvent.global) {
-            // for events that don't care about current state
+            ESP_LOGI("FSM", "Received Global Event: %s",
+                     psatFSM_eventTypeToString(currentEvent.type));
+            // for events that are state agnostic, so will be handled or run
+            // regardless of what state we are in
             globalEventHandler(&currentEvent);
         }
 
-        switch (currentState_s) {
-            case psatFSM_state_prelaunch:
-                nextState = psatFSM_prelaunchStateHandler(&currentEvent);
-                break;
-            case psatFSM_state_ascent:
-                nextState = psatFSM_ascentStateHandler(&currentEvent);
-                break;
-            case psatFSM_state_deployed:
-                nextState = psatFSM_deployedStateHandler(&currentEvent);
-                break;
-            case psatFSM_state_descent:
-                nextState = psatFSM_descentStateHandler(&currentEvent);
-                break;
-            case psatFSM_state_landing:
-                nextState = psatFSM_landingStateHandler(&currentEvent);
-                break;
-            case psatFSM_state_recovery:
-                nextState = psatFSM_recoveryStateHandler(&currentEvent);
-                break;
-            case psatFSM_state_lowpwr:
-                nextState = psatFSM_lowpwrStateHandler(&currentEvent);
-                break;
-            case psatFSM_state_error:
-                nextState = psatFSM_errorStateHandler(&currentEvent);
-                break;
+        ESP_LOGI("FSM", "Received Event: %s",
+                 psatFSM_eventTypeToString(currentEvent.type));
+
+        psatFSM_state_e localState;
+
+        xSemaphoreTake(stateMutex_s, portMAX_DELAY);
+        localState = currentState_s;
+        xSemaphoreGive(stateMutex_s);
+
+        if (stateHandlerTable[localState]) {
+            nextState = stateHandlerTable[localState](&currentEvent);
+        } else {
+            ESP_LOGE(TAG, "No handler for state %d", localState);
+            nextState = psatFSM_state_error;
         }
 
+        xSemaphoreTake(stateMutex_s, portMAX_DELAY);
         if (nextState != currentState_s) {
-            // TODO: print out state transition
+            ESP_LOGI("FSM", "Transitioning from state: %s to new state: %s",
+                     psatFSM_stateToString(currentState_s),
+                     psatFSM_stateToString(nextState));
             currentState_s = nextState;
         }
+        xSemaphoreGive(stateMutex_s);
+
+        taskYIELD();
     }
 }
 
 void psatFSM_start() {
     eventQueue_s = xQueueCreate(QUEUE_SIZE, sizeof(psatFSM_event_t));
+    stateMutex_s = xSemaphoreCreateMutex();
+
+    if (!eventQueue_s || !stateMutex_s) {
+        ESP_LOGE(TAG, "Failed to create queue or mutex");
+        return;
+    }
 
     psatFSM_event_t startupEvent = {.type = psatFSM_eventType_startPrelaunch,
                                     .global = false};
@@ -108,5 +138,9 @@ void psatFSM_killTask() {
     if (eventQueue_s != NULL) {
         vQueueDelete(eventQueue_s);
         eventQueue_s = NULL;
+    }
+    if (stateMutex_s != NULL) {
+        vSemaphoreDelete(stateMutex_s);
+        stateMutex_s = NULL;
     }
 }
