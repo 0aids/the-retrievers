@@ -1,36 +1,7 @@
 #ifndef shared_loraImpl_h_INCLUDED
 #define shared_loraImpl_h_INCLUDED
 #include <stdint.h>
-
-// Shared stuff for lora, just a whole bunch of defines.
-// clang-format off
-#define loraImpl_frequency_d 915000000                 // Hz
-#define loraImpl_txOutputPower_d 14                    // dBm
-                                                   //
-#define loraImpl_bandwidth_d 0                         // [0: 125 kHz,
-                                                   //  1: 250 kHz,
-                                                   //  2: 500 kHz,
-                                                   //  3: Reserved]
-                                                   //
-#define loraImpl_spreadingFactor_d 7                   // [SF7..SF12]
-                                                   //
-#define loraImpl_codingRate_d 1                        // [1: 4/5,
-                                                   //  2: 4/6,
-                                                   //  3: 4/7,
-                                                   //  4: 4/8]
-                                                   //
-#define loraImpl_preambleLength_d 8                    // Same for Tx and Rx
-#define loraImpl_symbolTimeout_d 0                     // Symbols
-#define loraImpl_fixLengthPayloadOn_d false
-#define loraImpl_iqInversionOn_d false
-
-#define loraImpl_headerPacketPreamble_d 0xff // 0b11111111
-#define loraImpl_dataPacketPreamble_d 0xaa   // 0b10101010
-#define loraImpl_footerPacketPreamble_d 0xcc // 0b11001100
-#define loraImpl_txTimeout_d 3000
-#define loraImpl_crcOn_d true
-#define loraImpl_freqHop_d 0 // No frequency hopping (would get better range if yes?)
-#define loraImpl_hopPeriod_d 0 // No frequency hopping (would get better range if yes?)
+#include <stdbool.h>
 
 // TODO This should be lora_interPacketTimeout, not loraImpl.
 // TODO: Figure out how low this can go.
@@ -95,6 +66,8 @@ typedef struct
     uint16_t dataCurrentContentSize;
     int16_t  rssi;
     int8_t   snr;
+    bool preInitComplete;
+    bool postInitComplete;
 } loraImpl_globalState_t;
 
 extern loraImpl_globalState_t loraImpl_globalState_g;

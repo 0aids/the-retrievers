@@ -10,9 +10,9 @@ void utils_sleepMs(uint16_t ms)
 
 void utils_log(const char* format, ...)
 {
-    va_list args;
-    va_start(args ,format);
-    vprintf(format, args);
-    va_end(args);
+    // va_list args;
+    // va_start(args ,format);
+    // vprintf(format, args);
+    // va_end(args);
 }
 

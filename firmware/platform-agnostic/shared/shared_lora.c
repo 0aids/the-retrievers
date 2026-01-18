@@ -1,4 +1,5 @@
 #include "shared_lora.h"
+#include "loraCfg.h"
 #include "string.h"
 #include "utilsImpl.h"
 
@@ -97,7 +98,7 @@ lora_headerPacket_t lora_createHeaderPacket(uint8_t* payload,
          lora_numDataBytes_d :
          payloadSize;
     lora_headerPacket_t header = {
-        .preamble     = loraImpl_headerPacketPreamble_d,
+        .preamble     = loraCfg_headerPacketPreamble_d,
         .numDataBytes = numDataBytes,
         .packetNumber = 1,
         .numPackets   = numPackets,
@@ -120,7 +121,7 @@ lora_dataPacket_t lora_createDataPacket(uint8_t* payload,
     // index of 31 represents 1st packet, and that should cause an error/not be possible.
     uint16_t packetNumber = (payloadIndex) / lora_numDataBytes_d + 1;
     lora_dataPacket_t dataPacket = {
-        .preamble     = loraImpl_dataPacketPreamble_d,
+        .preamble     = loraCfg_dataPacketPreamble_d,
         .numDataBytes = numDataBytes,
         .packetNumber = packetNumber,
         .numPackets   = numPackets,
@@ -136,7 +137,7 @@ lora_footerPacket_t lora_createFooterPacket(uint8_t* payload,
     uint16_t numPackets = _lora_calculateNumPackets(payloadSize);
     // For now we won't compute the crc.
     lora_footerPacket_t footer = {
-        .preamble = loraImpl_footerPacketPreamble_d,
+        .preamble = loraCfg_footerPacketPreamble_d,
         // Again we are the last packet.
         .packetNumber = numPackets,
         .numPackets   = numPackets,
@@ -187,6 +188,7 @@ void lora_send(uint8_t* payload, const uint16_t payloadSize)
         }
         return;
     }
+    utils_sleepMs(loraCfg_interPacketDelayMs_d);
 
     // Send the data packet
     for (uint16_t i = lora_numDataBytes_d; i < payloadSize;
@@ -206,6 +208,7 @@ void lora_send(uint8_t* payload, const uint16_t payloadSize)
             }
             return;
         }
+        utils_sleepMs(loraCfg_interPacketDelayMs_d);
     }
 
     // Send the footer packet
@@ -465,7 +468,7 @@ void _lora_backendRxDoneCallback(uint8_t* payload, uint16_t size,
     {
         case lora_rxStates_waitingForHeader:
             debug("RX state: waiting for header.\r\n");
-            if (payload[0] == loraImpl_headerPacketPreamble_d)
+            if (payload[0] == loraCfg_headerPacketPreamble_d)
             {
                 if (!_lora_processHeaderPacket(payload, size))
                     goto _lora_backendRxDoneCallback_error_gt;
@@ -487,7 +490,7 @@ void _lora_backendRxDoneCallback(uint8_t* payload, uint16_t size,
             debug("RX state: waiting for data or footer.\r\n");
             // Figure out if footer or header
             // Set state to respective state.
-            if (payload[0] == loraImpl_footerPacketPreamble_d)
+            if (payload[0] == loraCfg_footerPacketPreamble_d)
             {
                 // Process the footer packet
                 if (!_lora_processFooterPacket(payload, size))
@@ -498,7 +501,7 @@ void _lora_backendRxDoneCallback(uint8_t* payload, uint16_t size,
                 loraImpl_setIdle();
                 return;
             }
-            else if (payload[0] == loraImpl_dataPacketPreamble_d)
+            else if (payload[0] == loraCfg_dataPacketPreamble_d)
             {
                 if (!_lora_processDataPacket(payload, size))
                     goto _lora_backendRxDoneCallback_error_gt;

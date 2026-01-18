@@ -1,3 +1,4 @@
+#include <loraCfg.h>
 #include <loraImpl.h>
 #include <radio.h>
 #include <tremo_gpio.h>
@@ -61,48 +62,48 @@ void loraImpl_setCallbacks(void (*onTxDone)(void),
 // init
 void loraImpl_init(void)
 {
-#define LORA_BANDWIDTH                              0         // [0: 125 kHz,
-                                                              //  1: 250 kHz,
-                                                              //  2: 500 kHz,
-                                                              //  3: Reserved]
-#define LORA_SPREADING_FACTOR                       7         // [SF7..SF12]
-#define LORA_CODINGRATE                             1         // [1: 4/5,
-                                                              //  2: 4/6,
-                                                              //  3: 4/7,
-                                                              //  4: 4/8]
-#define LORA_PREAMBLE_LENGTH                        8         // Same for Tx and Rx
-#define LORA_SYMBOL_TIMEOUT                         0         // Symbols
-#define LORA_FIX_LENGTH_PAYLOAD_ON                  false
-#define LORA_IQ_INVERSION_ON                        false
-#define TX_OUTPUT_POWER                             14        // dBm
-#define RF_FREQUENCY                                915000000 // Hz
-    // luckily this takes a pointer and all updates will be noticed, so loraImpl_setCallbacks
-    // can be done later.
+// #define LORA_BANDWIDTH                              0         // [0: 125 kHz,
+//                                                               //  1: 250 kHz,
+//                                                               //  2: 500 kHz,
+//                                                               //  3: Reserved]
+// #define LORA_SPREADING_FACTOR                       7         // [SF7..SF12]
+// #define LORA_CODINGRATE                             1         // [1: 4/5,
+//                                                               //  2: 4/6,
+//                                                               //  3: 4/7,
+//                                                               //  4: 4/8]
+// #define LORA_PREAMBLE_LENGTH                        8         // Same for Tx and Rx
+// #define LORA_SYMBOL_TIMEOUT                         0         // Symbols
+// #define LORA_FIX_LENGTH_PAYLOAD_ON                  false
+// #define LORA_IQ_INVERSION_ON                        false
+// #define TX_OUTPUT_POWER                             14        // dBm
+// #define RF_FREQUENCY                                915000000 // Hz
+//     // luckily this takes a pointer and all updates will be noticed, so loraImpl_setCallbacks
+//     // can be done later.
+//     // No fdev because that's for modem_fsk (an older version of lora)
+//     Radio.SetTxConfig( MODEM_LORA, TX_OUTPUT_POWER, 0, LORA_BANDWIDTH,
+//                                    LORA_SPREADING_FACTOR, LORA_CODINGRATE,
+//                                    LORA_PREAMBLE_LENGTH, LORA_FIX_LENGTH_PAYLOAD_ON,
+//                                    true, 0, 0, LORA_IQ_INVERSION_ON, 3000 );
+
+//     Radio.SetRxConfig( MODEM_LORA, LORA_BANDWIDTH, LORA_SPREADING_FACTOR,
+//                                    LORA_CODINGRATE, 0, LORA_PREAMBLE_LENGTH,
+//                                    LORA_SYMBOL_TIMEOUT, LORA_FIX_LENGTH_PAYLOAD_ON,
+//                                    0, true, 0, 0, LORA_IQ_INVERSION_ON, true );
     Radio.Init(&radioEvents);
-    Radio.SetChannel(RF_FREQUENCY);
-    // No fdev because that's for modem_fsk (an older version of lora)
-    Radio.SetTxConfig( MODEM_LORA, TX_OUTPUT_POWER, 0, LORA_BANDWIDTH,
-                                   LORA_SPREADING_FACTOR, LORA_CODINGRATE,
-                                   LORA_PREAMBLE_LENGTH, LORA_FIX_LENGTH_PAYLOAD_ON,
-                                   true, 0, 0, LORA_IQ_INVERSION_ON, 3000 );
+    Radio.SetChannel(loraCfg_frequency_d);
+    Radio.SetTxConfig(
+        MODEM_LORA, loraCfg_txOutputPower_d, 0, loraCfg_bandwidth_d,
+        loraCfg_spreadingFactor_d, loraCfg_codingRate_d,
+        loraCfg_preambleLength_d, loraCfg_fixLengthPayloadOn_d,
+        loraCfg_crcOn_d, loraCfg_freqHop_d, loraCfg_hopPeriod_d,
+        loraCfg_iqInversionOn_d, loraCfg_txTimeout_d);
 
-    Radio.SetRxConfig( MODEM_LORA, LORA_BANDWIDTH, LORA_SPREADING_FACTOR,
-                                   LORA_CODINGRATE, 0, LORA_PREAMBLE_LENGTH,
-                                   LORA_SYMBOL_TIMEOUT, LORA_FIX_LENGTH_PAYLOAD_ON,
-                                   0, true, 0, 0, LORA_IQ_INVERSION_ON, true );
-    // Radio.SetTxConfig(
-    //     MODEM_LORA, loraImpl_txOutputPower_d, 0, loraImpl_bandwidth_d,
-    //     loraImpl_spreadingFactor_d, loraImpl_codingRate_d,
-    //     loraImpl_preambleLength_d, loraImpl_fixLengthPayloadOn_d,
-    //     loraImpl_crcOn_d, loraImpl_freqHop_d, loraImpl_hopPeriod_d,
-    //     loraImpl_iqInversionOn_d, loraImpl_txTimeout_d);
-
-    // Radio.SetRxConfig(
-    //     MODEM_LORA, loraImpl_bandwidth_d, loraImpl_spreadingFactor_d,
-    //     loraImpl_codingRate_d, 0, loraImpl_preambleLength_d,
-    //     loraImpl_symbolTimeout_d, loraImpl_fixLengthPayloadOn_d, 0,
-    //     loraImpl_crcOn_d, loraImpl_freqHop_d, 0,
-    //     loraImpl_iqInversionOn_d, true);
+    Radio.SetRxConfig(
+        MODEM_LORA, loraCfg_bandwidth_d, loraCfg_spreadingFactor_d,
+        loraCfg_codingRate_d, 0, loraCfg_preambleLength_d,
+        loraCfg_symbolTimeout_d, loraCfg_fixLengthPayloadOn_d, 0,
+        loraCfg_crcOn_d, loraCfg_freqHop_d, 0,
+        loraCfg_iqInversionOn_d, true);
 }
 
 // Deinit
