@@ -87,14 +87,7 @@ void rxErrorCallback()
 }
 
 uint8_t payload[] =
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do "
-    "eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut "
-    "enim ad minim veniam, quis nostrud exercitation ullamco laboris "
-    "nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor "
-    "in reprehenderit in voluptate velit esse cillum dolore eu "
-    "fugiat nulla pariatur. Excepteur sint occaecat cupidatat non "
-    "proident, sunt in culpa qui officia deserunt mollit anim id est "
-    "laborum.";
+"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce nulla urna, laoreet dapibus pellentesque in, porta eget mauris. Sed massa sapien, eleifend a pretium vitae, interdum vitae erat. Maecenas sit amet laoreet magna. Donec ac nibh in ligula cursus lobortis ut a velit. Sed scelerisque, orci pulvinar porttitor eleifend, quam ante aliquam elit, sed pulvinar lectus orci eu ligula. Integer egestas molestie magna, eu interdum tortor aliquet vitae. Suspendisse sagittis, nibh sit amet tempor congue, orci velit mattis sem, non pulvinar ex felis eget elit. Aliquam fringilla tortor lacus, in fermentum felis convallis id. Nullam dolor mauris, mollis at ultrices tincidunt, commodo sed nibh.In congue lectus sit amet urna consequat laoreet. Sed vulputate efficitur velit at aliquet. Donec id purus vehicula, dapibus justo ac, malesuada nunc. Suspendisse id felis et neque feugiat tincidunt ac ac neque. Phasellus venenatis non urna ut ornare. Vivamus at orci urna. Ut euismod facilisis augue a volutpat. Ut facilisis elit et scelerisque mollis. Nunc consequat, erat sed condimentum facilisis, tellus lorem tincidunt risus, eget semper nunc leo id risus.Maecenas condimentum bibendum odio. Maecenas auctor varius nibh ac ullamcorper. Nam convallis, magna in consequat faucibus, elit lorem sodales ipsum, vitae feugiat lacus nulla id arcu. Donec eget finibus libero. Duis vestibulum nec nibh eu semper. In et velit mauris. Proin hendrerit posuere nisl, ac dictum sapien eleifend eget. In hac habitasse platea dictumst. Vivamus eu luctus elit. Mauris in bibendum erat, varius aliquet leo. Interdum et malesuada fames ac ante ipsum primis in faucibus. Quisque consectetur dapibus eros, eu tincidunt nisi fermentum non. Nam velit purus, sollicitudin quis purus non, dignissim imperdiet metus. Sed rutrum, nulla sit amet dignissim suscipit, lectus augue gravida felis, nec gravida enim nunc malesuada velit.Etiam at malesuada justo. Vestibulum tincidunt blandit nulla, et ullamcorper sem cursus sed. Sed nec massa id velit dictum feugiat. Aliquam non. ";
 
 void main(void)
 {
