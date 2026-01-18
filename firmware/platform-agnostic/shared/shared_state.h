@@ -97,7 +97,6 @@ static inline const char* psatFSM_eventTypeToString(psatFSM_eventType_e type) {
 }
 
 typedef struct {
-    gps_data_t gpsData;
     psatFSM_state_e currentFSMState;
 } psatGlobal_state_t;
 
