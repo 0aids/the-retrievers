@@ -4,7 +4,7 @@ include($ENV{IDF_PATH}/tools/cmake/version.cmake)
 set(EXTRA_COMPONENT_DIRS
 "${CMAKE_SOURCE_DIR}/../../platform-agnostic" "../components"
 )
-set(TEST_COMPONENTS "buzzers")
+set(TEST_COMPONENTS "buzzers" "servo")
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 project(psat-station-test)
