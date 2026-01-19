@@ -3,6 +3,7 @@
 #include "shared_state.h"
 
 void globalEventHandler(const psatFSM_event_t* event);
+psatFSM_state_e psatFSM_startStateHandler(const psatFSM_event_t* event);
 psatFSM_state_e psatFSM_prelaunchStateHandler(const psatFSM_event_t* event);
 psatFSM_state_e psatFSM_ascentStateHandler(const psatFSM_event_t* event);
 psatFSM_state_e psatFSM_deployPendingStateHandler(const psatFSM_event_t* event);

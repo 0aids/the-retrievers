@@ -1,5 +1,5 @@
 #include "ldr.h"
-#include "freertos/idf_additions.h"
+
 
 
 //
@@ -74,11 +74,11 @@ void ldr_setup(void)
 {
     //-------------ADC1 Init---------------//
     // sets the handle and initConfig1 initialises ADC1 and disables ULP mode
-    adc_oneshot_unit_init_cfg_t initConfig1 = {
+    adc_oneshot_unit_init_cfg_t initConfigLDR = {
         .unit_id = ADC_UNIT_2,
         .ulp_mode = ADC_ULP_MODE_DISABLE,
     };
-    ESP_ERROR_CHECK(adc_oneshot_new_unit(&initConfig1, &ldr_adcHandlers_g.adc1));
+    ESP_ERROR_CHECK(adc_oneshot_new_unit(&initConfigLDR, &ldr_adcHandlers_g.adc1));
 
     //-------------ADC1 Config---------------//
     // Attenuation determines the range or maximum voltage that we can measure
@@ -155,4 +155,17 @@ void ldr_deinit(void){
     ESP_ERROR_CHECK(adc_oneshot_del_unit(ldr_adcHandlers_g.adc1));
     ESP_LOGD(ldr_tag_c, "deregister %s calibration scheme", "Line Fitting");
     ESP_ERROR_CHECK(adc_cali_delete_scheme_line_fitting(ldr_adcHandlers_g.adc1CaliChan0));
+}
+
+ldr_preflightTest_t ldr_preflightTest(void) {
+    ldr_preflightTest_t test = {};
+    
+    test.stateBefore = ldr_queryState();
+    ldr_setup();
+    test.stateMiddle = ldr_queryState();
+    test.sampleData = ldr_getVoltage();
+    ldr_deinit();
+    test.stateAfter = ldr_queryState();
+
+    return test;
 }

@@ -1,0 +1,3 @@
+## Component Manifest for loraHal
+dependencies:
+  idf: ">=4.4"
