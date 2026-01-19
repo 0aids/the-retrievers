@@ -1,3 +1,5 @@
+// AI Disclosure - Written primarily using AI (underlying implementation written by Aidan, testing functionality and tests
+//                                             written by Gemini 2.5)
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>

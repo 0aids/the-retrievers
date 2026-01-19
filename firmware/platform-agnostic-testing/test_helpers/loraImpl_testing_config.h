@@ -1,3 +1,5 @@
+// AI Disclosure - Written primarily using AI (underlying implementation written by Aidan, testing functionality and tests
+//                                             written by Gemini 2.5)
 #ifndef LORAIMPL_TESTING_CONFIG_H
 #define LORAIMPL_TESTING_CONFIG_H
 
