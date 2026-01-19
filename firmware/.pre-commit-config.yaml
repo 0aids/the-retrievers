@@ -10,7 +10,7 @@ repos:
         types: [c]
         args:
           - --enable=warning,performance,style,portability
-          - --std=gnu11
+          - --std=c23
           - --suppress=missingIncludeSystem
           - --error-exitcode=1
           - --inline-suppr
@@ -33,6 +33,6 @@ repos:
     hooks:
       - id: idf-compile-check
         name: ESP-IDF compile (no flash)
-        entry: bash -c 'cd firmware/psat-station && idf.py build'
+        entry: bash -c 'cd firmware && nix develop --command sh -c "cd psat-station && idf.py build"'
         language: system
         pass_filenames: false
