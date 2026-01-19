@@ -23,8 +23,12 @@
                   # pkgs.cmake
                   # pkgs.bear
               ];
+              shellHook = oldShell.shellHook + ''
+                  export IDF_TOOLCHAIN=clang
+              '';
           }
       );
     }
     ;
 }
+
