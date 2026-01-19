@@ -38,7 +38,6 @@ psatFSM_state_e psatFSM_prelaunchStateHandler(const psatFSM_event_t* event) {
     switch (event->type) {
         case psatFSM_eventType_prelaunchComplete:
             servo_init(&servo, GPIO_NUM_13);
-            button_disable(button_id_prelaunch);
             return psatFSM_state_ascent;
 
         default:
@@ -68,15 +67,6 @@ psatFSM_state_e psatFSM_deployPendingStateHandler(
 
     switch (event->type) {
         case psatFSM_eventType_deploymentConfirmed:
-            timer_stop(timer_timerId_10s);
-            timer_start(timer_timerId_1s);
-            timer_start(timer_timerId_5s);
-            timer_startOnce(timer_timerId_mechanical, 10000);
-
-            gps_startTask();
-
-            ldr_killTask();
-            button_disable(button_id_ldr);
             return psatFSM_state_deployed;
 
         case psatFSM_eventType_deploymentTimeout:
@@ -108,8 +98,6 @@ psatFSM_state_e psatFSM_descentStateHandler(const psatFSM_event_t* event) {
             gps_logGpsSnapshot(&snapshot);
             return psatFSM_state_descent;
         case psatFSM_eventType_landingConfirmed:
-            timer_stop(timer_timerId_1s);
-            button_disable(button_id_landing);
             return psatFSM_state_landing;
         default:
             return psatFSM_state_descent;

@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 #include "buttons.h"
 #include "buzzer.h"
 #include "esp_log.h"
@@ -13,40 +11,35 @@
 
 void psatFSM_prelaunchEntryHandler() {
     gps_init();
-
     timer_init();
-    timer_start(timer_timerId_10s);
-
-    ldr_startTask();
-
     button_init();
-    button_enable(button_id_prelaunch);
-    button_enable(button_id_landing);
-    button_enable(button_id_ldr);
-
     buzzer_init();
+
+    timer_start(timer_timerId_10s);
+    button_enable(button_id_prelaunch);
+    ldr_startTask();
 }
-void psatFSM_ascentEntryHandler() {
-    printf("Entering state psatFSM_ascentEntryHandler\n");
-}
-void psatFSM_deployPendingEntryHandler() {
-    printf("Entering state psatFSM_deployPendingEntryHandler\n");
-}
+
+void psatFSM_ascentEntryHandler() { button_enable(button_id_ldr); }
+
+void psatFSM_deployPendingEntryHandler() {}
+
 void psatFSM_deployedEntryHandler() {
-    printf("Entering state psatFSM_deployedEntryHandler\n");
+    ldr_killTask();
+    button_disable(button_id_ldr);
+    timer_stop(timer_timerId_10s);
+
+    timer_start(timer_timerId_1s);
+    timer_start(timer_timerId_5s);
+    timer_startOnce(timer_timerId_mechanical, 10000);
 }
+
 void psatFSM_descentEntryHandler() {
-    printf("Entering state psatFSM_descentEntryHandler\n");
+    gps_startTask();
+    button_enable(button_id_landing);
 }
-void psatFSM_landingEntryHandler() {
-    printf("Entering state psatFSM_landingEntryHandler\n");
-}
-void psatFSM_recoveryEntryHandler() {
-    printf("Entering state psatFSM_recoveryEntryHandler\n");
-}
-void psatFSM_lowPowerEntryHandler() {
-    printf("Entering state psatFSM_lowPowerEntryHandler\n");
-}
-void psatFSM_errorEntryHandler() {
-    printf("Entering state psatFSM_errorEntryHandler\n");
-}
+
+void psatFSM_landingEntryHandler() {}
+void psatFSM_recoveryEntryHandler() {}
+void psatFSM_lowPowerEntryHandler() {}
+void psatFSM_errorEntryHandler() {}

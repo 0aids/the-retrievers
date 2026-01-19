@@ -1,31 +1,30 @@
 #include <stdio.h>
 
+#include "buttons.h"
+#include "buzzer.h"
+#include "esp_log.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "gps_driver.h"
+#include "ldr_task.h"
+#include "servo.h"
+#include "state_handlers.h"
+#include "timers.h"
+
 void psatFSM_startExitHandler() {}  // do nothing
 
-void psatFSM_prelaunchExitHandler() {
-    printf("Exiting state psatFSM_prelaunchExitHandler\n");
-}
-void psatFSM_ascentExitHandler() {
-    printf("Exiting state psatFSM_ascentExitHandler\n");
-}
-void psatFSM_deployPendingExitHandler() {
-    printf("Exiting state psatFSM_deployPendingExitHandler\n");
-}
-void psatFSM_deployedExitHandler() {
-    printf("Exiting state psatFSM_deployedExitHandler\n");
-}
+void psatFSM_prelaunchExitHandler() { button_disable(button_id_prelaunch); }
+
+void psatFSM_ascentExitHandler() {}
+void psatFSM_deployPendingExitHandler() {}
+
+void psatFSM_deployedExitHandler() {}
 void psatFSM_descentExitHandler() {
-    printf("Exiting state psatFSM_descentExitHandler\n");
+    timer_stop(timer_timerId_1s);
+    button_disable(button_id_landing);
 }
-void psatFSM_landingExitHandler() {
-    printf("Exiting state psatFSM_landingExitHandler\n");
-}
-void psatFSM_recoveryExitHandler() {
-    printf("Exiting state psatFSM_recoveryExitHandler\n");
-}
-void psatFSM_lowPowerExitHandler() {
-    printf("Exiting state psatFSM_lowPowerExitHandler\n");
-}
-void psatFSM_errorExitHandler() {
-    printf("Exiting state psatFSM_errorExitHandler\n");
-}
+
+void psatFSM_landingExitHandler() {}
+void psatFSM_recoveryExitHandler() {}
+void psatFSM_lowPowerExitHandler() {}
+void psatFSM_errorExitHandler() {}
