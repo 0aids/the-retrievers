@@ -33,6 +33,6 @@ repos:
     hooks:
       - id: idf-compile-check
         name: ESP-IDF compile (no flash)
-        entry: bash -c 'cd firmware/psat-station && idf.py build'
+        entry: bash -c 'cd firmware/psat-station && nix develop --command sh -c "idf.py build"'
         language: system
         pass_filenames: false

@@ -15,7 +15,7 @@ static bool adcCalibrationInit(adc_unit_t unit, adc_channel_t channel, adc_atten
     bool calibrated = false;
 
 #if ADC_CALI_SCHEME_CURVE_FITTING_SUPPORTED
-    // Sets the calibtration scheme to curve fitting and configures it
+    // Sets the calibration scheme to curve fitting and configures it
     if (!calibrated) {
         ESP_LOGI(battery_tag_c, "calibration scheme version is %s", "Curve Fitting");
         adc_cali_curve_fitting_config_t cali_config = {
@@ -32,7 +32,7 @@ static bool adcCalibrationInit(adc_unit_t unit, adc_channel_t channel, adc_atten
 #endif
 
 #if ADC_CALI_SCHEME_LINE_FITTING_SUPPORTED
-    // Sets the calibtration scheme to line fitting and configures it
+    // Sets the calibration scheme to line fitting and configures it
     if (!calibrated) {
         ESP_LOGI(battery_tag_c, "calibration scheme version is %s", "Line Fitting");
         adc_cali_line_fitting_config_t cali_config = {
@@ -98,7 +98,7 @@ int battery_getVoltage(void){
 
 char battery_stateConfigBuffer_g[battery_stateConfigBufferSize_d] = {0};
 
-batterty_state_t battery_queryState(void){
+battery_state_t battery_queryState(void){
     battery_state.stateString = 0;
     FILE* memStream;
     char* tempBuffer = {0};
@@ -116,7 +116,7 @@ batterty_state_t battery_queryState(void){
     // close the memory stream to avoid ...
     fclose(memStream);
 
-    // truncates the tempBuffer to 1024 bytes if the buffer ever goes over and compies the information to the state buffer
+    // truncates the tempBuffer to 1024 bytes if the buffer ever goes over and copies the information to the state buffer
     size_t trueSize = (battery_stateConfigBufferSize_d - 1 < size ) ? battery_stateConfigBufferSize_d - 1 : size;
     memcpy(battery_stateConfigBuffer_g,tempBuffer, trueSize);
     battery_stateConfigBuffer_g[trueSize] = 0;

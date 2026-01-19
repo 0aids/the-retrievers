@@ -1,10 +1,12 @@
-# This is the project CMakeLists.txt file for the test subproject
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.5)
+include($ENV{IDF_PATH}/tools/cmake/version.cmake)
 
-# Include the components directory of the main application:
-#
-set(EXTRA_COMPONENT_DIRS "../components")
+set(TEST_COMPONENTS "buzzers" "servo")
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
-idf_build_set_property(MINIMAL_BUILD ON)
-project(psat-station_unitTest)
+project(psat-station-test)
+idf_build_set_property(
+    INCLUDE_DIRECTORIES
+    "${CMAKE_SOURCE_DIR}/../platform-agnostic/shared"
+    APPEND
+)

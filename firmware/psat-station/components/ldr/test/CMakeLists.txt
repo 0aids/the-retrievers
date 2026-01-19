@@ -1,3 +1,3 @@
 idf_component_register(SRC_DIRS "."
-                    REQUIRES unity
-                    INCLUDE_DIRS ".")
+                       INCLUDE_DIRS "."
+                       REQUIRES unity config driver)

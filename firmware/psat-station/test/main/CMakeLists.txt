@@ -1,3 +1,1 @@
-idf_component_register(SRCS "unit_test.c"
-                    PRIV_REQUIRES unity
-                    INCLUDE_DIRS ".")
+idf_component_register(SRCS "psat_station_test.c" INCLUDE_DIRS "." REQUIRES unity)

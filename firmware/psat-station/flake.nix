@@ -24,6 +24,8 @@
                   # pkgs.bear
                   #
                   pkgs.pre-commit
+		  pkgs.cspell
+		  pkgs.cppcheck
               ];
               shellHook = oldShell.shellHook + ''
                   export IDF_TOOLCHAIN=clang
