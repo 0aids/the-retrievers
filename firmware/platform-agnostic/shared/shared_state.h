@@ -40,8 +40,8 @@ typedef enum { PSAT_FSM_EVENT_TYPE_LIST } psatFSM_eventType_e;
 
 typedef struct {
     int global;
-    psatFsm_eventType_e type;
-} psatFsm_event_t;
+    psatFSM_eventType_e type;
+} psatFSM_event_t;
 
 typedef struct {
     float latitude;
