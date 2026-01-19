@@ -22,6 +22,8 @@
                   # pkgs.gnumake
                   # pkgs.cmake
                   # pkgs.bear
+                  #
+                  pkgs.pre-commit
               ];
               shellHook = oldShell.shellHook + ''
                   export IDF_TOOLCHAIN=clang
