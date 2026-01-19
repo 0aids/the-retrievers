@@ -126,14 +126,9 @@ void psatFSM_mainLoop(void* arg) {
         ESP_LOGI("FSM", "Received Event: %s",
                  psatFSM_eventTypeToString(currentEvent.type));
 
-        psatFSM_state_e currentState;
-
-        xSemaphoreTake(stateMutex_s, portMAX_DELAY);
-        currentState = psat_globalState.currentFSMState;
-        xSemaphoreGive(stateMutex_s);
-
         // TODO: do a check for state count
 
+        psatFSM_state_e currentState = psatFSM_getCurrentState();
         psatFSM_state_t currentStateDefinition = stateTable[currentState];
         if (currentStateDefinition.stateHandler) {
             nextState = currentStateDefinition.stateHandler(&currentEvent);
@@ -151,9 +146,7 @@ void psatFSM_mainLoop(void* arg) {
             currentStateDefinition.onStateExit();
 
             // change the state to the next state
-            xSemaphoreTake(stateMutex_s, portMAX_DELAY);
-            psat_globalState.currentFSMState = nextState;
-            xSemaphoreGive(stateMutex_s);
+            psatFSM_setCurrentState(nextState);
 
             // call the entry function for the new state
             psatFSM_state_t nextStateDefinition = stateTable[nextState];
@@ -196,5 +189,40 @@ void psatFSM_killTask() {
     if (stateMutex_s != NULL) {
         vSemaphoreDelete(stateMutex_s);
         stateMutex_s = NULL;
+    }
+}
+
+void psatFSM_stateOverride(psatFSM_state_e newState) {
+    ESP_LOGI(TAG, "Overriding current state to %i", newState);
+    psatFSM_setCurrentState(newState);
+
+    psatFSM_state_t newStateDefinition = stateTable[newState];
+    newStateDefinition.onStateEntry();
+}
+
+void psatFSM_stateNext() {
+    ESP_LOGI(TAG, "Moving to the next state");
+
+    psatFSM_state_e currentState = psatFSM_getCurrentState();
+    psatFSM_state_t currentStateDefinition = stateTable[currentState];
+    currentStateDefinition.onStateExit();
+
+    psatFSM_state_e nextState = currentStateDefinition.defaultNextState;
+    psatFSM_setCurrentState(nextState);
+
+    psatFSM_state_t nextStateDefinition = stateTable[nextState];
+    nextStateDefinition.onStateEntry();
+}
+
+void psatFSM_stateFastForward(psatFSM_state_e target) {
+    ESP_LOGI(TAG, "Fast forwarding current state to %i", target);
+    psatFSM_state_e currentState = psatFSM_getCurrentState();
+    if (target < currentState) {
+        return;
+    }
+
+    while (currentState != target) {
+        psatFSM_stateNext();
+        currentState = psatFSM_getCurrentState();
     }
 }
