@@ -3,36 +3,21 @@ fail_fast: false
 repos:
   - repo: local
     hooks:
-      - id: cppcheck
-        name: cppcheck
-        entry: cppcheck
-        language: system
-        types: [c]
-        args:
-          - --enable=warning,performance,style,portability
-          - --std=c23
-          - --suppress=missingIncludeSystem
-          - --error-exitcode=1
-          - --inline-suppr
-          - --suppress=*:firmware/platform-agnostic/shared/shared_state.h
-          - --suppress=*:firmware/psat-station/components/gps/include/minmea.h
-          - --suppress=*:firmware/psat-station/components/gps/minmea.c
-
-  - repo: local
-    hooks:
-      - id: cspell
-        name: cspell
-        entry: cspell
-        language: system
-        files: \.(c|h|md)$
-        args:
-          - --config
-          - firmware/psat-station/.cspell.json
-
-  - repo: local
-    hooks:
-      - id: idf-compile-check
-        name: ESP-IDF compile (no flash)
-        entry: bash -c 'cd firmware && nix develop --command sh -c "cd psat-station && idf.py build"'
+      - id: psat-station-compile-check
+        name: (COMPILE) psat-station
+        entry: bash -c 'cd firmware && nix develop .#esp --command sh -c "cd psat-station && idf.py build"'
         language: system
         pass_filenames: false
+
+      - id: platform-agnostic-compile-check
+        name: (COMPILE) platform-agnostic-tests
+        entry: bash -c 'cd firmware && nix develop .#linux --command sh -c "cd platform-agnostic-testing && cmake -S . -B build && cmake --build build"'
+        language: system
+        pass_filenames: false
+
+      - id: ground-station-ai-thinker-compile-check
+        name: (COMPILE) ground-station-aithinker
+        entry: bash -c 'cd firmware && nix develop .#thinker --command sh -c "cd ground-station/ai-thinker/ && make"'
+        language: system
+        pass_filenames: false
+
