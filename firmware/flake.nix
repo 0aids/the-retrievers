@@ -7,24 +7,123 @@
     esp-dev.url = "github:mirrexagon/nixpkgs-esp-dev";
   };
 
-  outputs = { self, nixpkgs, esp-dev }:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      esp-dev,
+    }:
     let
-      system = "x86_64-linux";
-      pkgs = nixpkgs.legacyPackages.${system};
-      # Choose your target: esp32-idf, esp32s3-idf, esp8266-rtos-sdk, etc.
-      esp-shell = esp-dev.devShells.${system}.esp-idf-full;
+      # Define the architectures you want to support
+      supportedSystems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "x86_64-darwin"
+        "aarch64-darwin"
+      ];
+
+
+      # Helper function to generate an attrset for each system
+      forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
     in
     {
-      devShells.${system}.default = esp-shell.overrideAttrs (
-          oldShell: {
-              nativeBuildInputs = (oldShell.nativeBuildInputs or []) ++ [
-                  # pkgs.clang-tools
-                  # pkgs.gnumake
-                  # pkgs.cmake
-                  # pkgs.bear
-              ];
-          }
+      devShells = forAllSystems (
+        system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+          # Access the specific shell for the current system
+          esp-shell = esp-dev.devShells.${system}.esp-idf-full;
+          defaultPkgs = with pkgs; [
+              pre-commit
+          ];
+        in
+        {
+          esp = esp-shell.overrideAttrs (oldShell: {
+            nativeBuildInputs = (oldShell.nativeBuildInputs or [ ]) ++ [
+              # Add extra packages here if needed:
+              # pkgs.cmake
+              # pkgs.ninja
+            ]++ defaultPkgs;
+            shellHook = (oldShell.shellHook or "") + ''
+            if [ "$(uname)" != "Darwin" ]; then
+              export IDF_TOOLCHAIN=clang
+            fi
+            '';
+          });
+
+          # Ai thinker
+          thinker =
+                  pkgs.mkShell.override
+        {
+          # Override stdenv in order to change compiler:
+          # stdenv = pkgs.clangStdenv;
+        }
+        {
+          packages = with pkgs;
+            [
+                bear
+                cmake
+                clang-tools
+                gcc-arm-embedded
+                python313
+                uv
+                usbutils
+                screen
+                cmake-language-server
+            ]++ defaultPkgs
+            ++ (
+              if system == "aarch64-darwin"
+              then []
+              else [gdb]
+            );
+          shellHook = ''
+            export ARM_TOOLCHAIN_ROOT=${pkgs.gcc-arm-embedded}/arm-none-eabi/include
+          '';
+        };
+          linux =
+            pkgs.mkShell.override
+              {
+                # Override stdenv in order to change compiler:
+                # stdenv = pkgs.clangStdenv;
+              }
+              {
+                packages =
+                  with pkgs;
+                  [
+                    bear
+                    cmake
+                    clang-tools
+                    gcc-arm-embedded
+                    python313
+                    uv
+                    usbutils
+                    screen
+                    cmake-language-server
+                  ] ++ defaultPkgs
+                  ++ (if system == "aarch64-darwin" then [ ] else [ gdb ]);
+                shellHook = ''
+                  export ARM_TOOLCHAIN_ROOT=${pkgs.gcc-arm-embedded}/arm-none-eabi/include
+                '';
+              };
+          default =
+            pkgs.mkShell.override
+              {
+                # Override stdenv in order to change compiler:
+                # stdenv = pkgs.clangStdenv;
+              }
+              {
+                packages =
+                  with pkgs;
+                  [
+                      clang-tools
+                      pre-commit
+                  ]
+                  ++ (if system == "aarch64-darwin" then [ ] else [ gdb ]);
+                shellHook = ''
+                  export ARM_TOOLCHAIN_ROOT=${pkgs.gcc-arm-embedded}/arm-none-eabi/include
+                '';
+              };
+        }
       );
-    }
-    ;
+    };
 }

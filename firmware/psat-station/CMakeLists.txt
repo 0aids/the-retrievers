@@ -9,10 +9,11 @@ idf_build_set_property(
     "${CMAKE_SOURCE_DIR}/../platform-agnostic/shared"
     APPEND
 )
+# Who the fuck set -Werror istg
+idf_build_set_property(C_COMPILE_OPTIONS -Wno-error APPEND)
 
 get_filename_component(C_COMPILER_NAME ${CMAKE_C_COMPILER} NAME)
 if ("${C_COMPILER_NAME}" STREQUAL "clang")
     message("-- !!!compiler is ${C_COMPILER_NAME}, disabling -Werror (-Wno-error)!!!")
-    idf_build_set_property(C_COMPILE_OPTIONS -Wno-error APPEND)
     idf_build_set_property(C_COMPILE_OPTIONS -Wno-implicit-function-declaration APPEND)
 endif()
