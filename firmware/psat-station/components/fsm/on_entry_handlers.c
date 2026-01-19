@@ -1,8 +1,30 @@
-
 #include <stdio.h>
 
+#include "buttons.h"
+#include "buzzer.h"
+#include "esp_log.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "gps_driver.h"
+#include "ldr_task.h"
+#include "servo.h"
+#include "state_handlers.h"
+#include "timers.h"
+
 void psatFSM_prelaunchEntryHandler() {
-    printf("Entering state psatFSM_prelaunchEntryHandler\n");
+    gps_init();
+
+    timer_init();
+    timer_start(timer_timerId_10s);
+
+    ldr_startTask();
+
+    button_init();
+    button_enable(button_id_prelaunch);
+    button_enable(button_id_landing);
+    button_enable(button_id_ldr);
+
+    buzzer_init();
 }
 void psatFSM_ascentEntryHandler() {
     printf("Entering state psatFSM_ascentEntryHandler\n");

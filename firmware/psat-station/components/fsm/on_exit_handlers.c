@@ -1,5 +1,7 @@
 #include <stdio.h>
 
+void psatFSM_startExitHandler() {}  // do nothing
+
 void psatFSM_prelaunchExitHandler() {
     printf("Exiting state psatFSM_prelaunchExitHandler\n");
 }

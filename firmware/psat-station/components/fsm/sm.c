@@ -17,6 +17,10 @@ static QueueHandle_t eventQueue_s = NULL;
 static SemaphoreHandle_t stateMutex_s = NULL;
 
 static psatFSM_state_t stateTable[] = {
+    [psatFSM_state_start] = {.state = psatFSM_state_start,
+                             .defaultNextState = psatFSM_state_prelaunch,
+                             .onStateExit = psatFSM_startExitHandler,
+                             .stateHandler = psatFSM_startStateHandler},
     [psatFSM_state_prelaunch] = {.state = psatFSM_state_prelaunch,
                                  .defaultNextState = psatFSM_state_ascent,
                                  .onStateEntry = psatFSM_prelaunchEntryHandler,

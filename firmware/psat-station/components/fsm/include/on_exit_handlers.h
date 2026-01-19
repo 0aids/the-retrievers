@@ -1,5 +1,6 @@
 #pragma once
 
+void psatFSM_startExitHandler();
 void psatFSM_prelaunchExitHandler();
 void psatFSM_ascentExitHandler();
 void psatFSM_deployPendingExitHandler();

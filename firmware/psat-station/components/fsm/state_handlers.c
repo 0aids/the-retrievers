@@ -15,7 +15,7 @@
 static volatile servo_data_t servo;
 
 void globalEventHandler(const psatFSM_event_t* event) {
-    static const char* TAG = "PSAT_FSM-Global-Event";
+    // static const char* TAG = "PSAT_FSM-Global-Event";
 
     switch (event->type) {
         case psatFSM_eventType_unfoldMechanism:
@@ -27,29 +27,17 @@ void globalEventHandler(const psatFSM_event_t* event) {
     }
 }
 
+// this state purely kick-starts the FSM, and immediately move into prelaunch
+psatFSM_state_e psatFSM_startStateHandler(const psatFSM_event_t* event) {
+    return psatFSM_state_prelaunch;
+}
+
 psatFSM_state_e psatFSM_prelaunchStateHandler(const psatFSM_event_t* event) {
-    static const char* TAG = "PSAT_FSM-Prelaunch";
+    // static const char* TAG = "PSAT_FSM-Prelaunch";
 
     switch (event->type) {
-        case psatFSM_eventType_startPrelaunch:
-            gps_init();
-
-            timer_init();
-            timer_start(timer_timerId_10s);
-
-            ldr_startTask();
-
-            button_init();
-            button_enable(button_id_prelaunch);
-            button_enable(button_id_landing);
-            button_enable(button_id_ldr);
-
-            buzzer_init();
-
-            servo_init(&servo, GPIO_NUM_13);
-            return psatFSM_state_prelaunch;
-
         case psatFSM_eventType_prelaunchComplete:
+            servo_init(&servo, GPIO_NUM_13);
             button_disable(button_id_prelaunch);
             return psatFSM_state_ascent;
 
@@ -76,7 +64,7 @@ psatFSM_state_e psatFSM_ascentStateHandler(const psatFSM_event_t* event) {
 
 psatFSM_state_e psatFSM_deployPendingStateHandler(
     const psatFSM_event_t* event) {
-    static const char* TAG = "PSAT_FSM-Deployment-Pending";
+    // static const char* TAG = "PSAT_FSM-Deployment-Pending";
 
     switch (event->type) {
         case psatFSM_eventType_deploymentConfirmed:
@@ -100,7 +88,7 @@ psatFSM_state_e psatFSM_deployPendingStateHandler(
 }
 
 psatFSM_state_e psatFSM_deployedStateHandler(const psatFSM_event_t* event) {
-    static const char* TAG = "PSAT_FSM-Deployed";
+    // static const char* TAG = "PSAT_FSM-Deployed";
 
     switch (event->type) {
         case psatFSM_eventType_timer5s:
@@ -111,7 +99,7 @@ psatFSM_state_e psatFSM_deployedStateHandler(const psatFSM_event_t* event) {
 }
 
 psatFSM_state_e psatFSM_descentStateHandler(const psatFSM_event_t* event) {
-    static const char* TAG = "PSAT_FSM-Descent";
+    // static const char* TAG = "PSAT_FSM-Descent";
 
     switch (event->type) {
         case psatFSM_eventType_timer5s:
@@ -129,7 +117,7 @@ psatFSM_state_e psatFSM_descentStateHandler(const psatFSM_event_t* event) {
 }
 
 psatFSM_state_e psatFSM_landingStateHandler(const psatFSM_event_t* event) {
-    static const char* TAG = "PSAT_FSM-Landing";
+    // static const char* TAG = "PSAT_FSM-Landing";
 
     switch (event->type) {
         case psatFSM_eventType_timer5s:
@@ -140,7 +128,7 @@ psatFSM_state_e psatFSM_landingStateHandler(const psatFSM_event_t* event) {
 }
 
 psatFSM_state_e psatFSM_recoveryStateHandler(const psatFSM_event_t* event) {
-    static const char* TAG = "PSAT_FSM-Recovery";
+    // static const char* TAG = "PSAT_FSM-Recovery";
 
     switch (event->type) {
         case psatFSM_eventType_audioBeep:
@@ -152,7 +140,7 @@ psatFSM_state_e psatFSM_recoveryStateHandler(const psatFSM_event_t* event) {
 }
 
 psatFSM_state_e psatFSM_lowPowerStateHandler(const psatFSM_event_t* event) {
-    static const char* TAG = "PSAT_FSM-LowPower";
+    // static const char* TAG = "PSAT_FSM-LowPower";
 
     switch (event->type) {
         default:
@@ -161,7 +149,7 @@ psatFSM_state_e psatFSM_lowPowerStateHandler(const psatFSM_event_t* event) {
 }
 
 psatFSM_state_e psatFSM_errorStateHandler(const psatFSM_event_t* event) {
-    static const char* TAG = "PSAT_FSM-Error";
+    // static const char* TAG = "PSAT_FSM-Error";
 
     switch (event->type) {
         default:
