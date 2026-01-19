@@ -1,6 +1,12 @@
 #include "shared_lora.h"
+#include "loraCfg.h"
 #include "string.h"
 #include "utilsImpl.h"
+
+#define debug(...)                                                   \
+    utils_log("[%s:%d] ", __PRETTY_FUNCTION__,          \
+              __LINE__);                                             \
+    utils_log(__VA_ARGS__)
 
 // Brief:
 // The implementation of an n-byte (max 1mb) lora packeting system
@@ -19,47 +25,58 @@ lora_globalState_t lora_globalState_g = {
     .dataReceived           = false,
     .dataBuffer             = {},
     .dataCurrentContentSize = 0,
-    .backendRSSI            = 0,
-    .backendSNR             = 0,
-    .RXState                = lora_RXStates_WaitingForHeader,
-    .backendRXDone          = false,
-    .backendTXDone          = false,
-    .backendRXError         = false,
-    .backendRXTimeout       = false,
-    .backendTXTimeout       = false,
-    .errorType              = lora_RXErrorTypes_none,
+    .backendRssi            = 0,
+    .backendSnr             = 0,
+    .rxState                = lora_rxStates_waitingForHeader,
+    .backendRxDone          = false,
+    .backendTxDone          = false,
+    .backendRxError         = false,
+    .backendRxTimeout       = false,
+    .backendTxTimeout       = false,
+    .errorType              = lora_rxErrorTypes_none,
 };
 
-static bool _lora_waitUntilTXDone(void)
+static bool _lora_waitUntilTxDone(void)
 {
-    while (!lora_globalState_g.backendTXDone)
+    debug("Waiting for TX to complete...\r\n");
+    while (!lora_globalState_g.backendTxDone)
     {
-        loraImpl_IRQProcess();
-        utils_sleepms(1);
+        loraImpl_irqProcess();
+        utils_sleepMs(1);
         // spinloop
-        if (lora_globalState_g.backendTXTimeout)
+        if (lora_globalState_g.backendTxTimeout)
         {
+            debug("TX timeout occurred while waiting.\r\n");
             return false;
         }
     }
-    lora_globalState_g.backendTXDone = false;
+    lora_globalState_g.backendTxDone = false;
+    debug("TX completed successfully.\r\n");
     return true;
 }
 
 void lora_init()
 {
+    debug("Initializing lora...\r\r\n");
     loraImpl_init();
+    loraImpl_setRx(0);
     loraImpl_setCallbacks(
-        _lora_backendTXDoneCallback, _lora_backendRXDoneCallback,
-        _lora_backendTXTimeoutCallback,
-        _lora_backendRXTimeoutCallback, _lora_backendRXErrorCallback);
+        _lora_backendTxDoneCallback, _lora_backendRxDoneCallback,
+        _lora_backendTxTimeoutCallback,
+        _lora_backendRxTimeoutCallback, _lora_backendRxErrorCallback);
+    debug("Initialization complete!\r\r\n");
+}
+
+void lora_setRx(uint16_t ms)
+{
+    loraImpl_setRx(ms);
 }
 
 void lora_deinit()
 {
     loraImpl_deinit();
     memset(&lora_globalState_g, 0, sizeof(lora_globalState_g));
-    lora_globalState_g.RXState = lora_RXStates_WaitingForHeader;
+    lora_globalState_g.rxState = lora_rxStates_waitingForHeader;
 }
 
 static uint16_t _lora_calculateNumPackets(uint16_t payloadSize)
@@ -81,7 +98,7 @@ lora_headerPacket_t lora_createHeaderPacket(uint8_t* payload,
          lora_numDataBytes_d :
          payloadSize;
     lora_headerPacket_t header = {
-        .preamble     = lora_headerPacketPreamble_d,
+        .preamble     = loraCfg_headerPacketPreamble_d,
         .numDataBytes = numDataBytes,
         .packetNumber = 1,
         .numPackets   = numPackets,
@@ -104,7 +121,7 @@ lora_dataPacket_t lora_createDataPacket(uint8_t* payload,
     // index of 31 represents 1st packet, and that should cause an error/not be possible.
     uint16_t packetNumber = (payloadIndex) / lora_numDataBytes_d + 1;
     lora_dataPacket_t dataPacket = {
-        .preamble     = lora_dataPacketPreamble_d,
+        .preamble     = loraCfg_dataPacketPreamble_d,
         .numDataBytes = numDataBytes,
         .packetNumber = packetNumber,
         .numPackets   = numPackets,
@@ -120,7 +137,7 @@ lora_footerPacket_t lora_createFooterPacket(uint8_t* payload,
     uint16_t numPackets = _lora_calculateNumPackets(payloadSize);
     // For now we won't compute the crc.
     lora_footerPacket_t footer = {
-        .preamble = lora_footerPacketPreamble_d,
+        .preamble = loraCfg_footerPacketPreamble_d,
         // Again we are the last packet.
         .packetNumber = numPackets,
         .numPackets   = numPackets,
@@ -129,43 +146,49 @@ lora_footerPacket_t lora_createFooterPacket(uint8_t* payload,
     return footer;
 }
 
-void lora_setCallbacks(void (*onTXDone)(void),
-                       void (*onRXDone)(uint8_t* payload,
+void lora_setCallbacks(void (*onTxDone)(void),
+                       void (*onRxDone)(uint8_t* payload,
                                         uint16_t size, int16_t rssi,
                                         int8_t snr),
-                       void (*onTXTimeout)(void),
-                       void (*onRXTimeout)(void),
-                       void (*onRXError)(void))
+                       void (*onTxTimeout)(void),
+                       void (*onRxTimeout)(void),
+                       void (*onRxError)(void))
 {
-    lora_globalState_g.onRXError   = onRXError;
-    lora_globalState_g.onTXDone    = onTXDone;
-    lora_globalState_g.onRXDone    = onRXDone;
-    lora_globalState_g.onRXTimeout = onRXTimeout;
-    lora_globalState_g.onTXTimeout = onTXTimeout;
+    lora_globalState_g.onRxError   = onRxError;
+    lora_globalState_g.onTxDone    = onTxDone;
+    lora_globalState_g.onRxDone    = onRxDone;
+    lora_globalState_g.onRxTimeout = onRxTimeout;
+    lora_globalState_g.onTxTimeout = onTxTimeout;
 }
 
 void lora_send(uint8_t* payload, const uint16_t payloadSize)
 {
+    debug("lora_send called with payload size: %d\r\n", payloadSize);
     // Caution? Hopefully this won't be called when receiving a packet,
     // as when receiving a packet we should wait until we receive everything.
     // It shouldn't be able to be called when the irq process is running.
 
     // Reset all the TX states.
-    lora_globalState_g.backendTXTimeout = false;
-    lora_globalState_g.backendTXDone    = false;
+    lora_globalState_g.backendTxTimeout = false;
+    lora_globalState_g.backendTxDone    = false;
 
     // Send the header packet
     lora_headerPacket_t header =
         lora_createHeaderPacket(payload, payloadSize);
+    debug("Sending header packet...\r\n");
     loraImpl_send((uint8_t*)&header, sizeof(header));
 
-    if (!_lora_waitUntilTXDone())
+    if (!_lora_waitUntilTxDone())
     {
         // If we fail to TX due to timing out.
-        if (lora_globalState_g.backendTXTimeout)
-            lora_globalState_g.onTXTimeout();
+        if (lora_globalState_g.backendTxTimeout)
+        {
+            debug("TX timeout occurred.\r\n");
+            lora_globalState_g.onTxTimeout();
+        }
         return;
     }
+    utils_sleepMs(loraCfg_interPacketDelayMs_d);
 
     // Send the data packet
     for (uint16_t i = lora_numDataBytes_d; i < payloadSize;
@@ -173,34 +196,43 @@ void lora_send(uint8_t* payload, const uint16_t payloadSize)
     {
         lora_dataPacket_t dataPacket =
             lora_createDataPacket(payload, i, payloadSize);
+        debug("Sending data packet %d\r\n", dataPacket.packetNumber);
         loraImpl_send((uint8_t*)&dataPacket, sizeof(dataPacket));
-        if (!_lora_waitUntilTXDone())
+        if (!_lora_waitUntilTxDone())
         {
             // If we fail to TX due to timing out.
-            if (lora_globalState_g.backendTXTimeout)
-                lora_globalState_g.onTXTimeout();
+            if (lora_globalState_g.backendTxTimeout)
+            {
+                debug("TX timeout occurred.\r\n");
+                lora_globalState_g.onTxTimeout();
+            }
             return;
         }
+        utils_sleepMs(loraCfg_interPacketDelayMs_d);
     }
 
     // Send the footer packet
     lora_footerPacket_t footer =
         lora_createFooterPacket(payload, payloadSize);
+    debug("Sending footer packet...\r\n");
     loraImpl_send((uint8_t*)&footer, sizeof(lora_footerPacket_t));
-    if (!_lora_waitUntilTXDone())
+    if (!_lora_waitUntilTxDone())
     {
         // If we fail to TX due to timing out.
-        if (lora_globalState_g.backendTXTimeout)
-            lora_globalState_g.onTXTimeout();
+        if (lora_globalState_g.backendTxTimeout)
+        {
+            debug("TX timeout occurred.\r\n");
+            lora_globalState_g.onTxTimeout();
+        }
         return;
     }
 
-    if (lora_globalState_g.backendTXDone)
-        lora_globalState_g.onTXDone();
+    debug("All packets sent successfully.\r\n");
+    lora_globalState_g.onTxDone();
 
     // Reset all the TX states.
-    lora_globalState_g.backendTXTimeout = false;
-    lora_globalState_g.backendTXDone    = false;
+    lora_globalState_g.backendTxTimeout = false;
+    lora_globalState_g.backendTxDone    = false;
     return;
 }
 
@@ -210,13 +242,16 @@ void lora_queryState(void)
     // IDK i'll think about it later.
 }
 
+// Sets the global state to failure to append.
 static bool _lora_appendData(uint8_t* payload, uint16_t size)
 {
+    debug("Appending %d bytes to data buffer.\r\n", size);
     if (lora_globalState_g.dataCurrentContentSize + size >
         lora_numBufferBytes_d)
     {
+        debug("Failed to append data, buffer full.\r\n");
         lora_globalState_g.errorType =
-            lora_RXErrorTypes_failedToAppend;
+            lora_rxErrorTypes_failedToAppend;
         return false;
     }
 
@@ -224,6 +259,7 @@ static bool _lora_appendData(uint8_t* payload, uint16_t size)
         lora_globalState_g.dataCurrentContentSize;
     memcpy(head, payload, size);
     lora_globalState_g.dataCurrentContentSize += size;
+    debug("Data appended successfully.\r\n");
     return true;
 }
 
@@ -232,11 +268,13 @@ static bool _lora_appendData(uint8_t* payload, uint16_t size)
 // Will also start appending to data buffer.
 bool _lora_processHeaderPacket(uint8_t* payload, uint16_t size)
 {
+    debug("Processing header packet...\r\n");
     // Check that the values are possible
     if (size != sizeof(lora_headerPacket_t))
     {
+        debug("Header packet size mismatch.\r\n");
         lora_globalState_g.errorType =
-            lora_RXErrorTypes_headerPacketSizeMismatch;
+            lora_rxErrorTypes_headerPacketSizeMismatch;
         return false;
     }
 
@@ -245,8 +283,9 @@ bool _lora_processHeaderPacket(uint8_t* payload, uint16_t size)
     // Check that the values correspond to what's expected next (a data packet or a footer packet)
     if (header.packetNumber != 1) // first packet so 1
     {
+        debug("Header packet number is not 1.\r\n");
         lora_globalState_g.errorType =
-            lora_RXErrorTypes_headerPacketNumberIsNot1;
+            lora_rxErrorTypes_headerPacketNumberIsNot1;
         return false;
     }
 
@@ -255,11 +294,13 @@ bool _lora_processHeaderPacket(uint8_t* payload, uint16_t size)
     lora_globalState_g.currentPacketNumber     = 1;
     lora_globalState_g.currentTotalPacketCount = header.numPackets;
     lora_globalState_g.dataCurrentContentSize  = 0;
+    debug("Header packet processed successfully. Total packets: %d\r\n",
+          header.numPackets);
 
     // Append
     if (!_lora_appendData(header.data, header.numDataBytes))
     {
-        lora_globalState_g.RXState = lora_RXStates_RxError;
+        lora_globalState_g.rxState = lora_rxStates_rxError;
         return false;
     }
     return true;
@@ -268,10 +309,13 @@ bool _lora_processHeaderPacket(uint8_t* payload, uint16_t size)
 // Append to data buffer as well as the above
 bool _lora_processDataPacket(uint8_t* payload, uint16_t size)
 {
+    debug("Processing data packet...\r\n");
     // Check that the values are possible
     if (size != sizeof(lora_dataPacket_t))
     {
-        lora_globalState_g.errorType = lora_RXErrorTypes_dataPacketSizeMismatch;
+        debug("Data packet size mismatch.\r\n");
+        lora_globalState_g.errorType =
+            lora_rxErrorTypes_dataPacketSizeMismatch;
         return false;
     }
 
@@ -280,7 +324,9 @@ bool _lora_processDataPacket(uint8_t* payload, uint16_t size)
     // Check that the values correspond to what's expected next
     if (data.numPackets != lora_globalState_g.currentTotalPacketCount)
     {
-        lora_globalState_g.errorType = lora_RXErrorTypes_dataPacketNumPacketsMismatch;
+        debug("Data packet numPackets mismatch.\r\n");
+        lora_globalState_g.errorType =
+            lora_rxErrorTypes_dataPacketNumPacketsMismatch;
         return false;
     }
 
@@ -288,26 +334,34 @@ bool _lora_processDataPacket(uint8_t* payload, uint16_t size)
     if (data.packetNumber !=
         lora_globalState_g.currentPacketNumber + 1)
     {
-        lora_globalState_g.errorType = lora_RXErrorTypes_dataPacketNotConsecutive;
+        debug("Data packet not consecutive.\r\n");
+        lora_globalState_g.errorType =
+            lora_rxErrorTypes_dataPacketNotConsecutive;
         return false;
     }
 
-    // Append
+    // Appending sets the error if fails.
     if (!_lora_appendData(data.data, data.numDataBytes))
     {
-        lora_globalState_g.RXState = lora_RXStates_RxError;
+        lora_globalState_g.rxState = lora_rxStates_rxError;
         return false;
     }
     lora_globalState_g.currentPacketNumber += 1;
+    debug("Data packet %d processed successfully.\r\n",
+          data.packetNumber);
     return true;
 }
 
 // Set data received = true.
 bool _lora_processFooterPacket(uint8_t* payload, uint16_t size)
 {
+    debug("Processing footer packet...\r\n");
     // Check that the values are possible
     if (size != sizeof(lora_footerPacket_t))
+    {
+        debug("Footer packet size mismatch.\r\n");
         return false;
+    }
 
     lora_footerPacket_t footer;
     memcpy(&footer, payload, sizeof(lora_footerPacket_t));
@@ -316,26 +370,30 @@ bool _lora_processFooterPacket(uint8_t* payload, uint16_t size)
     if (footer.numPackets !=
         lora_globalState_g.currentTotalPacketCount)
     {
+        debug("Footer packet numPackets mismatch.\r\n");
         lora_globalState_g.errorType =
-            lora_RXErrorTypes_footerPacketNumPacketsMismatch;
+            lora_rxErrorTypes_footerPacketNumPacketsMismatch;
         return false;
     }
     if (footer.packetNumber != footer.numPackets)
     {
+        debug("Footer packet is not the last packet.\r\n");
         lora_globalState_g.errorType =
-            lora_RXErrorTypes_footerPacketIsNotLast;
+            lora_rxErrorTypes_footerPacketIsNotLast;
         return false;
     }
 
     if (footer.packetNumber !=
         lora_globalState_g.currentPacketNumber + 1)
     {
+        debug("Footer packet is not consecutive.\r\n");
         lora_globalState_g.errorType =
-            lora_RXErrorTypes_footerPacketIsNotConsecutive;
+            lora_rxErrorTypes_footerPacketIsNotConsecutive;
         return false;
     }
 
     lora_globalState_g.currentPacketNumber += 1;
+    debug("Footer packet processed successfully.\r\n");
     // Do crc check (unimplemented)
     return true;
 }
@@ -343,132 +401,153 @@ bool _lora_processFooterPacket(uint8_t* payload, uint16_t size)
 // A large process which activates the receiving.
 // This means that when we receive something, we will try to continue receiving
 // until it finishes, timeout, or error occurs.
-void lora_IRQProcess(void)
+void lora_irqProcess(void)
 {
     // Will also activate RxTimeout if need be.
     do
     {
-        loraImpl_IRQProcess();
+        loraImpl_irqProcess();
         // Process the RX errors and timeouts
-        switch (lora_globalState_g.RXState)
+        switch (lora_globalState_g.rxState)
         {
-            case lora_RXStates_RxError:
+            case lora_rxStates_rxError:
+                debug("RX error occurred.\r\n");
                 // Whoever has their callback can inspect the state
                 // to figure out what went wrong.
-                lora_globalState_g.onRXError();
+                lora_globalState_g.onRxError();
                 // Don't forget to reset the states!
-                goto lora_IRQProcess_resetRXStates_gt;
+                goto lora_irqProcess_resetRxStates_gt;
 
-            case lora_RXStates_RxTimeout:
-                lora_globalState_g.onRXTimeout();
-                goto lora_IRQProcess_resetRXStates_gt;
+            case lora_rxStates_rxTimeout:
+                debug("RX timeout occurred.\r\n");
+                lora_globalState_g.onRxTimeout();
+                goto lora_irqProcess_resetRxStates_gt;
 
-            case lora_RXStates_RxDone:
-                lora_globalState_g.onRXDone(
+            case lora_rxStates_rxDone:
+                debug("RX done.\r\n");
+                lora_globalState_g.onRxDone(
                     lora_globalState_g.dataBuffer,
                     lora_globalState_g.dataCurrentContentSize,
-                    lora_globalState_g.backendRSSI,
-                    lora_globalState_g.backendSNR);
-                goto lora_IRQProcess_resetRXStates_gt;
+                    lora_globalState_g.backendRssi,
+                    lora_globalState_g.backendSnr);
+                goto lora_irqProcess_resetRxStates_gt;
             default: break;
         }
-        utils_sleepms(1);
-    } while (lora_globalState_g.RXState !=
-             lora_RXStates_WaitingForHeader);
+        utils_sleepMs(1);
+    } while (lora_globalState_g.rxState !=
+             lora_rxStates_waitingForHeader);
     return;
 
-lora_IRQProcess_resetRXStates_gt:
-    lora_globalState_g.RXState       = lora_RXStates_WaitingForHeader;
-    lora_globalState_g.backendRXDone = false;
-    lora_globalState_g.backendRXError   = false;
-    lora_globalState_g.backendRXTimeout = false;
-    lora_globalState_g.errorType        = lora_RXErrorTypes_none;
+lora_irqProcess_resetRxStates_gt:
+    debug("Resetting RX states.\r\n");
+    lora_globalState_g.rxState       = lora_rxStates_waitingForHeader;
+    lora_globalState_g.backendRxDone = false;
+    lora_globalState_g.backendRxError   = false;
+    lora_globalState_g.backendRxTimeout = false;
+    lora_globalState_g.errorType        = lora_rxErrorTypes_none;
     return;
 }
 
 // Has its own FSM to figure out how to generate the new types of packets.
 // And when to call its own callbacks.
 // DOES NOT CALL CALLBACKS!!!!
-void _lora_backendRXDoneCallback(uint8_t* payload, uint16_t size,
+void _lora_backendRxDoneCallback(uint8_t* payload, uint16_t size,
                                  int16_t rssi, int8_t snr)
 {
+    debug("Backend RX done callback. Received %d bytes. RSSI: %d, SNR: %d\r\n",
+          size, rssi, snr);
     // Obvious error checking
     if (size < 1)
         goto _lora_backendRxDoneCallback_error_gt;
     loraImpl_globalState_g.rssi    = rssi;
     loraImpl_globalState_g.snr     = snr;
-    lora_globalState_g.backendRSSI = rssi;
-    lora_globalState_g.backendSNR  = snr;
+    lora_globalState_g.backendRssi = rssi;
+    lora_globalState_g.backendSnr  = snr;
 
-    switch (lora_globalState_g.RXState)
+    switch (lora_globalState_g.rxState)
     {
-        case lora_RXStates_WaitingForHeader:
-            if (payload[0] == lora_headerPacketPreamble_d)
+        case lora_rxStates_waitingForHeader:
+            debug("RX state: waiting for header.\r\n");
+            if (payload[0] == loraCfg_headerPacketPreamble_d)
             {
                 if (!_lora_processHeaderPacket(payload, size))
                     goto _lora_backendRxDoneCallback_error_gt;
 
-                lora_globalState_g.RXState =
-                    lora_RXStates_WaitingForDataOrFooter;
+                lora_globalState_g.rxState =
+                    lora_rxStates_waitingForDataOrFooter;
                 // non-blocking??? Might be a source of error.
-                loraImpl_SetRX(lora_interPacketTimeout_d);
+                loraImpl_setRx(loraImpl_interPacketTimeout_d);
                 break;
             }
             else
+            {
+                lora_globalState_g.errorType = 
+                    lora_rxErrorTypes_firstPacketWasNotHeader;
                 goto _lora_backendRxDoneCallback_error_gt;
+            }
 
-        case lora_RXStates_WaitingForDataOrFooter:
+        case lora_rxStates_waitingForDataOrFooter:
+            debug("RX state: waiting for data or footer.\r\n");
             // Figure out if footer or header
             // Set state to respective state.
-            if (payload[0] == lora_footerPacketPreamble_d)
+            if (payload[0] == loraCfg_footerPacketPreamble_d)
             {
                 // Process the footer packet
                 if (!_lora_processFooterPacket(payload, size))
                     goto _lora_backendRxDoneCallback_error_gt;
 
-                lora_globalState_g.RXState = lora_RXStates_RxDone;
+                lora_globalState_g.rxState = lora_rxStates_rxDone;
 
-                loraImpl_SetIdle();
+                loraImpl_setIdle();
                 return;
             }
-            else if (payload[0] == lora_dataPacketPreamble_d)
+            else if (payload[0] == loraCfg_dataPacketPreamble_d)
             {
                 if (!_lora_processDataPacket(payload, size))
                     goto _lora_backendRxDoneCallback_error_gt;
 
                 // Continue receiving.
-                loraImpl_SetRX(lora_interPacketTimeout_d);
+                loraImpl_setRx(loraImpl_interPacketTimeout_d);
             }
             else
+            {
+                lora_globalState_g.errorType = 
+                    lora_rxErrorTypes_expectedDataOrFooterGotUnknown;
                 goto _lora_backendRxDoneCallback_error_gt;
+            }
 
         default: break;
     }
     return;
 
 _lora_backendRxDoneCallback_error_gt:
-    lora_globalState_g.RXState = lora_RXStates_RxError;
+    debug("RX error in backend callback.\r\n");
+    lora_globalState_g.rxState = lora_rxStates_rxError;
     return;
 }
 
-void _lora_backendTXDoneCallback(void)
+void _lora_backendTxDoneCallback(void)
 {
-    lora_globalState_g.backendTXDone = true;
+    debug("Backend TX done callback.\r\n");
+    lora_globalState_g.backendTxDone = true;
 }
 
-void _lora_backendRXTimeoutCallback(void)
+void _lora_backendRxTimeoutCallback(void)
 {
-    lora_globalState_g.RXState          = lora_RXStates_RxTimeout;
-    lora_globalState_g.backendRXTimeout = true;
+    debug("Backend RX timeout callback.\r\n");
+    lora_globalState_g.rxState          = lora_rxStates_rxTimeout;
+    lora_globalState_g.backendRxTimeout = true;
 }
 
-void _lora_backendTXTimeoutCallback(void)
+void _lora_backendTxTimeoutCallback(void)
 {
-    lora_globalState_g.backendTXTimeout = true;
+    debug("Backend TX timeout callback.\r\n");
+    lora_globalState_g.backendTxTimeout = true;
 }
 
-void _lora_backendRXErrorCallback(void)
+void _lora_backendRxErrorCallback(void)
 {
-    lora_globalState_g.errorType = lora_RXErrorTypes_spuriousError;
-    lora_globalState_g.backendRXError = true;
+    debug("Backend RX error callback.\r\n");
+    lora_globalState_g.errorType = lora_rxErrorTypes_spuriousError;
+    lora_globalState_g.backendRxError = true;
 }
