@@ -1,0 +1,1 @@
+idf_component_register(SRCS "psat_station_test.c" INCLUDE_DIRS "." REQUIRES unity)

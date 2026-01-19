@@ -15,6 +15,7 @@
         "minmea",
         "FLOWCTRL",
         "PSAT",
-        "IRAM"
+        "IRAM",
+	"atten"
     ]
 }
