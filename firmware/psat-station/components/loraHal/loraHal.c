@@ -11,7 +11,16 @@
 #include <esp_log.h>
 #include <string.h>
 
-// Note: This handle is not initialized because loraHal_init is a placeholder.
+// Forward declarations
+static esp_err_t _loraHal_spi_init(void);
+static esp_err_t _loraHal_spi_deinit(void);
+static esp_err_t _loraHal_en_init(void);
+static esp_err_t _loraHal_en_on(void);
+static esp_err_t _loraHal_en_off(void);
+static esp_err_t _loraHal_en_deinit(void);
+static esp_err_t _loraHal_rxDoneIsr_init(void);
+static esp_err_t _loraHal_rxDoneIsr_deinit(void);
+
 static spi_device_handle_t    loraSpiHandle = NULL;
 static const char* const      TAG           = "loraHal";
 
@@ -72,20 +81,32 @@ static const spi_device_interface_config_t loraSpiDeviceConfig = {
     .post_cb      = NULL,
 };
 
-static void _loraHal_spi_init(void)
+static esp_err_t _loraHal_spi_init(void)
 {
-    ESP_ERROR_CHECK(spi_bus_initialize(loraHalBoardCfg_spiHost_d,
-                                       &loraSpiBusConfig,
-                                       SPI_DMA_CH_AUTO));
-    ESP_ERROR_CHECK(spi_bus_add_device(loraHalBoardCfg_spiHost_d,
-                                       &loraSpiDeviceConfig,
-                                       &loraSpiHandle));
+    esp_err_t err;
+    err = spi_bus_initialize(loraHalBoardCfg_spiHost_d, &loraSpiBusConfig, SPI_DMA_CH_AUTO);
+    if (err != ESP_OK) {
+        return err;
+    }
+    err = spi_bus_add_device(loraHalBoardCfg_spiHost_d, &loraSpiDeviceConfig, &loraSpiHandle);
+    if (err != ESP_OK) {
+        return err;
+    }
+    return ESP_OK;
 }
 
-static void _loraHal_spi_deinit()
+static esp_err_t _loraHal_spi_deinit(void)
 {
-    ESP_ERROR_CHECK(spi_bus_remove_device(loraSpiHandle));
-    ESP_ERROR_CHECK(spi_bus_free(loraHalBoardCfg_spiHost_d));
+    esp_err_t err;
+    err = spi_bus_remove_device(loraSpiHandle);
+    if (err != ESP_OK) {
+        return err;
+    }
+    err = spi_bus_free(loraHalBoardCfg_spiHost_d);
+    if (err != ESP_OK) {
+        return err;
+    }
+    return ESP_OK;
 }
 
 struct
@@ -94,117 +115,210 @@ struct
     bool isOn;
 } loraHal_en_state_s = {false, false};
 
-static void _loraHal_en_init(void)
+static esp_err_t _loraHal_en_init(void)
 {
-    ESP_ERROR_CHECK(gpio_set_direction(loraHalBoardCfg_enableGpio_d,
-                                       GPIO_MODE_OUTPUT));
+    esp_err_t err;
+    err = gpio_set_direction(loraHalBoardCfg_enableGpio_d, GPIO_MODE_OUTPUT);
+    if (err != ESP_OK) {
+        return err;
+    }
     // Off for now
-    ESP_ERROR_CHECK(gpio_set_level(loraHalBoardCfg_enableGpio_d, 0));
+    err = gpio_set_level(loraHalBoardCfg_enableGpio_d, 0);
+    if (err != ESP_OK) {
+        return err;
+    }
 
     loraHal_en_state_s.initComplete = true;
     loraHal_en_state_s.isOn         = false;
+    return ESP_OK;
 }
 
-static void _loraHal_en_on(void)
+static esp_err_t _loraHal_en_on(void)
 {
+    esp_err_t err;
     if (!loraHal_en_state_s.initComplete)
     {
         ESP_LOGE(TAG,
                  "Attempted to enable lora without initialising "
                  "enable pin!");
-        return;
+        return ESP_FAIL; // Or appropriate error code
     }
-    ESP_ERROR_CHECK(gpio_set_level(loraHalBoardCfg_enableGpio_d, 1));
+    err = gpio_set_level(loraHalBoardCfg_enableGpio_d, 1);
+    if (err != ESP_OK) {
+        return err;
+    }
     loraHal_en_state_s.isOn = true;
+    return ESP_OK;
 }
 
-static void _loraHal_en_off(void)
+static esp_err_t _loraHal_en_off(void)
 {
+    esp_err_t err;
     if (!loraHal_en_state_s.initComplete)
     {
         ESP_LOGE(TAG,
                  "Attempted to enable lora without initialising "
                  "enable pin!");
-        return;
+        return ESP_FAIL; // Or appropriate error code
     }
-    ESP_ERROR_CHECK(gpio_set_level(loraHalBoardCfg_enableGpio_d, 1));
+    err = gpio_set_level(loraHalBoardCfg_enableGpio_d, 1);
+    if (err != ESP_OK) {
+        return err;
+    }
     loraHal_en_state_s.isOn = false;
+    return ESP_OK;
 }
 
-static void _loraHal_en_deinit(void)
+static esp_err_t _loraHal_en_deinit(void)
 {
-    ESP_ERROR_CHECK(gpio_set_level(loraHalBoardCfg_enableGpio_d, 0));
-    ESP_ERROR_CHECK(gpio_reset_pin(loraHalBoardCfg_enableGpio_d));
+    esp_err_t err;
+    err = gpio_set_level(loraHalBoardCfg_enableGpio_d, 0);
+    if (err != ESP_OK) {
+        return err;
+    }
+    err = gpio_reset_pin(loraHalBoardCfg_enableGpio_d);
+    if (err != ESP_OK) {
+        return err;
+    }
     loraHal_en_state_s.initComplete = false;
     loraHal_en_state_s.isOn         = false;
+    return ESP_OK;
 }
 
 static void(*_loraHal_rxDoneIsr)(void*) = NULL;
-static void _loraHal_rxDoneIsr_init(void)
+static esp_err_t _loraHal_rxDoneIsr_init(void)
 {
+    esp_err_t err;
     // Init the GPIO
-    ESP_ERROR_CHECK(gpio_set_direction(loraHalBoardCfg_dio0Gpio_d, GPIO_MODE_INPUT));
-    ESP_ERROR_CHECK(gpio_set_pull_mode(loraHalBoardCfg_dio0Gpio_d, GPIO_PULLDOWN_ENABLE));
-    ESP_ERROR_CHECK(gpio_set_intr_type(loraHalBoardCfg_dio0Gpio_d, GPIO_INTR_POSEDGE));
-    ESP_ERROR_CHECK(gpio_install_isr_service(0));
+    err = gpio_set_direction(loraHalBoardCfg_dio0Gpio_d, GPIO_MODE_INPUT);
+    if (err != ESP_OK) {
+        return err;
+    }
+    err = gpio_set_pull_mode(loraHalBoardCfg_dio0Gpio_d, GPIO_PULLDOWN_ENABLE);
+    if (err != ESP_OK) {
+        return err;
+    }
+    err = gpio_set_intr_type(loraHalBoardCfg_dio0Gpio_d, GPIO_INTR_POSEDGE);
+    if (err != ESP_OK) {
+        return err;
+    }
+    err = gpio_install_isr_service(0);
+    if (err != ESP_OK) {
+        return err;
+    }
+    return ESP_OK;
 }
-static void _loraHal_rxDoneIsr_deinit(void)
+static esp_err_t _loraHal_rxDoneIsr_deinit(void)
 {
+    esp_err_t err;
     if (_loraHal_rxDoneIsr)
     {
         // Deregister the isr
-        loraHal_deregisterRxDoneIsr();
+        loraHal_deregisterRxDoneIsr(); // This already uses ESP_ERROR_CHECK internally
     }
     // Deinit the correspond GPIO
     gpio_uninstall_isr_service();
-    ESP_ERROR_CHECK(gpio_reset_pin(loraHalBoardCfg_dio0Gpio_d));
+    err = gpio_reset_pin(loraHalBoardCfg_dio0Gpio_d);
+    if (err != ESP_OK) {
+        return err;
+    }
+    return ESP_OK;
 }
 
-void loraHal_registerRxDoneIsr(void(*isr)(void*))
+esp_err_t loraHal_registerRxDoneIsr(void(*isr)(void*))
 {
+    esp_err_t err;
     _loraHal_rxDoneIsr = isr;
-    ESP_ERROR_CHECK(gpio_isr_handler_add(loraHalBoardCfg_dio0Gpio_d, isr, NULL));
+    err = gpio_isr_handler_add(loraHalBoardCfg_dio0Gpio_d, isr, NULL);
+    if (err != ESP_OK) {
+        return err;
+    }
+    return ESP_OK;
 }
 
-void loraHal_deregisterRxDoneIsr() 
+esp_err_t loraHal_deregisterRxDoneIsr() 
 {
+    esp_err_t err;
     _loraHal_rxDoneIsr = NULL;
-    ESP_ERROR_CHECK(gpio_isr_handler_remove(loraHalBoardCfg_dio0Gpio_d));
+    err = gpio_isr_handler_remove(loraHalBoardCfg_dio0Gpio_d);
+    if (err != ESP_OK) {
+        return err;
+    }
+    return ESP_OK;
 }
 
 esp_err_t loraHal_init(void)
 {
+    esp_err_t err;
+
     // Initialise SPI
-    _loraHal_spi_init();
+    err = _loraHal_spi_init();
+    if (err != ESP_OK) {
+        return err;
+    }
     // Initialise enable gpio.
-    _loraHal_en_init();
-    _loraHal_en_on();
-    _loraHal_rxDoneIsr_init();
+    err = _loraHal_en_init();
+    if (err != ESP_OK) {
+        _loraHal_spi_deinit(); // Deinit SPI on error
+        return err;
+    }
+    err = _loraHal_en_on();
+    if (err != ESP_OK) {
+        _loraHal_en_deinit(); // Deinit enable GPIO on error
+        _loraHal_spi_deinit(); // Deinit SPI on error
+        return err;
+    }
+    err = _loraHal_rxDoneIsr_init();
+    if (err != ESP_OK) {
+        _loraHal_en_deinit(); // Deinit enable GPIO on error
+        _loraHal_spi_deinit(); // Deinit SPI on error
+        return err;
+    }
     // Initialise GPIO for rxDone itr? (probably not, we'll just poll IRQ for now)
     spiSemaphore = xSemaphoreCreateBinary();
+    if (spiSemaphore == NULL) {
+        _loraHal_rxDoneIsr_deinit();
+        _loraHal_en_deinit();
+        _loraHal_spi_deinit();
+        return ESP_FAIL; // Or a more specific error
+    }
     xSemaphoreGive(spiSemaphore);
     return ESP_OK;
 }
 
 esp_err_t loraHal_deinit(void)
 {
+    esp_err_t err;
     xSemaphoreTake(spiSemaphore, portMAX_DELAY);
-    _loraHal_rxDoneIsr_deinit();
-    _loraHal_en_off();
+    err = _loraHal_rxDoneIsr_deinit();
+    if (err != ESP_OK) {
+        return err;
+    }
+    err = _loraHal_en_off();
+    if (err != ESP_OK) {
+        return err;
+    }
     // Takes 10ms to reset the lora configuration
     vTaskDelay(portTICK_PERIOD_MS / 10);
-    _loraHal_en_deinit();
-    _loraHal_spi_deinit();
+    err = _loraHal_en_deinit();
+    if (err != ESP_OK) {
+        return err;
+    }
+    err = _loraHal_spi_deinit();
+    if (err != ESP_OK) {
+        return err;
+    }
     return ESP_OK;
 }
 
-uint8_t loraHal_writeReg(uint8_t reg, uint8_t val)
+esp_err_t loraHal_writeReg(uint8_t reg, uint8_t val, uint8_t* readVal)
 {
+    esp_err_t err;
     if (!loraSpiHandle)
     {
         ESP_LOGE(TAG,
                  "Failed to write register, lora not initialised!");
-        return 0;
+        return ESP_FAIL;
     }
     spi_transaction_t trans = {
         .cmd     = loraReg_cmdWrite_d,
@@ -214,18 +328,25 @@ uint8_t loraHal_writeReg(uint8_t reg, uint8_t val)
         .flags   = SPI_TRANS_USE_RXDATA | SPI_TRANS_USE_TXDATA,
     };
     xSemaphoreTake(spiSemaphore, portMAX_DELAY);
-    ESP_ERROR_CHECK(spi_device_transmit(loraSpiHandle, &trans));
+    err = spi_device_transmit(loraSpiHandle, &trans);
     xSemaphoreGive(spiSemaphore);
-    return trans.rx_data[0];
+    if (err != ESP_OK) {
+        return err;
+    }
+    if (readVal != NULL) {
+        *readVal = trans.rx_data[0];
+    }
+    return ESP_OK;
 }
 
-uint8_t loraHal_readReg(uint8_t reg)
+esp_err_t loraHal_readReg(uint8_t reg, uint8_t* readVal)
 {
+    esp_err_t err;
     if (!loraSpiHandle)
     {
         ESP_LOGE(TAG,
                  "Failed to read register, lora not initialised!");
-        return 0;
+        return ESP_FAIL;
     }
     spi_transaction_t trans = {
         .cmd     = loraReg_cmdRead_d,
@@ -236,19 +357,26 @@ uint8_t loraHal_readReg(uint8_t reg)
         .flags   = SPI_TRANS_USE_RXDATA | SPI_TRANS_USE_TXDATA,
     };
     xSemaphoreTake(spiSemaphore, portMAX_DELAY);
-    ESP_ERROR_CHECK(spi_device_transmit(loraSpiHandle, &trans));
+    err = spi_device_transmit(loraSpiHandle, &trans);
     xSemaphoreGive(spiSemaphore);
-    return trans.rx_data[0];
+    if (err != ESP_OK) {
+        return err;
+    }
+    if (readVal != NULL) {
+        *readVal = trans.rx_data[0];
+    }
+    return ESP_OK;
 }
 
-void loraHal_writeRegContinuous(uint8_t reg, const uint8_t* buffer,
+esp_err_t loraHal_writeRegContinuous(uint8_t reg, const uint8_t* buffer,
                                 uint8_t numBytes)
 {
+    esp_err_t err;
     if (!loraSpiHandle)
     {
         ESP_LOGE(TAG,
                  "Failed to write register, lora not initialised!");
-        return;
+        return ESP_FAIL;
     }
     spi_transaction_t trans = {
         .cmd       = loraReg_cmdWrite_d,
@@ -258,18 +386,23 @@ void loraHal_writeRegContinuous(uint8_t reg, const uint8_t* buffer,
         .flags     = 0,
     };
     xSemaphoreTake(spiSemaphore, portMAX_DELAY);
-    ESP_ERROR_CHECK(spi_device_transmit(loraSpiHandle, &trans));
+    err = spi_device_transmit(loraSpiHandle, &trans);
     xSemaphoreGive(spiSemaphore);
+    if (err != ESP_OK) {
+        return err;
+    }
+    return ESP_OK;
 }
 
-void loraHal_readRegContinuous(uint8_t reg, uint8_t* buffer,
+esp_err_t loraHal_readRegContinuous(uint8_t reg, uint8_t* buffer,
                                uint8_t numBytes)
 {
+    esp_err_t err;
     if (!loraSpiHandle)
     {
         ESP_LOGE(TAG,
                  "Failed to read register, lora not initialised!");
-        return;
+        return ESP_FAIL;
     }
     spi_transaction_t trans = {
         .cmd       = loraReg_cmdRead_d,
@@ -279,6 +412,10 @@ void loraHal_readRegContinuous(uint8_t reg, uint8_t* buffer,
         .flags     = 0,
     };
     xSemaphoreTake(spiSemaphore, portMAX_DELAY);
-    ESP_ERROR_CHECK(spi_device_transmit(loraSpiHandle, &trans));
+    err = spi_device_transmit(loraSpiHandle, &trans);
     xSemaphoreGive(spiSemaphore);
+    if (err != ESP_OK) {
+        return err;
+    }
+    return ESP_OK;
 }

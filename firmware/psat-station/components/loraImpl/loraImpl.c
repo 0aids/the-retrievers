@@ -11,6 +11,13 @@
 #include <stdatomic.h>
 #include "portmacro.h"
 
+// Forward declarations
+static void IRAM_ATTR lora_dio0IsrHandler(void*);
+static void _loraImpl_rxDoneTask(void*);
+static void _loraImpl_setupDefaultConfig();
+static void _loraImpl_printGlobalState();
+static void _loraImpl_printIrqState();
+
 #define _loraImpl_runCallback_df(func)                               \
     if (func)                                                        \
     {                                                                \
@@ -40,9 +47,6 @@ static struct
 static uint8_t  rxBuffer[256] = {0};
 static uint16_t rxBufferSize  = 0;
 
-// Forward declaration for the ISR
-static void IRAM_ATTR lora_dio0IsrHandler(void*);
-
 static void IRAM_ATTR lora_dio0IsrHandler(void*)
 {
     xSemaphoreGive(rxDoneIsrSemaphore);
@@ -61,7 +65,8 @@ static void _loraImpl_rxDoneTask(void*)
         {
             ESP_LOGI(__FUNCTION__, "rxDoneTask triggered by ISR");
             // Check payload received correctly, if not set rxTimeout or rxError
-            uint8_t flags  = loraHal_readReg(loraReg_addrIrqFlags_d);
+            uint8_t flags;
+            loraHal_readReg(loraReg_addrIrqFlags_d, &flags);
             uint8_t crcErr = flags & loraBit_irqFlags_crcErrMsk_d;
             uint8_t validHeader =
                 flags & loraBit_irqFlags_validHeadMsk_d;
@@ -77,7 +82,7 @@ static void _loraImpl_rxDoneTask(void*)
                 // Rx Error
                 atomic_store(&loraImpl_irqState.rxError, true);
                 loraHal_writeReg(loraReg_addrIrqFlags_d,
-                                 loraBit_irqFlags_clearAll_d);
+                                 loraBit_irqFlags_clearAll_d, NULL);
                 continue;
             }
             else if (rxTimeout)
@@ -86,28 +91,30 @@ static void _loraImpl_rxDoneTask(void*)
                 // Rx timeout
                 atomic_store(&loraImpl_irqState.rxTimeout, true);
                 loraHal_writeReg(loraReg_addrIrqFlags_d,
-                                 loraBit_irqFlags_clearAll_d);
+                                 loraBit_irqFlags_clearAll_d, NULL);
                 continue;
             }
             loraHal_writeReg(loraReg_addrIrqFlags_d,
-                             loraBit_irqFlags_clearAll_d);
+                             loraBit_irqFlags_clearAll_d, NULL);
             ESP_LOGI(__FUNCTION__, "Packet received successfully");
             // Read from the rxDone buffer.
-            rxBufferSize = loraHal_readReg(loraReg_addrRxNbBytes_d);
+            loraHal_readReg(loraReg_addrRxNbBytes_d, (uint8_t*)&rxBufferSize);
             ESP_LOGI(__FUNCTION__, "Received packet of size: %d",
                      rxBufferSize);
-            uint8_t currAddr =
-                loraHal_readReg(loraReg_addrFifoRxCurAddr_d);
-            loraHal_writeReg(loraReg_addrFifoAddrPtr_d, currAddr);
+            uint8_t currAddr;
+            loraHal_readReg(loraReg_addrFifoRxCurAddr_d, &currAddr);
+            loraHal_writeReg(loraReg_addrFifoAddrPtr_d, currAddr, NULL);
             loraHal_readRegContinuous(loraReg_addrFifo_d, rxBuffer,
                                       rxBufferSize);
             atomic_store(&loraImpl_irqState.rxDone, true);
-            // printf("hex: ");
-            // for (size_t i = 0; i < rxBufferSize; i++)
-            // {
-            //     printf("%02x ", rxBuffer[i]);
-            // }
-            // printf("\r\n");
+            #ifdef psat_debugMode_d
+            printf("hex: ");
+            for (size_t i = 0; i < rxBufferSize; i++)
+            {
+                printf("%02x ", rxBuffer[i]);
+            }
+            printf("\r\n");
+            #endif
             xSemaphoreGive(rxProcessedSemaphore);
         }
     }
@@ -119,16 +126,18 @@ void loraImpl_send(uint8_t* payload, uint16_t payloadSize)
     ESP_LOGI(__FUNCTION__, "Sending packet - size: %" PRIu16,
              payloadSize);
     // Change to stdby mode.
-    uint8_t opMode = loraHal_readReg(loraReg_addrOpMode_d);
+    uint8_t opMode;
+    loraHal_readReg(loraReg_addrOpMode_d, &opMode);
     loraBit_set(opMode, loraBit_opMode_modeMsk_d,
                 loraBit_opMode_mode_stdby_d);
-    loraHal_writeReg(loraReg_addrOpMode_d, opMode);
+    loraHal_writeReg(loraReg_addrOpMode_d, opMode, NULL);
 
     // Setting the fifo to point to the tx base.
-    uint8_t txBase = loraHal_readReg(loraReg_addrFifoTxBaseAddr_d);
-    loraHal_writeReg(loraReg_addrFifoAddrPtr_d, txBase);
+    uint8_t txBase;
+    loraHal_readReg(loraReg_addrFifoTxBaseAddr_d, &txBase);
+    loraHal_writeReg(loraReg_addrFifoAddrPtr_d, txBase, NULL);
     // Set the number of bytes to be sent.
-    loraHal_writeReg(loraReg_addrPayloadLen_d, (uint8_t)payloadSize);
+    loraHal_writeReg(loraReg_addrPayloadLen_d, (uint8_t)payloadSize, NULL);
 
     // Then write the data to be sent.
     loraHal_writeRegContinuous(loraReg_addrFifo_d, payload,
@@ -137,7 +146,7 @@ void loraImpl_send(uint8_t* payload, uint16_t payloadSize)
     // Then set the op mode to be TX
     loraBit_set(opMode, loraBit_opMode_modeMsk_d,
                 loraBit_opMode_mode_tx_d);
-    loraHal_writeReg(loraReg_addrOpMode_d, opMode);
+    loraHal_writeReg(loraReg_addrOpMode_d, opMode, NULL);
     atomic_store(&loraImpl_irqState.txDone, true);
 }
 
@@ -159,17 +168,18 @@ void loraImpl_setCallbacks(void (*onTxDone)(void),
 static void _loraImpl_setupDefaultConfig()
 {
     // Sleep and change into lora mode
-    uint8_t opMode = loraHal_readReg(loraReg_addrOpMode_d);
+    uint8_t opMode;
+    loraHal_readReg(loraReg_addrOpMode_d, &opMode);
     loraBit_set(opMode, loraBit_opMode_modeMsk_d,
                 loraBit_opMode_mode_sleep_d);
-    loraHal_writeReg(loraReg_addrOpMode_d, opMode);
+    loraHal_writeReg(loraReg_addrOpMode_d, opMode, NULL);
     vTaskDelay(10 / portTICK_PERIOD_MS);
     loraBit_set(opMode,
                 (loraBit_opMode_longRangeModeMsk_d |
                  loraBit_opMode_freqMsk_d),
                 (loraBit_opMode_longRangeMode_lora_d |
                  loraBit_opMode_freq_high_d));
-    loraHal_writeReg(loraReg_addrOpMode_d, opMode);
+    loraHal_writeReg(loraReg_addrOpMode_d, opMode, NULL);
 
     // Write mdmcfg1
     uint8_t mdmcfg1 = 0;
@@ -179,8 +189,9 @@ static void _loraImpl_setupDefaultConfig()
                 (loraHalCfg_mdmCfg1_implicitHead_d |
                  loraHalCfg_mdmCfg1_bw_d | loraHalCfg_mdmCfg1_cr_d));
 
-    loraHal_writeReg(loraReg_addrMdmCfg1_d, mdmcfg1);
-    uint8_t readMdmcfg1 = loraHal_readReg(loraReg_addrMdmCfg1_d);
+    loraHal_writeReg(loraReg_addrMdmCfg1_d, mdmcfg1, NULL);
+    uint8_t readMdmcfg1;
+    loraHal_readReg(loraReg_addrMdmCfg1_d, &readMdmcfg1);
     ESP_LOGI(__FUNCTION__, "mdmcfg1 - Expected: %#x, received: %#x",
              mdmcfg1, readMdmcfg1);
     if (mdmcfg1 != readMdmcfg1)
@@ -199,8 +210,9 @@ static void _loraImpl_setupDefaultConfig()
         (loraHalCfg_mdmCfg2_rxCrc_d | loraHalCfg_mdmCfg2_sf_d |
          loraHalCfg_mdmCfg2_symbTimeoutMsb_d |
          loraBit_mdmCfg2_txCont_off_d));
-    loraHal_writeReg(loraReg_addrMdmCfg2_d, mdmcfg2);
-    uint8_t readMdmcfg2 = loraHal_readReg(loraReg_addrMdmCfg2_d);
+    loraHal_writeReg(loraReg_addrMdmCfg2_d, mdmcfg2, NULL);
+    uint8_t readMdmcfg2;
+    loraHal_readReg(loraReg_addrMdmCfg2_d, &readMdmcfg2);
     ESP_LOGI(__FUNCTION__, "mdmcfg2 - Expected: %#x, received: %#x",
              mdmcfg2, readMdmcfg2);
     if (mdmcfg2 != readMdmcfg2)
@@ -216,8 +228,9 @@ static void _loraImpl_setupDefaultConfig()
                  loraBit_mdmCfg3_lowDataOptMsk_d),
                 (loraBit_mdmCfg3_agcAuto_on_d |
                  loraHalCfg_mdmCfg3_lowDataOpt_d));
-    loraHal_writeReg(loraReg_addrMdmCfg3_d, mdmcfg3);
-    uint8_t readMdmcfg3 = loraHal_readReg(loraReg_addrMdmCfg3_d);
+    loraHal_writeReg(loraReg_addrMdmCfg3_d, mdmcfg3, NULL);
+    uint8_t readMdmcfg3;
+    loraHal_readReg(loraReg_addrMdmCfg3_d, &readMdmcfg3);
     ESP_LOGI(__FUNCTION__, "mdmcfg3 - Expected: %#x, received: %#x",
              mdmcfg3, readMdmcfg3);
     if (mdmcfg3 != readMdmcfg3)
@@ -231,7 +244,7 @@ static void _loraImpl_setupDefaultConfig()
     loraBit_set(lna,
                 (loraBit_lna_gainMsk_d | loraBit_lna_boostHfMsk_d),
                 (loraBit_lna_boostHf_on_d | loraBit_lna_gain_g1_d));
-    loraHal_writeReg(loraReg_addrLna_d, lna);
+    loraHal_writeReg(loraReg_addrLna_d, lna, NULL);
 
     uint8_t pacfg = 0;
     loraBit_set(pacfg,
@@ -240,8 +253,9 @@ static void _loraImpl_setupDefaultConfig()
                  loraBit_paCfg_outputPowerMsk_d),
                 (loraHalCfg_paCfg_paSelect_d |
                  loraHalCfg_paCfg_outputPower_d));
-    loraHal_writeReg(loraReg_addrPaCfg_d, pacfg);
-    uint8_t readPacfg3 = loraHal_readReg(loraReg_addrPaCfg_d);
+    loraHal_writeReg(loraReg_addrPaCfg_d, pacfg, NULL);
+    uint8_t readPacfg3;
+    loraHal_readReg(loraReg_addrPaCfg_d, &readPacfg3);
     ESP_LOGI(__FUNCTION__, "pacfg - Expected: %#x, received: %#x",
              pacfg, readMdmcfg3);
     if (pacfg != readPacfg3)
@@ -263,15 +277,25 @@ static void _loraImpl_setupDefaultConfig()
                                (uint8_t*)&preambleLength, 2);
 
     uint8_t symbolTimeout = loraHalCfg_symbTimeout_lsb_d;
-    loraHal_writeReg(loraReg_addrSymbTimeLsb_d, symbolTimeout);
+    loraHal_writeReg(loraReg_addrSymbTimeLsb_d, symbolTimeout, NULL);
 }
 
 void loraImpl_init(void)
 {
+    esp_err_t err;
     uint32_t stackSize = 1 << 15;
-    loraHal_init();
+    err = loraHal_init();
+    if (err != ESP_OK) {
+        ESP_LOGE(__FUNCTION__, "loraHal_init failed with error code: %d", err);
+        return;
+    }
     _loraImpl_setupDefaultConfig();
-    loraHal_registerRxDoneIsr(lora_dio0IsrHandler);
+    err = loraHal_registerRxDoneIsr(lora_dio0IsrHandler);
+    if (err != ESP_OK) {
+        ESP_LOGE(__FUNCTION__, "loraHal_registerRxDoneIsr failed with error code: %d", err);
+        loraHal_deinit();
+        return;
+    }
     rxDoneIsrSemaphore   = xSemaphoreCreateBinary();
     rxProcessedSemaphore = xSemaphoreCreateBinary();
     xTaskCreate(_loraImpl_rxDoneTask, "rxDoneTask", stackSize, NULL,
@@ -280,9 +304,16 @@ void loraImpl_init(void)
 
 void loraImpl_deinit(void)
 {
-    loraHal_deregisterRxDoneIsr();
+    esp_err_t err;
+    err = loraHal_deregisterRxDoneIsr();
+    if (err != ESP_OK) {
+        ESP_LOGE(__FUNCTION__, "loraHal_deregisterRxDoneIsr failed with error code: %d", err);
+    }
     vTaskDelete(rxDoneTaskHandle);
-    loraHal_deinit();
+    err = loraHal_deinit();
+    if (err != ESP_OK) {
+        ESP_LOGE(__FUNCTION__, "loraHal_deinit failed with error code: %d", err);
+    }
 }
 
 static void _loraImpl_printGlobalState()
@@ -322,8 +353,10 @@ void loraImpl_queryState(void)
     // For now we just dump all.
     for (size_t reg = 0x00; reg < loraReg_addrEnd_d; reg++)
     {
+        uint8_t val;
+        loraHal_readReg(reg, &val);
         ESP_LOGI(__FUNCTION__, "Register: %#x, Value: %#x", reg,
-                 loraHal_readReg(reg));
+                 val);
     }
 }
 
@@ -336,10 +369,12 @@ void loraImpl_irqProcess(void)
           loraBit_irqFlags_rxTimeoutMsk_d |
           loraBit_irqFlags_validHeadMsk_d |
           loraBit_irqFlags_crcErrMsk_d);
-    uint8_t flags =
-        loraHal_writeReg(loraReg_addrIrqFlags_d, relevantFlags);
-    // if (flags)
-    //     ESP_LOGI(__FUNCTION__, "flags - Value: %#x", flags);
+    uint8_t flags;
+    loraHal_writeReg(loraReg_addrIrqFlags_d, relevantFlags, &flags);
+    #ifdef psat_debugMode_d
+    if (flags)
+        ESP_LOGI(__FUNCTION__, "flags - Value: %#x", flags);
+    #endif
     if (flags & loraBit_irqFlags_txDoneMsk_d)
     {
         ESP_LOGI(__FUNCTION__, "Processing TX Done IRQ");
@@ -353,11 +388,13 @@ void loraImpl_irqProcess(void)
         if (loraImpl_globalState_g.onRxDone &&
             xSemaphoreTake(rxProcessedSemaphore, portMAX_DELAY))
         {
-            int16_t rssi = -157 + loraHal_readReg(loraReg_addrRssi_d);
+            uint8_t rssi_val;
+            loraHal_readReg(loraReg_addrRssi_d, &rssi_val);
+            int16_t rssi = -157 + rssi_val;
 
             // Funky stuff because the the implicit cast to uint8_t might do some sus stuff.
-            uint8_t unproccessedSnr =
-                loraHal_readReg(loraReg_addrPktSnr_d);
+            uint8_t unproccessedSnr;
+            loraHal_readReg(loraReg_addrPktSnr_d, &unproccessedSnr);
             int8_t processedSnr = 0;
             memcpy(&processedSnr, &unproccessedSnr, 1);
             processedSnr /= 4;
@@ -403,10 +440,11 @@ void loraImpl_setRx(uint32_t milliseconds)
 {
     ESP_LOGI(__FUNCTION__, "Setting Rx mode, timeout: %lu",
              milliseconds);
-    uint8_t curOpMode = loraHal_readReg(loraReg_addrOpMode_d);
+    uint8_t curOpMode;
+    loraHal_readReg(loraReg_addrOpMode_d, &curOpMode);
     loraBit_set(curOpMode, loraBit_opMode_modeMsk_d,
                 loraBit_opMode_mode_rxc_d);
-    loraHal_writeReg(loraReg_addrOpMode_d, curOpMode);
+    loraHal_writeReg(loraReg_addrOpMode_d, curOpMode, NULL);
     // Also set the rxTimeout duration
     // Truncate it to fit.
     milliseconds                     = (uint16_t)milliseconds;
@@ -427,8 +465,9 @@ void loraImpl_setRx(uint32_t milliseconds)
 void loraImpl_setIdle()
 {
     ESP_LOGI(__FUNCTION__, "Setting Idle mode");
-    uint8_t curOpMode = loraHal_readReg(loraReg_addrOpMode_d);
+    uint8_t curOpMode;
+    loraHal_readReg(loraReg_addrOpMode_d, &curOpMode);
     loraBit_set(curOpMode, loraBit_opMode_modeMsk_d,
                 loraBit_opMode_mode_stdby_d);
-    loraHal_writeReg(loraReg_addrOpMode_d, curOpMode);
+    loraHal_writeReg(loraReg_addrOpMode_d, curOpMode, NULL);
 }

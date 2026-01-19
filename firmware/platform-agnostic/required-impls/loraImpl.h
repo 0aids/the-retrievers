@@ -5,6 +5,7 @@
 
 // TODO This should be lora_interPacketTimeout, not loraImpl.
 // TODO: Figure out how low this can go.
+// TODO: Figure out how to do error checking platform-agnostically.
 #define loraImpl_interPacketTimeout_d 500 //ms
 
 // clang-format on
