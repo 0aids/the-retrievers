@@ -14,3 +14,4 @@ void utils_log(const char* format, ...)
     vprintf(format, args);
     va_end(args);
 }
+
