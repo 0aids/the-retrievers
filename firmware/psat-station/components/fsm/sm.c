@@ -4,6 +4,9 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 #include "freertos/task.h"
+#include "on_entry_handlers.h"
+#include "on_exit_handlers.h"
+#include "shared_state.h"
 #include "state_handlers.h"
 
 #define QUEUE_SIZE 32
@@ -12,19 +15,58 @@ static const char* TAG = "PSAT_FSM";
 static TaskHandle_t xHandleSM_s = NULL;
 static QueueHandle_t eventQueue_s = NULL;
 static SemaphoreHandle_t stateMutex_s = NULL;
-static volatile psatFSM_state_e currentState_s = psatFSM_state_prelaunch;
 
-typedef psatFSM_state_e (*psatFSM_stateHandler_t)(const psatFSM_event_t* event);
-static psatFSM_stateHandler_t stateHandlerTable[] = {
-    [psatFSM_state_prelaunch] = psatFSM_prelaunchStateHandler,
-    [psatFSM_state_ascent] = psatFSM_ascentStateHandler,
-    [psatFSM_state_deployPending] = psatFSM_deployPendingStateHandler,
-    [psatFSM_state_deployed] = psatFSM_deployedStateHandler,
-    [psatFSM_state_descent] = psatFSM_descentStateHandler,
-    [psatFSM_state_landing] = psatFSM_landingStateHandler,
-    [psatFSM_state_recovery] = psatFSM_recoveryStateHandler,
-    [psatFSM_state_lowPower] = psatFSM_lowPowerStateHandler,
-    [psatFSM_state_error] = psatFSM_errorStateHandler,
+static psatFSM_state_t stateTable[] = {
+    [psatFSM_state_start] = {.state = psatFSM_state_start,
+                             .defaultNextState = psatFSM_state_prelaunch,
+                             .onStateExit = psatFSM_startExitHandler,
+                             .stateHandler = psatFSM_startStateHandler},
+    [psatFSM_state_prelaunch] = {.state = psatFSM_state_prelaunch,
+                                 .defaultNextState = psatFSM_state_ascent,
+                                 .onStateEntry = psatFSM_prelaunchEntryHandler,
+                                 .onStateExit = psatFSM_prelaunchExitHandler,
+                                 .stateHandler = psatFSM_prelaunchStateHandler},
+    [psatFSM_state_ascent] = {.state = psatFSM_state_ascent,
+                              .defaultNextState = psatFSM_state_deployPending,
+                              .onStateEntry = psatFSM_ascentEntryHandler,
+                              .onStateExit = psatFSM_ascentExitHandler,
+                              .stateHandler = psatFSM_ascentStateHandler},
+    [psatFSM_state_deployPending] =
+        {.state = psatFSM_state_deployPending,
+         .defaultNextState = psatFSM_state_deployed,
+         .onStateEntry = psatFSM_deployPendingEntryHandler,
+         .onStateExit = psatFSM_deployPendingExitHandler,
+         .stateHandler = psatFSM_deployPendingStateHandler},
+    [psatFSM_state_deployed] = {.state = psatFSM_state_deployed,
+                                .defaultNextState = psatFSM_state_descent,
+                                .onStateEntry = psatFSM_deployedEntryHandler,
+                                .onStateExit = psatFSM_deployedExitHandler,
+                                .stateHandler = psatFSM_deployedStateHandler},
+    [psatFSM_state_descent] = {.state = psatFSM_state_descent,
+                               .defaultNextState = psatFSM_state_landing,
+                               .onStateEntry = psatFSM_descentEntryHandler,
+                               .onStateExit = psatFSM_descentExitHandler,
+                               .stateHandler = psatFSM_descentStateHandler},
+    [psatFSM_state_landing] = {.state = psatFSM_state_landing,
+                               .defaultNextState = psatFSM_state_recovery,
+                               .onStateEntry = psatFSM_landingEntryHandler,
+                               .onStateExit = psatFSM_landingExitHandler,
+                               .stateHandler = psatFSM_landingStateHandler},
+    [psatFSM_state_recovery] = {.state = psatFSM_state_recovery,
+                                .defaultNextState = psatFSM_state_lowPower,
+                                .onStateEntry = psatFSM_recoveryEntryHandler,
+                                .onStateExit = psatFSM_recoveryExitHandler,
+                                .stateHandler = psatFSM_recoveryStateHandler},
+    [psatFSM_state_lowPower] = {.state = psatFSM_state_lowPower,
+                                .defaultNextState = psatFSM_state_error,
+                                .onStateEntry = psatFSM_lowPowerEntryHandler,
+                                .onStateExit = psatFSM_lowPowerExitHandler,
+                                .stateHandler = psatFSM_lowPowerStateHandler},
+    [psatFSM_state_error] = {.state = psatFSM_state_error,
+                             .defaultNextState = psatFSM_state_error,
+                             .onStateEntry = psatFSM_errorEntryHandler,
+                             .onStateExit = psatFSM_errorExitHandler,
+                             .stateHandler = psatFSM_errorStateHandler},
 };
 
 void psatFSM_postEvent(const psatFSM_event_t* event) {
@@ -49,7 +91,7 @@ void psatFSM_postEventISR(const psatFSM_event_t* event) {
 
 void psatFSM_setCurrentState(psatFSM_state_e newState) {
     if (stateMutex_s && xSemaphoreTake(stateMutex_s, portMAX_DELAY) == pdTRUE) {
-        currentState_s = newState;
+        psat_globalState.currentFSMState = newState;
         xSemaphoreGive(stateMutex_s);
     }
 }
@@ -58,7 +100,7 @@ psatFSM_state_e psatFSM_getCurrentState() {
     psatFSM_state_e state = psatFSM_state_error;
 
     if (stateMutex_s && xSemaphoreTake(stateMutex_s, portMAX_DELAY) == pdTRUE) {
-        state = currentState_s;
+        state = psat_globalState.currentFSMState;
         xSemaphoreGive(stateMutex_s);
     }
 
@@ -67,7 +109,7 @@ psatFSM_state_e psatFSM_getCurrentState() {
 
 void psatFSM_mainLoop(void* arg) {
     psatFSM_event_t currentEvent = {0};
-    psatFSM_state_e nextState = currentState_s;
+    psatFSM_state_e nextState = psat_globalState.currentFSMState;
 
     while (1) {
         if (!xQueueReceive(eventQueue_s, &currentEvent, portMAX_DELAY))
@@ -84,27 +126,32 @@ void psatFSM_mainLoop(void* arg) {
         ESP_LOGI("FSM", "Received Event: %s",
                  psatFSM_eventTypeToString(currentEvent.type));
 
-        psatFSM_state_e localState;
+        // TODO: do a check for state count
 
-        xSemaphoreTake(stateMutex_s, portMAX_DELAY);
-        localState = currentState_s;
-        xSemaphoreGive(stateMutex_s);
-
-        if (stateHandlerTable[localState]) {
-            nextState = stateHandlerTable[localState](&currentEvent);
+        psatFSM_state_e currentState = psatFSM_getCurrentState();
+        psatFSM_state_t currentStateDefinition = stateTable[currentState];
+        if (currentStateDefinition.stateHandler) {
+            nextState = currentStateDefinition.stateHandler(&currentEvent);
         } else {
-            ESP_LOGE(TAG, "No handler for state %d", localState);
+            ESP_LOGE(TAG, "No handler for state %d", currentState);
             nextState = psatFSM_state_error;
         }
 
-        xSemaphoreTake(stateMutex_s, portMAX_DELAY);
-        if (nextState != currentState_s) {
+        if (nextState != currentState) {
             ESP_LOGI("FSM", "Transitioning from state: %s to new state: %s",
-                     psatFSM_stateToString(currentState_s),
+                     psatFSM_stateToString(psat_globalState.currentFSMState),
                      psatFSM_stateToString(nextState));
-            currentState_s = nextState;
+
+            // run exit function for current state
+            currentStateDefinition.onStateExit();
+
+            // change the state to the next state
+            psatFSM_setCurrentState(nextState);
+
+            // call the entry function for the new state
+            psatFSM_state_t nextStateDefinition = stateTable[nextState];
+            nextStateDefinition.onStateEntry();
         }
-        xSemaphoreGive(stateMutex_s);
 
         taskYIELD();
     }
@@ -142,5 +189,40 @@ void psatFSM_killTask() {
     if (stateMutex_s != NULL) {
         vSemaphoreDelete(stateMutex_s);
         stateMutex_s = NULL;
+    }
+}
+
+void psatFSM_stateOverride(psatFSM_state_e newState) {
+    ESP_LOGI(TAG, "Overriding current state to %i", newState);
+    psatFSM_setCurrentState(newState);
+
+    psatFSM_state_t newStateDefinition = stateTable[newState];
+    newStateDefinition.onStateEntry();
+}
+
+void psatFSM_stateNext() {
+    ESP_LOGI(TAG, "Moving to the next state");
+
+    psatFSM_state_e currentState = psatFSM_getCurrentState();
+    psatFSM_state_t currentStateDefinition = stateTable[currentState];
+    currentStateDefinition.onStateExit();
+
+    psatFSM_state_e nextState = currentStateDefinition.defaultNextState;
+    psatFSM_setCurrentState(nextState);
+
+    psatFSM_state_t nextStateDefinition = stateTable[nextState];
+    nextStateDefinition.onStateEntry();
+}
+
+void psatFSM_stateFastForward(psatFSM_state_e target) {
+    ESP_LOGI(TAG, "Fast forwarding current state to %i", target);
+    psatFSM_state_e currentState = psatFSM_getCurrentState();
+    if (target < currentState) {
+        return;
+    }
+
+    while (currentState != target) {
+        psatFSM_stateNext();
+        currentState = psatFSM_getCurrentState();
     }
 }

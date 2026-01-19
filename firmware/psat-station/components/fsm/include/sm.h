@@ -10,3 +10,6 @@ void psatFSM_mainLoop(void* arg);
 void psatFSM_start();
 void psatFSM_startAsTask();
 void psatFSM_killTask();
+void psatFSM_stateOverride(psatFSM_state_e newState);
+void psatFSM_stateNext();
+void psatFSM_stateFastForward(psatFSM_state_e target);

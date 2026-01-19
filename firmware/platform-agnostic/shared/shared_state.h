@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #define PSAT_FSM_STATE_LIST        \
+    X(psatFSM_state_start)         \
     X(psatFSM_state_prelaunch)     \
     X(psatFSM_state_ascent)        \
     X(psatFSM_state_deployPending) \
@@ -12,7 +13,8 @@
     X(psatFSM_state_landing)       \
     X(psatFSM_state_recovery)      \
     X(psatFSM_state_lowPower)      \
-    X(psatFSM_state_error)
+    X(psatFSM_state_error)         \
+    X(psatFSM_state__COUNT)
 
 #define PSAT_FSM_EVENT_TYPE_LIST             \
     X(psatFSM_eventType_startPrelaunch)      \
@@ -31,7 +33,8 @@
     X(psatFSM_eventType_audioOff)            \
     X(psatFSM_eventType_audioBeep)           \
     X(psatFSM_eventType_loraCommand)         \
-    X(psatFSM_eventType_error)
+    X(psatFSM_eventType_error)               \
+    X(psatFSM_eventType__COUNT)
 
 #define X(name) name,
 typedef enum { PSAT_FSM_STATE_LIST } psatFSM_state_e;
@@ -43,6 +46,17 @@ typedef struct {
     psatFSM_eventType_e type;
 } psatFSM_event_t;
 
+// State Definition
+typedef psatFSM_state_e (*psatFSM_stateHandler_t)(const psatFSM_event_t* event);
+typedef struct {
+    psatFSM_state_e state;
+    psatFSM_state_e defaultNextState;
+    void (*onStateEntry)(void);
+    psatFSM_stateHandler_t stateHandler;
+    void (*onStateExit)(void);
+} psatFSM_state_t;
+
+// GPS Data
 typedef struct {
     float latitude;
     float longitude;
@@ -95,3 +109,10 @@ static inline const char* psatFSM_eventTypeToString(psatFSM_eventType_e type) {
             return "Invalid State";
     }
 }
+
+// Global State
+typedef struct {
+    psatFSM_state_e currentFSMState;
+} psatGlobal_state_t;
+
+extern psatGlobal_state_t psat_globalState;
