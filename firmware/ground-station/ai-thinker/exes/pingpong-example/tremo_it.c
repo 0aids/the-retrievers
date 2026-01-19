@@ -1,6 +1,9 @@
 
 #include "tremo_it.h"
 
+extern void RadioOnDioIrq(void);
+extern void RtcOnIrq(void);
+
 /**
  * @brief  This function handles NMI exception.
  * @param  None
@@ -98,11 +101,12 @@ void PWR_IRQHandler()
 /*  file (startup_cm4.S).                                               */
 /******************************************************************************/
 
-/**
- * @brief  This function handles PPP interrupt request.
- * @param  None
- * @retval None
- */
-/*void PPP_IRQHandler(void)
+void LORA_IRQHandler()
 {
-}*/
+    RadioOnDioIrq();
+}
+
+void RTC_IRQHandler(void)
+{
+    RtcOnIrq();
+}

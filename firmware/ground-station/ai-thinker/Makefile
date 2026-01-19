@@ -9,8 +9,6 @@ configure:
 
 build:
 	cmake --build build -j $(NumProcessors)
-	echo "Making binary to build/main.bin"
-	arm-none-eabi-objcopy -O binary build/main build/main.bin
 
 clean:
 	rm -rf build
