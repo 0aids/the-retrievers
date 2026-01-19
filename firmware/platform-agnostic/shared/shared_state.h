@@ -43,6 +43,17 @@ typedef struct {
     psatFSM_eventType_e type;
 } psatFSM_event_t;
 
+// State Definition
+typedef psatFSM_state_e (*psatFSM_stateHandler_t)(const psatFSM_event_t* event);
+typedef struct {
+    psatFSM_state_e state;
+    psatFSM_state_e defaultNextState;
+    void (*onStateEntry)(void);
+    psatFSM_stateHandler_t stateHandler;
+    void (*onStateExit)(void);
+} psatFSM_state_t;
+
+// GPS Data
 typedef struct {
     float latitude;
     float longitude;
@@ -96,6 +107,7 @@ static inline const char* psatFSM_eventTypeToString(psatFSM_eventType_e type) {
     }
 }
 
+// Global State
 typedef struct {
     psatFSM_state_e currentFSMState;
 } psatGlobal_state_t;
