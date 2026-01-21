@@ -4,6 +4,7 @@
 #include <string.h>
 #include <shared_lora.h>
 #include <shared_state.h>
+#include <helpers.h>
 
 #include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
@@ -61,8 +62,10 @@ static void _loraFsm_runStateTxRoutine();
 
 static loraFsm_radioStates_e _loraFsm_currentState_s;
 static bool                  _rxProcessed           = false;
-static uint8_t               rxBuffer[2048]         = {0};
-static uint16_t              rxBufferSize           = 0;
+static struct {
+    helpers_malloced_t mp;
+    uint32_t currentlyUsedSize;
+} rxBuffer = {0};
 static uint64_t              lastSuccessfulPing_sec = 0;
 static uint64_t              timeSinceBeacon_sec    = 0;
 
@@ -78,15 +81,21 @@ static void _loraFsm_onTxTimeout()
 {
     ESP_LOGI(__FUNCTION__, "onTxTimeout");
 }
+
+// The payload will be freed after this is run, so memcpy everything.
 static void _loraFsm_onRxDone(uint8_t* payload, uint16_t payloadSize,
                               int16_t rssi, int8_t snr)
 {
-    // Wait for something to do.
-    memcpy(rxBuffer, payload, payloadSize);
-    ESP_LOGI(__FUNCTION__, "onRxDone");
-    rxBufferSize = payloadSize;
-    _rxProcessed = true;
+    if (!helpers_smartAlloc(&rxBuffer.mp, payloadSize))
+    {
+        ESP_LOGE(__FUNCTION__, "Failed to allocate buffer for rxDone!");
+        return;
+    }
+    memcpy(rxBuffer.mp.buffer, payload, payloadSize);
+    rxBuffer.currentlyUsedSize = payloadSize;
+    ESP_LOGI(__FUNCTION__, "rx done! payload size: %"PRIu16, payloadSize);
 }
+
 static void _loraFsm_onTxDone()
 {
     ESP_LOGI(__FUNCTION__, "onTxDone");
@@ -99,13 +108,17 @@ static bool _loraFsm_attemptPing()
     // Wait 2s until if we get a response.
     lora_setRx(0);
     uint64_t startTime_sec = esp_timer_get_time() / 1000000;
-    ESP_LOGI(__FUNCTION__, "Sent ping, waiting for pong, start time: %"PRIu64, startTime_sec);
+    ESP_LOGI(__FUNCTION__,
+             "Sent ping, waiting for pong, start time: %" PRIu64,
+             startTime_sec);
     uint16_t i = 0;
     while (_rxProcessed != true &&
            startTime_sec + 2 > (esp_timer_get_time() / 1000000))
     {
         if (i++ % 1000 == 0)
-            ESP_LOGI(__FUNCTION__, "Still waiting, current time is: %"PRIu64, (esp_timer_get_time() / 1000000));
+            ESP_LOGI(__FUNCTION__,
+                     "Still waiting, current time is: %" PRIu64,
+                     (esp_timer_get_time() / 1000000));
         lora_irqProcess();
         taskYIELD();
     }
@@ -180,7 +193,7 @@ static void _loraFsm_runStateCmd()
 {
     // Figure out what the command is.
     loraFsm_packet_t packet =
-        loraFsm_packetParse(rxBuffer, rxBufferSize);
+        loraFsm_packetParse(rxBuffer.mp.buffer, rxBuffer.currentlyUsedSize);
 
     switch (packet.type)
     {
