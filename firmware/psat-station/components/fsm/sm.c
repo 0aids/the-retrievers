@@ -16,7 +16,7 @@ static TaskHandle_t xHandleSM_s = NULL;
 static QueueHandle_t eventQueue_s = NULL;
 static SemaphoreHandle_t stateMutex_s = NULL;
 
-static psatFSM_state_t stateTable[] = {
+static psatFsm_state_t stateTable[] = {
     [psatFSM_state_start] = {.state = psatFSM_state_start,
                              .defaultNextState = psatFSM_state_prelaunch,
                              .onStateExit = psatFSM_startExitHandler,
@@ -129,7 +129,7 @@ void psatFSM_mainLoop(void* arg) {
         // TODO: do a check for state count
 
         psatFSM_state_e currentState = psatFSM_getCurrentState();
-        psatFSM_state_t currentStateDefinition = stateTable[currentState];
+        psatFsm_state_t currentStateDefinition = stateTable[currentState];
         if (currentStateDefinition.stateHandler) {
             nextState = currentStateDefinition.stateHandler(&currentEvent);
         } else {
@@ -149,7 +149,7 @@ void psatFSM_mainLoop(void* arg) {
             psatFSM_setCurrentState(nextState);
 
             // call the entry function for the new state
-            psatFSM_state_t nextStateDefinition = stateTable[nextState];
+            psatFsm_state_t nextStateDefinition = stateTable[nextState];
             nextStateDefinition.onStateEntry();
         }
 
@@ -196,7 +196,7 @@ void psatFSM_stateOverride(psatFSM_state_e newState) {
     ESP_LOGI(TAG, "Overriding current state to %i", newState);
     psatFSM_setCurrentState(newState);
 
-    psatFSM_state_t newStateDefinition = stateTable[newState];
+    psatFsm_state_t newStateDefinition = stateTable[newState];
     newStateDefinition.onStateEntry();
 }
 
@@ -204,13 +204,13 @@ void psatFSM_stateNext() {
     ESP_LOGI(TAG, "Moving to the next state");
 
     psatFSM_state_e currentState = psatFSM_getCurrentState();
-    psatFSM_state_t currentStateDefinition = stateTable[currentState];
+    psatFsm_state_t currentStateDefinition = stateTable[currentState];
     currentStateDefinition.onStateExit();
 
     psatFSM_state_e nextState = currentStateDefinition.defaultNextState;
     psatFSM_setCurrentState(nextState);
 
-    psatFSM_state_t nextStateDefinition = stateTable[nextState];
+    psatFsm_state_t nextStateDefinition = stateTable[nextState];
     nextStateDefinition.onStateEntry();
 }
 
