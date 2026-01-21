@@ -56,7 +56,7 @@ const char* loraFsm_packetTypeToStr(loraFsm_packetType_e type) {
 }
 
 void loraFSM_printPacketStats(loraFsm_packet_t* packet) {
-    printf("Received: %s\r\n", loraFSM_packetTypeToStr(packet->type));
+    printf("Received: %s\r\n", loraFsm_packetTypeToStr(packet->type));
     // printf("Time on air: %u ms\r\n", gr_RadioGetTimeOnAir(packet));
     // printf("Signal strength: %d dbm\r\n", gr_RadioGetRSSI());
     printf("Total packet size including header: %d\r\n",

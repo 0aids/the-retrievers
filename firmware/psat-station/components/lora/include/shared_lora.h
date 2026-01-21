@@ -16,7 +16,7 @@
 // up to ~2kb and check for bounds
 // NOTE: the asr6601CB that the ai-thinker uses has 16kb sram.
 // The esp32-s3-wroom-1u-n16r8 has 8mb of ram, 16mb flash.
-#define lora_numBufferBytes_d ((uint16_t)(3072))
+#define lora_numBufferBytes_d ((uint16_t)(2048))
 
 typedef enum
 {

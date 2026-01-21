@@ -8,7 +8,10 @@
 #include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "esp_log.h"
 #include "portmacro.h"
+#include "gps_data.h"
+#include "sm.h"
 
 #define DelayMs(timeInMs)     vTaskDelay((timeInMs) / portTICK_PERIOD_MS)
 #define TimerTime_t           int64_t
@@ -57,10 +60,10 @@ static void _loraFsm_runStateTxRoutine();
 
 static loraFsm_radioStates_e _loraFsm_currentState_s;
 static bool                  _rxProcessed           = false;
-static uint8_t               rxBuffer[16384]        = {0};
+static uint8_t               rxBuffer[2048]         = {0};
 static uint16_t              rxBufferSize           = 0;
 static uint64_t              lastSuccessfulPing_sec = 0;
-static uint64_t timeSinceBeacon_sec = 0;
+static uint64_t              timeSinceBeacon_sec    = 0;
 
 static void                  _loraFsm_onRxError()
 {
@@ -96,7 +99,8 @@ static bool _loraFsm_attemptPing()
     // Wait 2s until if we get a response.
     lora_setRx(0);
     uint64_t startTime_sec = esp_timer_get_time() / 1000000;
-    while (_rxProcessed != true || startTime_sec + 2 > (esp_timer_get_time() / 1000000))
+    while (_rxProcessed != true ||
+           startTime_sec + 2 > (esp_timer_get_time() / 1000000))
     {
         vTaskDelay(1 / portTICK_PERIOD_MS);
     }
@@ -119,15 +123,17 @@ static void _loraFsm_broadcast()
     // Might not fill out the data.
     gps_stateGetSnapshot(&gpsData);
     // Transmit the state data
-    loraFsm_packet_t psatStatePacket = loraFsm_createPacket(
-        loraFsm_packetType_stateData, (uint8_t*)&psatState, sizeof(psatState));
+    loraFsm_packet_t psatStatePacket =
+        loraFsm_createPacket(loraFsm_packetType_stateData,
+                             (uint8_t*)&psatState, sizeof(psatState));
 
     lora_send((uint8_t*)&psatStatePacket, sizeof(psatState) + 1);
 
     vTaskDelay(100 / portTICK_PERIOD_MS);
 
-    loraFsm_packet_t gpsStatePacket = loraFsm_createPacket(
-        loraFsm_packetType_stateData, (uint8_t*)&gpsData, sizeof(gpsData));
+    loraFsm_packet_t gpsStatePacket =
+        loraFsm_createPacket(loraFsm_packetType_stateData,
+                             (uint8_t*)&gpsData, sizeof(gpsData));
 
     lora_send((uint8_t*)&gpsStatePacket, sizeof(gpsData) + 1);
 }
@@ -150,7 +156,8 @@ static void _loraFsm_runStateIdle()
         _loraFsm_currentState_s = loraFsm_radioStates_txRoutine;
         return;
     }
-    if (currentTime > lastSuccessfulPing_sec + loraFsm_connTimeoutThreshold_s_d)
+    if (currentTime >
+        lastSuccessfulPing_sec + loraFsm_connTimeoutThreshold_s_d)
     {
         if (_loraFsm_attemptPing())
         {
@@ -158,7 +165,7 @@ static void _loraFsm_runStateIdle()
             return;
         }
         // We failed and thus we become a beacon.
-        timeSinceBeacon_sec = esp_timer_get_time() / 1000000;
+        timeSinceBeacon_sec     = esp_timer_get_time() / 1000000;
         _loraFsm_currentState_s = loraFsm_radioStates_beacon;
         return;
     }
@@ -178,7 +185,7 @@ static void _loraFsm_runStateCmd()
                 .global = false,
                 .type   = psatFSM_eventType_audioBeep,
             };
-            psatFSM_postEvent(event);
+            psatFSM_postEvent(&event);
             break;
         }
 
@@ -193,7 +200,7 @@ static void _loraFsm_runStateCmd()
 
         case loraFsm_packetType_stateOverrideReq:
             ESP_LOGE(__FUNCTION__, "Overriding state!");
-            psatFSM_stateOverride(*(psatFsm_state_t*)(packet.data));
+            psatFSM_stateOverride(*(psatFSM_state_e*)(packet.data));
             break;
 
         default: ESP_LOGE(__FUNCTION__, "Invalid request!"); break;
@@ -202,10 +209,12 @@ static void _loraFsm_runStateCmd()
     _loraFsm_currentState_s = loraFsm_radioStates_idle;
 }
 
-static void _loraFsm_runStateBeacon() {
+static void _loraFsm_runStateBeacon()
+{
     // Using time since last beacon
     uint64_t currentTime_sec = esp_timer_get_time() / 1000000;
-    if (timeSinceBeacon_sec + loraFsm_beaconRoutineInterval_s_d < currentTime_sec)
+    if (timeSinceBeacon_sec + loraFsm_beaconRoutineInterval_s_d <
+        currentTime_sec)
     {
         timeSinceBeacon_sec = currentTime_sec;
         _loraFsm_broadcast();
@@ -226,7 +235,7 @@ static void _loraFsm_runStateTxRoutine()
     _loraFsm_currentState_s = loraFsm_radioStates_idle;
     vTaskDelay(500 / portTICK_PERIOD_MS);
     // Send a ping request.
-    if (_loraFsm_attemptPing()) 
+    if (_loraFsm_attemptPing())
         lastSuccessfulPing_sec = esp_timer_get_time() / 1000000;
 }
 
@@ -238,8 +247,7 @@ void loraFsm_init()
                       _loraFsm_onRxError);
 }
 
-void loraFsm_queryState() {
-}
+void loraFsm_queryState() {}
 
 void loraFsm_start()
 {
