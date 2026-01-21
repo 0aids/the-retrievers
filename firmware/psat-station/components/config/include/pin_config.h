@@ -1,22 +1,12 @@
 #pragma once
 
-#include "driver/adc.h"
 #include "driver/uart.h"
 
-typedef struct {
-    uart_port_t gpsUartNum;
-    int gpsTxPin;
-    int gpsRxPin;
-
-    int landingButtonPin;
-    int prelaunchButtonPin;
-
-    int light1Pin;                 // based on the transistor circuit
-    adc2_channel_t light2Channel;  // will be used for redundancy with the ADC
-
-    int buzzerPin;
-
-    int servoPin;
-} config_pinConfig_t;
-
-const config_pinConfig_t* config_getPinConfig(void);
+#define CFG_GPS_UART_NUM_d         UART_NUM_1
+#define CFG_GPS_TX_PIN_d           27
+#define CFG_GPS_RX_PIN_d           25
+#define CFG_LANDING_BUTTON_PIN_d   22
+#define CFG_PRELAUNCH_BUTTON_PIN_d 21
+#define CFG_LIGHT1_PIN_d           19
+#define CFG_BUZZER_PIN_d           23
+#define CFG_SERVO_PIN_d            13

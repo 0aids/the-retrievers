@@ -11,45 +11,47 @@
 #include "esp_adc/adc_cali_scheme.h"
 #include "driver/gpio.h"
 #include "soc/io_mux_reg.h"
-#include <stdbool.h> 
+#include <stdbool.h>
 #include "freertos/idf_additions.h"
 
 //Constants
-#define battery_adcAtten_d                      ADC_ATTEN_DB_12
-#define battery_adc1Chan0_d                     ADC_CHANNEL_0       // This is GPIO4
-#define battery_pinMask_d                       (1ULL << 4)         // pin mask for GPIO 4
-#define battery_stateConfigBufferSize_d         (1024)
+#define battery_adcAtten_d              ADC_ATTEN_DB_12
+#define battery_adc1Chan0_d             ADC_CHANNEL_0 // This is GPIO4
+#define battery_pinMask_d               (1ULL << 4) // pin mask for GPIO 4
+#define battery_stateConfigBufferSize_d (1024)
 
 const static char* battery_tag_c = "Battery";
 
 //Global struct variables
-typedef struct {
+typedef struct
+{
     adc_oneshot_unit_handle_t adcHandle;
-    adc_cali_handle_t adcCaliChan0;
+    adc_cali_handle_t         adcCaliChan0;
 } battery_handlers_t;
 
 extern battery_handlers_t battery_adcHandlers_g;
 
-typedef struct {
-    char* stateString;
-    adc_unit_t unit;
+typedef struct
+{
+    char*          stateString;
+    adc_unit_t     unit;
     adc_ulp_mode_t ulpMode;
-    adc_atten_t atten;
-    adc_bitwidth_t bitwidth; 
+    adc_atten_t    atten;
+    adc_bitwidth_t bitwidth;
 } battery_state_t;
 
 extern battery_state_t battery_state_g;
 
-typedef struct {
+typedef struct
+{
     battery_state_t stateBefore;
     battery_state_t stateMiddle;
-    int sampleData;
+    int             sampleData;
     battery_state_t stateAfter;
 } battery_preflightTest_t;
 
-
-void battery_setup(void);
-int battery_getVoltage(void);
-battery_state_t battery_queryState(void);
-void battery_deinit(void);
+void                    battery_setup(void);
+int                     battery_getVoltage(void);
+battery_state_t         battery_queryState(void);
+void                    battery_deinit(void);
 battery_preflightTest_t battery_preflightTest(void);

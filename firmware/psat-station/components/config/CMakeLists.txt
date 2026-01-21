@@ -1,5 +1,5 @@
 idf_component_register(
-    SRCS "pin_config.c"
+    SRCS
     INCLUDE_DIRS "include" 
     REQUIRES driver esp_adc
 )
