@@ -75,7 +75,7 @@ void board_init()
 
 uint8_t txrxBuffer[2048] = {};
 
-void txDoneCallback()
+void    txDoneCallback()
 {
     printw("txDoneCallback\r\n");
     lora_setRx(0);
@@ -119,8 +119,8 @@ void main(void)
 {
     board_init();
     printw("Initializing the lora\r\n");
-    lora_init();
-    lora_setCallbacks(txDoneCallback, rxDoneCallback,
+    loraImpl_init();
+    loraImpl_setCallbacks(txDoneCallback, rxDoneCallback,
                       txTimeoutCallback, rxTimeoutCallback,
                       rxErrorCallback);
     delay_ms(100);
@@ -130,8 +130,8 @@ void main(void)
     {
         if ((size = receiveUart(txrxBuffer, sizeof(txrxBuffer))))
         {
-            lora_send(txrxBuffer, size);
-            lora_setRx(0);
+            loraImpl_send(txrxBuffer, size);
+            loraImpl_setRx(0);
         }
         lora_irqProcess();
     }
