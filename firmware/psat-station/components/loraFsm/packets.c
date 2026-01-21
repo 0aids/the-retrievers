@@ -1,4 +1,5 @@
 #include "packets.h"
+#include <esp_log.h>
 
 loraFsm_packet_t loraFsm_createPacket(loraFsm_packetType_e type,
                                     const uint8_t* const dataBuffer,
@@ -9,7 +10,12 @@ loraFsm_packet_t loraFsm_createPacket(loraFsm_packetType_e type,
         .m_dataSize = 0,
         .wellFormed = false,
     };
-    if (d_defaultPacketBufferSize < dataBufferLength) return packet;
+    if (loraFsm_defaultPacketSize_d < dataBufferLength) 
+    {
+        ESP_LOGE(__FUNCTION__, "Unable to create packet, size is too large!");
+        packet.m_dataSize = 0;
+        return packet;
+    }
 
     packet.wellFormed = true;
     // If length is 0 or a nullptr is passed
@@ -30,6 +36,12 @@ loraFsm_packet_t loraFsm_packetParse(uint8_t* payload, uint16_t size) {
         .m_dataSize = size - 1,
     };
     if (pack.m_dataSize <= 0) return pack;
+    if (size - 1 > loraFsm_defaultPacketSize_d)
+    {
+        ESP_LOGE(__FUNCTION__, "Unable to parse packet, size is too large!");
+        pack.m_dataSize = 0;
+        return pack;
+    }
 
     memcpy(pack.data, payload + 1, size - 1);
     return pack;

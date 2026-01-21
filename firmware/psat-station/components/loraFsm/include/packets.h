@@ -9,7 +9,7 @@
 #include <shared_state.h>
 
 // Consider using malloc rather than using massive structs
-#define d_defaultPacketBufferSize 2048
+#define loraFsm_defaultPacketSize_d 255
 
 typedef enum __attribute__((packed)) {
     loraFsm_packetType_empty,
@@ -28,7 +28,7 @@ typedef enum __attribute__((packed)) {
 // This will be sent as a raw buffer, up to m_dataSize bytes.
 typedef struct __attribute__((packed)){
     loraFsm_packetType_e type;                      // 8 bits
-    uint8_t data[d_defaultPacketBufferSize];  // OWNING, for receiving
+    uint8_t data[loraFsm_defaultPacketSize_d];  // OWNING, for receiving
     uint16_t m_dataSize;  // This is not part of the actual packet, this is just
                           // for sending.
     bool wellFormed;

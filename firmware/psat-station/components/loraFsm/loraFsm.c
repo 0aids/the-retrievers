@@ -9,6 +9,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_log.h"
+#include "loraImpl.h"
 #include "portmacro.h"
 #include "gps_data.h"
 #include "sm.h"
@@ -95,14 +96,18 @@ static bool _loraFsm_attemptPing()
 {
     loraFsm_packetType_e ping = loraFsm_packetType_ping;
     lora_send((uint8_t*)&ping, sizeof(ping));
-    ESP_LOGI(__FUNCTION__, "Sent ping, waiting for pong");
     // Wait 2s until if we get a response.
     lora_setRx(0);
     uint64_t startTime_sec = esp_timer_get_time() / 1000000;
-    while (_rxProcessed != true ||
+    ESP_LOGI(__FUNCTION__, "Sent ping, waiting for pong, start time: %"PRIu64, startTime_sec);
+    uint16_t i = 0;
+    while (_rxProcessed != true &&
            startTime_sec + 2 > (esp_timer_get_time() / 1000000))
     {
-        vTaskDelay(1 / portTICK_PERIOD_MS);
+        if (i++ % 1000 == 0)
+            ESP_LOGI(__FUNCTION__, "Still waiting, current time is: %"PRIu64, (esp_timer_get_time() / 1000000));
+        lora_irqProcess();
+        taskYIELD();
     }
     if (_rxProcessed)
     {
@@ -118,6 +123,7 @@ static void _loraFsm_broadcast()
 {
     // Get state and then transmit it.
     // TODO: create function that returns more than just our current PSAT state.
+    ESP_LOGI(__FUNCTION__, "Broadcasting state information!");
     psatFSM_state_e psatState = psatFSM_getCurrentState();
     gps_data_t      gpsData   = {0};
     // Might not fill out the data.
