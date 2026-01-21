@@ -54,7 +54,7 @@ typedef struct {
     void (*onStateEntry)(void);
     psatFSM_stateHandler_t stateHandler;
     void (*onStateExit)(void);
-} psatFSM_state_t;
+} psatFsm_state_t;
 
 // GPS Data
 typedef struct {
