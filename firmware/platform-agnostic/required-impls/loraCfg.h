@@ -23,7 +23,7 @@
 #define loraCfg_headerPacketPreamble_d 0xff // 0b11111111
 #define loraCfg_dataPacketPreamble_d 0xaa   // 0b10101010
 #define loraCfg_footerPacketPreamble_d 0xcc // 0b11001100
-#define loraCfg_txTimeout_d 3000
+#define loraCfg_txTimeout_ms_d 3000
 #define loraCfg_crcOn_d true
 #define loraCfg_freqHop_d 0 // No frequency hopping (would get better range if yes?)
 #define loraCfg_hopPeriod_d 0 // No frequency hopping (would get better range if yes?)

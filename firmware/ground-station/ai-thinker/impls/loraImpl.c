@@ -96,7 +96,7 @@ void loraImpl_init(void)
         loraCfg_spreadingFactor_d, loraCfg_codingRate_d,
         loraCfg_preambleLength_d, loraCfg_fixLengthPayloadOn_d,
         loraCfg_crcOn_d, loraCfg_freqHop_d, loraCfg_hopPeriod_d,
-        loraCfg_iqInversionOn_d, loraCfg_txTimeout_d);
+        loraCfg_iqInversionOn_d, loraCfg_txTimeout_ms_d);
 
     Radio.SetRxConfig(
         MODEM_LORA, loraCfg_bandwidth_d, loraCfg_spreadingFactor_d,

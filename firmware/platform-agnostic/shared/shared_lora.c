@@ -39,7 +39,9 @@ lora_globalState_t lora_globalState_g = {
 static bool _lora_waitUntilTxDone(void)
 {
     debug("Waiting for TX to complete...\r\n");
-    while (!lora_globalState_g.backendTxDone)
+    uint16_t time = 0;
+    // Force a timeout after some time anyways.
+    while (!lora_globalState_g.backendTxDone && time++ < loraCfg_txTimeout_ms_d)
     {
         loraImpl_irqProcess();
         utils_sleepMs(1);
