@@ -17,8 +17,8 @@
 #include "freertos/idf_additions.h"
 
 #define ldr_adcAtten_d  ADC_ATTEN_DB_12
-#define ldr_adc1Chan0_d ADC_CHANNEL_0 // This is GPIO4
-#define ldr_pinMask_d   (1ULL << 4)   // pin mask for GPIO 4
+#define ldr_adc1Chan0_d ADC_CHANNEL_7 // This is GPIO4
+#define ldr_pinMask_d   (1ULL << 18)  // pin mask for GPIO 4
 
 const static char* ldr_tag_c = "LDR";
 

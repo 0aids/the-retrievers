@@ -10,3 +10,11 @@
 #define CFG_LIGHT1_PIN_d           19
 #define CFG_BUZZER_PIN_d           23
 #define CFG_SERVO_PIN_d            13
+
+#define CFG_GPS_TX_PIN_d           38
+#define CFG_GPS_RX_PIN_d           37
+#define CFG_LANDING_BUTTON_PIN_d   39
+#define CFG_PRELAUNCH_BUTTON_PIN_d 40
+#define CFG_LIGHT1_PIN_d           2
+#define CFG_BUZZER_PIN_d           21
+#define CFG_SERVO_PIN_d            8

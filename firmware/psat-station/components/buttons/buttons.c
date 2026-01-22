@@ -40,8 +40,6 @@ static void IRAM_ATTR      button_isr(void* arg)
 
 void button_init(void)
 {
-    gpio_install_isr_service(0);
-
     for (int i = 0; i < button_id__COUNT; i++)
     {
         gpio_config_t cfg = {

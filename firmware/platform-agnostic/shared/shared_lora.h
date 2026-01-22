@@ -85,7 +85,8 @@ typedef struct
     // Is true when the databuffer is fully formed
     bool     dataReceived;
     uint16_t dataCurrentContentSize;
-    uint8_t  dataBuffer[lora_numBufferBytes_d];
+    // This needs to be allocated some way or another. 
+    uint8_t  *dataBuffer;
     lora_rxErrorTypes_e errorType;
 } lora_globalState_t;
 

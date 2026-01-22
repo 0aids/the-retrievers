@@ -13,10 +13,10 @@
 
 // Forward declarations
 static void IRAM_ATTR lora_dio0IsrHandler(void*);
-static void _loraImpl_rxDoneTask(void*);
-static void _loraImpl_setupDefaultConfig();
-static void _loraImpl_printGlobalState();
-static void _loraImpl_printIrqState();
+static void           _loraImpl_rxDoneTask(void*);
+static void           _loraImpl_setupDefaultConfig();
+static void           _loraImpl_printGlobalState();
+static void           _loraImpl_printIrqState();
 
 #define _loraImpl_runCallback_df(func)                               \
     if (func)                                                        \
@@ -44,8 +44,8 @@ static struct
     atomic_bool rxError;
 } loraImpl_irqState = {};
 
-static uint8_t  rxBuffer[256] = {0};
-static uint16_t rxBufferSize  = 0;
+static uint8_t        rxBuffer[256] = {0};
+static uint16_t       rxBufferSize  = 0;
 
 static void IRAM_ATTR lora_dio0IsrHandler(void*)
 {
@@ -98,23 +98,25 @@ static void _loraImpl_rxDoneTask(void*)
                              loraBit_irqFlags_clearAll_d, NULL);
             ESP_LOGI(__FUNCTION__, "Packet received successfully");
             // Read from the rxDone buffer.
-            loraHal_readReg(loraReg_addrRxNbBytes_d, (uint8_t*)&rxBufferSize);
+            loraHal_readReg(loraReg_addrRxNbBytes_d,
+                            (uint8_t*)&rxBufferSize);
             ESP_LOGI(__FUNCTION__, "Received packet of size: %d",
                      rxBufferSize);
             uint8_t currAddr;
             loraHal_readReg(loraReg_addrFifoRxCurAddr_d, &currAddr);
-            loraHal_writeReg(loraReg_addrFifoAddrPtr_d, currAddr, NULL);
+            loraHal_writeReg(loraReg_addrFifoAddrPtr_d, currAddr,
+                             NULL);
             loraHal_readRegContinuous(loraReg_addrFifo_d, rxBuffer,
                                       rxBufferSize);
             atomic_store(&loraImpl_irqState.rxDone, true);
-            #ifdef psat_debugMode_d
+#ifdef psat_debugMode_d
             printf("hex: ");
             for (size_t i = 0; i < rxBufferSize; i++)
             {
                 printf("%02x ", rxBuffer[i]);
             }
             printf("\r\n");
-            #endif
+#endif
             xSemaphoreGive(rxProcessedSemaphore);
         }
     }
@@ -137,7 +139,8 @@ void loraImpl_send(uint8_t* payload, uint16_t payloadSize)
     loraHal_readReg(loraReg_addrFifoTxBaseAddr_d, &txBase);
     loraHal_writeReg(loraReg_addrFifoAddrPtr_d, txBase, NULL);
     // Set the number of bytes to be sent.
-    loraHal_writeReg(loraReg_addrPayloadLen_d, (uint8_t)payloadSize, NULL);
+    loraHal_writeReg(loraReg_addrPayloadLen_d, (uint8_t)payloadSize,
+                     NULL);
 
     // Then write the data to be sent.
     loraHal_writeRegContinuous(loraReg_addrFifo_d, payload,
@@ -283,16 +286,22 @@ static void _loraImpl_setupDefaultConfig()
 void loraImpl_init(void)
 {
     esp_err_t err;
-    uint32_t stackSize = 1 << 15;
-    err = loraHal_init();
-    if (err != ESP_OK) {
-        ESP_LOGE(__FUNCTION__, "loraHal_init failed with error code: %d", err);
+    uint32_t  stackSize = 1 << 15;
+    err                 = loraHal_init();
+    if (err != ESP_OK)
+    {
+        ESP_LOGE(__FUNCTION__,
+                 "loraHal_init failed with error code: %d", err);
         return;
     }
     _loraImpl_setupDefaultConfig();
     err = loraHal_registerRxDoneIsr(lora_dio0IsrHandler);
-    if (err != ESP_OK) {
-        ESP_LOGE(__FUNCTION__, "loraHal_registerRxDoneIsr failed with error code: %d", err);
+    if (err != ESP_OK)
+    {
+        ESP_LOGE(
+            __FUNCTION__,
+            "loraHal_registerRxDoneIsr failed with error code: %d",
+            err);
         loraHal_deinit();
         return;
     }
@@ -306,13 +315,19 @@ void loraImpl_deinit(void)
 {
     esp_err_t err;
     err = loraHal_deregisterRxDoneIsr();
-    if (err != ESP_OK) {
-        ESP_LOGE(__FUNCTION__, "loraHal_deregisterRxDoneIsr failed with error code: %d", err);
+    if (err != ESP_OK)
+    {
+        ESP_LOGE(
+            __FUNCTION__,
+            "loraHal_deregisterRxDoneIsr failed with error code: %d",
+            err);
     }
     vTaskDelete(rxDoneTaskHandle);
     err = loraHal_deinit();
-    if (err != ESP_OK) {
-        ESP_LOGE(__FUNCTION__, "loraHal_deinit failed with error code: %d", err);
+    if (err != ESP_OK)
+    {
+        ESP_LOGE(__FUNCTION__,
+                 "loraHal_deinit failed with error code: %d", err);
     }
 }
 
@@ -355,8 +370,7 @@ void loraImpl_queryState(void)
     {
         uint8_t val;
         loraHal_readReg(reg, &val);
-        ESP_LOGI(__FUNCTION__, "Register: %#x, Value: %#x", reg,
-                 val);
+        ESP_LOGI(__FUNCTION__, "Register: %#x, Value: %#x", reg, val);
     }
 }
 
@@ -371,10 +385,10 @@ void loraImpl_irqProcess(void)
           loraBit_irqFlags_crcErrMsk_d);
     uint8_t flags;
     loraHal_writeReg(loraReg_addrIrqFlags_d, relevantFlags, &flags);
-    #ifdef psat_debugMode_d
+#ifdef psat_debugMode_d
     if (flags)
         ESP_LOGI(__FUNCTION__, "flags - Value: %#x", flags);
-    #endif
+#endif
     if (flags & loraBit_irqFlags_txDoneMsk_d)
     {
         ESP_LOGI(__FUNCTION__, "Processing TX Done IRQ");
@@ -438,8 +452,8 @@ void loraImpl_irqProcess(void)
 
 void loraImpl_setRx(uint32_t milliseconds)
 {
-    ESP_LOGI(__FUNCTION__, "Setting Rx mode, timeout: %lu",
-             milliseconds);
+    // ESP_LOGI(__FUNCTION__, "Setting Rx mode, timeout: %lu",
+    //          milliseconds);
     uint8_t curOpMode;
     loraHal_readReg(loraReg_addrOpMode_d, &curOpMode);
     loraBit_set(curOpMode, loraBit_opMode_modeMsk_d,

@@ -1,40 +1,69 @@
 #include "packets.h"
+#include "helpers.h"
+#include <esp_log.h>
 
-loraFsm_packet_t loraFsm_createPacket(loraFsm_packetType_e type,
-                                    const uint8_t* const dataBuffer,
+inline static bool _loraFsm_copyData(loraFsm_packetWrapper_t *packetWrapped, const uint8_t* const dataBuffer_nma,
+                                    const uint16_t dataBufferLength)
+{
+	if (!helpers_smartAlloc(&packetWrapped->packetStorage, dataBufferLength + 1))
+	{
+    	return false;
+	}
+	memcpy(packetWrapped->packetStorage.buffer + 1, dataBuffer_nma, dataBufferLength);
+	return true;
+}
+
+loraFsm_packetWrapper_t loraFsm_packetCreate(loraFsm_packetType_e type,
+                                    const uint8_t* const dataBuffer_nma,
                                     const uint16_t dataBufferLength) {
-    loraFsm_packet_t packet = {
-        .type = type,
-        .data = {0},
-        .m_dataSize = 0,
-        .wellFormed = false,
-    };
-    if (d_defaultPacketBufferSize < dataBufferLength) return packet;
-
-    packet.wellFormed = true;
-    // If length is 0 or a nullptr is passed
-    if (dataBufferLength == 0 || dataBuffer == NULL) {
-        return packet;
-    }
-    memcpy(packet.data, dataBuffer, dataBufferLength);
-    packet.m_dataSize = dataBufferLength;
-
-    return packet;
+	loraFsm_packetWrapper_t packetWrapped = {0};
+	packetWrapped.wellFormed = false;
+	if (!_loraFsm_copyData(&packetWrapped, dataBuffer_nma, dataBufferLength))
+	{
+    	ESP_LOGE(__FUNCTION__, "Failed to allocate and copy data to packet!");
+    	return packetWrapped;
+	}
+	packetWrapped.packetInterpreter = (loraFsm_packet_t*)packetWrapped.packetStorage.buffer;
+	packetWrapped.packetStorage.buffer[0] = type;
+	packetWrapped.wellFormed = true;
+	return packetWrapped;
 }
 
 // The size of the parsed packet is the entire size of the received buffer.
-loraFsm_packet_t loraFsm_packetParse(uint8_t* payload, uint16_t size) {
-    loraFsm_packet_t pack = {
-        .type = payload[0],
-        .data = {0},
-        .m_dataSize = size - 1,
-    };
-    if (pack.m_dataSize <= 0) return pack;
-
-    memcpy(pack.data, payload + 1, size - 1);
-    return pack;
+loraFsm_packetWrapper_t loraFsm_packetParse(const uint8_t* const payload_nma, uint16_t size) {
+	loraFsm_packetWrapper_t packetWrapped = {0};
+	packetWrapped.wellFormed = false;
+	if (!_loraFsm_copyData(&packetWrapped, payload_nma + 1, size - 1))
+	{
+    	ESP_LOGE(__FUNCTION__, "Failed to allocate and copy data to packet!");
+    	return packetWrapped;
+	}
+	packetWrapped.packetStorage.buffer[0] = payload_nma[0];
+	packetWrapped.packetInterpreter = (loraFsm_packet_t*)packetWrapped.packetStorage.buffer;
+	packetWrapped.wellFormed = true;
+	return packetWrapped;
 }
 
+void loraFsm_packetSend(loraFsm_packetWrapper_t* packet)
+{
+    if (!packet->wellFormed) 
+    {
+        ESP_LOGE(__FUNCTION__, "Unable to send packet! Packet is not well formed!");
+        return;
+    }
+    lora_send(packet->packetStorage.buffer, packet->packetStorage.bufferSize);
+}
+
+bool loraFsm_packetFree(loraFsm_packetWrapper_t* packet)
+{
+    if (!packet->wellFormed) 
+    {
+        ESP_LOGE(__FUNCTION__, "Unable free packet! Packet is not well formed!");
+        return false;
+    }
+    packet->packetInterpreter = NULL;
+    return helpers_free(&packet->packetStorage);
+}
 
 const char* loraFsm_packetTypeToStr(loraFsm_packetType_e type) {
     switch (type) {
@@ -53,12 +82,4 @@ const char* loraFsm_packetTypeToStr(loraFsm_packetType_e type) {
         default:
             return "UNKNOWN_PACKET_TYPE";
     }
-}
-
-void loraFSM_printPacketStats(loraFsm_packet_t* packet) {
-    printf("Received: %s\r\n", loraFSM_packetTypeToStr(packet->type));
-    // printf("Time on air: %u ms\r\n", gr_RadioGetTimeOnAir(packet));
-    // printf("Signal strength: %d dbm\r\n", gr_RadioGetRSSI());
-    printf("Total packet size including header: %d\r\n",
-           packet->m_dataSize + 1);
 }
