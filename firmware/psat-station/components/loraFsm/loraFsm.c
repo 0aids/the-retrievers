@@ -94,6 +94,7 @@ static void _loraFsm_onRxDone(uint8_t* payload, uint16_t payloadSize,
     memcpy(rxBuffer.mp.buffer, payload, payloadSize);
     rxBuffer.currentlyUsedSize = payloadSize;
     ESP_LOGI(__FUNCTION__, "rx done! payload size: %"PRIu16, payloadSize);
+    _rxProcessed = true;
 }
 
 static void _loraFsm_onTxDone()
@@ -124,6 +125,7 @@ static bool _loraFsm_attemptPing()
     }
     if (_rxProcessed)
     {
+        // TODO: Check if we actually received a pong.
         ESP_LOGI(__FUNCTION__, "Received pong, successful ping pong");
         _rxProcessed = false;
         return true;
@@ -142,19 +144,21 @@ static void _loraFsm_broadcast()
     // Might not fill out the data.
     gps_stateGetSnapshot(&gpsData);
     // Transmit the state data
-    loraFsm_packet_t psatStatePacket =
-        loraFsm_createPacket(loraFsm_packetType_stateData,
+    loraFsm_packetWrapper_t psatStatePacket =
+        loraFsm_packetCreate(loraFsm_packetType_stateData,
                              (uint8_t*)&psatState, sizeof(psatState));
 
-    lora_send((uint8_t*)&psatStatePacket, sizeof(psatState) + 1);
+    loraFsm_packetSend(&psatStatePacket);
+    loraFsm_packetFree(&psatStatePacket);
 
     vTaskDelay(100 / portTICK_PERIOD_MS);
 
-    loraFsm_packet_t gpsStatePacket =
-        loraFsm_createPacket(loraFsm_packetType_stateData,
+    loraFsm_packetWrapper_t gpsStatePacket =
+        loraFsm_packetCreate(loraFsm_packetType_stateData,
                              (uint8_t*)&gpsData, sizeof(gpsData));
 
-    lora_send((uint8_t*)&gpsStatePacket, sizeof(gpsData) + 1);
+    loraFsm_packetSend(&gpsStatePacket);
+    loraFsm_packetFree(&psatStatePacket);
 }
 
 static void _loraFsm_runStateIdle()
@@ -192,10 +196,16 @@ static void _loraFsm_runStateIdle()
 static void _loraFsm_runStateCmd()
 {
     // Figure out what the command is.
-    loraFsm_packet_t packet =
+    loraFsm_packetWrapper_t packet =
         loraFsm_packetParse(rxBuffer.mp.buffer, rxBuffer.currentlyUsedSize);
+    if (!packet.wellFormed)
+    {
+        ESP_LOGE(__FUNCTION__, "Unable to run state cmd, packet parsing failed!");
+        _loraFsm_currentState_s = loraFsm_radioStates_idle;
+        return;
+    }
 
-    switch (packet.type)
+    switch (packet.packetInterpreter->type)
     {
         case loraFsm_packetType_buzReq:
         {
@@ -219,13 +229,14 @@ static void _loraFsm_runStateCmd()
 
         case loraFsm_packetType_stateOverrideReq:
             ESP_LOGE(__FUNCTION__, "Overriding state!");
-            psatFSM_stateOverride(*(psatFSM_state_e*)(packet.data));
+            psatFSM_stateOverride(*(psatFSM_state_e*)(&packet.packetInterpreter->data));
             break;
 
         default: ESP_LOGE(__FUNCTION__, "Invalid request!"); break;
     }
 
     _loraFsm_currentState_s = loraFsm_radioStates_idle;
+    loraFsm_packetFree(&packet);
 }
 
 static void _loraFsm_runStateBeacon()

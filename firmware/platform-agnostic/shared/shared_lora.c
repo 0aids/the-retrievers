@@ -3,6 +3,16 @@
 #include "string.h"
 #include "utilsImpl.h"
 
+#ifdef lora_hasMalloc_d
+#include <stdlib.h>
+#endif
+
+#ifndef lora_defaultBufferSizeMalloc_d
+#warning "lora_defaultBufferSizeMalloc_d not defined, defaulting to 500KiB"
+// 500KiB by default
+#define lora_defaultBufferSizeMalloc_d (1 << 19)
+#endif
+
 #define debug(...)                                                   \
     utils_log("[%s:%d] ", __PRETTY_FUNCTION__,          \
               __LINE__);                                             \
@@ -57,9 +67,20 @@ static bool _lora_waitUntilTxDone(void)
     return true;
 }
 
+#ifndef lora_hasMalloc_d
+// If we don't have malloc, use rxBuffer lora_numBufferBytes_d size.
+static uint8_t rxBuffer[lora_numBufferBytes_d] = {0};
+#endif
+
 void lora_init()
 {
     debug("Initializing lora...\r\r\n");
+    // Initialize the buffer (malloc or stack depending of if we have malloc)
+    #ifdef lora_hasMalloc_d
+    lora_globalState_g.dataBuffer = malloc(lora_defaultBufferSizeMalloc_d);
+    #else
+    lora_globalState_g.dataBuffer = rxBuffer;
+    #endif
     loraImpl_init();
     loraImpl_setRx(0);
     loraImpl_setCallbacks(
@@ -249,7 +270,12 @@ static bool _lora_appendData(uint8_t* payload, uint16_t size)
 {
     debug("Appending %d bytes to data buffer.\r\n", size);
     if (lora_globalState_g.dataCurrentContentSize + size >
-        lora_numBufferBytes_d)
+    #ifdef lora_defaultBufferSizeMalloc_d
+        lora_defaultBufferSizeMalloc_d
+    #else
+        lora_numBufferBytes_d
+    #endif
+        )
     {
         debug("Failed to append data, buffer full.\r\n");
         lora_globalState_g.errorType =

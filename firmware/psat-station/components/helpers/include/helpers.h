@@ -1,6 +1,10 @@
 #pragma once
 #include <stdbool.h>
 #include <stdint.h>
+// Convention:
+    // _oma suffix - Owning Malloc Pointer -- if you receive this that means you now own the pointer.
+    // _nma suffix - Non-owning malloc pointer -- if you receive this you do not own the pointer.
+
 /**
  * @brief Print detailed heap usage information
  */
@@ -8,8 +12,8 @@ void helpers_printHeapDetails(void);
 
 typedef struct
 {
-    uint8_t* buffer;
     uint32_t bufferSize;
+    uint8_t* buffer;
 } helpers_malloced_t;
 
 // Malloc, returns false on failure. On failure, *data is not modified
