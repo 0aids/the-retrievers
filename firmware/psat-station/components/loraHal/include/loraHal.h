@@ -23,7 +23,8 @@ esp_err_t loraHal_deinit(void);
  *
  * @return previous value
  */
-esp_err_t loraHal_writeReg(uint8_t reg, uint8_t val, uint8_t* readVal);
+esp_err_t loraHal_writeReg(uint8_t reg, uint8_t val,
+                           uint8_t* readVal);
 
 /**
  * @brief Reads a single byte from a LoRa register.
@@ -42,7 +43,9 @@ esp_err_t loraHal_readReg(uint8_t reg, uint8_t* readVal);
  * @param numBytes Number of bytes to write.
  * @return esp_err_t ESP_OK if successful, an error code otherwise.
  */
-esp_err_t loraHal_writeRegContinuous(uint8_t reg, const uint8_t* buffer, uint8_t numBytes);
+esp_err_t loraHal_writeRegContinuous(uint8_t        reg,
+                                     const uint8_t* buffer,
+                                     uint8_t        numBytes);
 
 /**
  * @brief Reads a buffer of data from consecutive LoRa registers.
@@ -52,9 +55,10 @@ esp_err_t loraHal_writeRegContinuous(uint8_t reg, const uint8_t* buffer, uint8_t
  * @param numBytes Number of bytes to read.
  * @return esp_err_t ESP_OK if successful, an error code otherwise.
  */
-esp_err_t loraHal_readRegContinuous(uint8_t reg, uint8_t* buffer, uint8_t numBytes);
+esp_err_t loraHal_readRegContinuous(uint8_t reg, uint8_t* buffer,
+                                    uint8_t numBytes);
 
-esp_err_t loraHal_registerRxDoneIsr(void(*isr)(void*));
+esp_err_t loraHal_registerRxDoneIsr(void (*isr)(void*));
 
 esp_err_t loraHal_deregisterRxDoneIsr();
 
