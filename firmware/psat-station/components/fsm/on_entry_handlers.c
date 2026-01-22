@@ -17,15 +17,16 @@ void loraFSM_startAsTask()
 }
 void psatFSM_prelaunchEntryHandler()
 {
-    // gps_init();
-    // timer_init();
-    // button_init();
-    // buzzer_init();
+    gpio_install_isr_service(0);
+    gps_init();
+    timer_init();
+    button_init();
+    buzzer_init();
     loraFsm_init();
 
-    // timer_start(timer_timerId_10s);
-    // button_enable(button_id_prelaunch);
-    // ldr_startTask();
+    timer_start(timer_timerId_10s);
+    button_enable(button_id_prelaunch);
+    ldr_startTask();
     loraFSM_startAsTask();
 }
 

@@ -202,10 +202,6 @@ static esp_err_t _loraHal_rxDoneIsr_init(void)
     if (err != ESP_OK) {
         return err;
     }
-    err = gpio_install_isr_service(0);
-    if (err != ESP_OK) {
-        return err;
-    }
     return ESP_OK;
 }
 static esp_err_t _loraHal_rxDoneIsr_deinit(void)
@@ -216,8 +212,6 @@ static esp_err_t _loraHal_rxDoneIsr_deinit(void)
         // Deregister the isr
         loraHal_deregisterRxDoneIsr(); // This already uses ESP_ERROR_CHECK internally
     }
-    // Deinit the correspond GPIO
-    gpio_uninstall_isr_service();
     err = gpio_reset_pin(loraHalBoardCfg_dio0Gpio_d);
     if (err != ESP_OK) {
         return err;
