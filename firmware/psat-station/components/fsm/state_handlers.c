@@ -12,7 +12,7 @@
 #include "servo.h"
 #include "timers.h"
 
-static volatile servo_data_t servo;
+static servo_data_t servo;
 
 void globalEventHandler(const psatFSM_event_t* event) {
     // static const char* TAG = "PSAT_FSM-Global-Event";
