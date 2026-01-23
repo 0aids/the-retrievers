@@ -2,6 +2,7 @@
 
 #include "driver/uart.h"
 
+
 #define CFG_GPS_UART_NUM_d         UART_NUM_1
 #define CFG_GPS_TX_PIN_d           37
 #define CFG_GPS_RX_PIN_d           38 // We don't care about this. 
