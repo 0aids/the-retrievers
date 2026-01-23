@@ -1,12 +1,8 @@
 #include "ldr.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "pin_config.h"
-#include "esp_log.h"
 #include "esp_adc/adc_cali_scheme.h"
-#include "driver/gpio.h"
-#include "freertos/task.h"
+#include "esp_err.h"
+
+extern esp_err_t adc_cali_delete_scheme_line_fitting(adc_cali_handle_t handle);
 
 //
 // Global Variables

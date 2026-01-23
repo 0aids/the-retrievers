@@ -22,7 +22,6 @@
         "aarch64-darwin"
       ];
 
-
       # Helper function to generate an attrset for each system
       forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
     in
@@ -35,6 +34,10 @@
           esp-shell = esp-dev.devShells.${system}.esp-idf-full;
           defaultPkgs = with pkgs; [
               pre-commit
+              python313
+              python313Packages.pytest
+              python313Packages.pyserial
+              python313Packages.asyncserial
           ];
         in
         {
@@ -43,7 +46,7 @@
               # Add extra packages here if needed:
               # pkgs.cmake
               # pkgs.ninja
-            ]++ defaultPkgs;
+            ] ++ defaultPkgs;
             shellHook = (oldShell.shellHook or "") + ''
             if [ "$(uname)" != "Darwin" ]; then
               export IDF_TOOLCHAIN=clang
@@ -65,8 +68,6 @@
                 cmake
                 clang-tools
                 gcc-arm-embedded
-                python313
-                uv
                 usbutils
                 screen
                 cmake-language-server
@@ -94,8 +95,6 @@
                     cmake
                     clang-tools
                     gcc-arm-embedded
-                    python313
-                    uv
                     usbutils
                     screen
                     cmake-language-server
@@ -117,7 +116,7 @@
                   [
                       clang-tools
                       pre-commit
-                  ]
+                  ] ++ defaultPkgs
                   ++ (if system == "aarch64-darwin" then [ ] else [ gdb ]);
                 shellHook = ''
                   export ARM_TOOLCHAIN_ROOT=${pkgs.gcc-arm-embedded}/arm-none-eabi/include
