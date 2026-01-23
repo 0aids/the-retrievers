@@ -1,4 +1,8 @@
 #include "ldr.h"
+#include "esp_adc/adc_cali_scheme.h"
+#include "esp_err.h"
+
+extern esp_err_t adc_cali_delete_scheme_line_fitting(adc_cali_handle_t handle);
 
 //
 // Global Variables
