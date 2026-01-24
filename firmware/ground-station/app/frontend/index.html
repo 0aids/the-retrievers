@@ -3,13 +3,12 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Document</title>
+        <title>Ground Station</title>
+        <link rel="stylesheet" href="/static/css/index.css" />
         <link rel="stylesheet" href="/static/css/leaflet.css" />
-        <link href="/static/css/output.css" rel="stylesheet" />
-        <script src="/static/js/leaflet.js"></script>
-        <script type="module" src="/static/js/index.js"></script>
+        <script type="module" src="/src/main.ts"></script>
     </head>
-    <body class="bg-[#050809]">
+    <body class="bg-[#050809] text-white">
         <nav id="topbar" class="flex sticky w-full justify-between p-2 pl-3">
             <div id="title">
                 <h1 class="text-white text-xs">The Retrievers</h1>
@@ -27,14 +26,29 @@
             </div>
         </nav>
         <main id="map-section" class="rounded-xl w-full p-2">
-            <div id="map" class="h-[40vh] rounded-xl"></div>
+            <div id="map" class="h-[40vh] md:h-[90vh] rounded-xl"></div>
         </main>
-        <section id="map-controls">
-            <button id="follow-me">Follow Me</button>
-            <button id="follow-psat">Follow PSAT</button>
-            <button id="toggle-path">Toggle Path</button>
+        <section id="map-controls" class="flex justify-between px-3">
+            <button
+                id="follow-me"
+                class="bg-gray-700 px-5 py-3 rounded-xl text-white text-md"
+            >
+                Go to Me
+            </button>
+            <button
+                id="follow-psat"
+                class="bg-gray-700 px-5 py-3 rounded-xl text-white text-md"
+            >
+                Follow PSAT
+            </button>
+            <button
+                id="toggle-path"
+                class="bg-gray-700 px-5 py-3 rounded-xl text-white text-md"
+            >
+                Toggle Path
+            </button>
         </section>
-        <section id="main-data">
+        <!-- <section id="main-data">
             <div id="gps-data">
                 <h1>GPS Data</h1>
                 <h3>Position: <span id="gps-position"></span></h3>
@@ -89,6 +103,6 @@
         <section id="log-section">
             <h1>Log:</h1>
             <pre id="log-data"></pre>
-        </section>
+        </section> -->
     </body>
 </html>
