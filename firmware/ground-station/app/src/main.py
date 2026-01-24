@@ -2,6 +2,7 @@
 python script to start the rest api and load routes
 """
 
+import sys
 from typing import Final
 from os.path import dirname, join
 
@@ -27,7 +28,7 @@ def main():
         "host": "0.0.0.0",
         "reload": False,
         "port": PORT,
-        "access_log": False,
+        "access_log": len(sys.argv) > 1 and sys.argv[1] == "log",
         "ssl_keyfile": SSL_KEYFILE_PATH,
         "ssl_certfile": SSL_CERTFILE_PATH,
     }
