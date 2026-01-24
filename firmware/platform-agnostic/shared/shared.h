@@ -23,4 +23,39 @@ typedef enum {
     lora_packetTypes_testData,
 } lora_packetTypes_e;
 
+// clang-format off
+#define allError_xmacro \ 
+    X(ldrErr_none) \
+    X(ldrErr_calibrationInitErr) \
+    X(ldrErr_adcInitErr) \
+    X(ldrErr_adcConfig) \
+    X(ldrErr_oneshotRead) \
+    X(ldrErr_voltageCali) \
+    X(ldrErr_OpenMemStream) \
+    X(ldrErr_adcDel) \
+    X(ldrErr_caliDel) \
+// clang-format on
+
+
+typedef enum {
+#define X(name) name,
+    allError_xmacro
+#undef X
+} psatErrStates_e;
+
+
+void printErrorType(psatErrStates_e err)
+{
+    extern void printf(const char* fmt, ...);
+
+    switch (err) {
+        #define X(errType) \
+            case errType: \
+                printf("Error type: %s\n", #errType);  \
+                break; \
+        allError_xmacro
+        #undef X
+    }
+}
+
 #endif
