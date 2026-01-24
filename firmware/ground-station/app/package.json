@@ -12,5 +12,9 @@
   "devDependencies": {
     "@types/leaflet": "^1.9.21",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.18",
+    "tailwindcss": "^4.1.18"
   }
 }
