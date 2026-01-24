@@ -1,10 +1,11 @@
 #pragma once
+#include <stdio.h>
 #include "esp_adc/adc_oneshot.h"
 #include "esp_adc/adc_cali.h"
 #include <stdbool.h>
 
 
-const static char* ldr_tag_c = "LDR";
+
 
 //Global structs
 
@@ -32,6 +33,11 @@ typedef struct
 void                ldr_setup(void);
 // In millivolts
 int                 ldr_getVoltage(void);
-ldr_state_t         ldr_queryState(void);
+void                ldr_queryState(char* stateString);
 void                ldr_deinit(void);
-ldr_preflightTest_t ldr_preflightTest(void);
+
+void ldr_preflightTest(ldr_preflightTest_t* test);
+// This function allocates dynamic memory, dont forget to free it
+void ldr_callocTestState(ldr_preflightTest_t* test);
+// Frees the dynamic memory that was allocated in the test input struct
+void ldr_freeTestState(ldr_preflightTest_t* test);

@@ -7,6 +7,6 @@ idf_build_set_property(C_COMPILE_OPTIONS -Wno-error APPEND)
 set(EXTRA_COMPONENT_DIRS
 "${CMAKE_SOURCE_DIR}/../../platform-agnostic" "../components"
 )
-set(TEST_COMPONENTS "buzzers" "servo")
+set(TEST_COMPONENTS "buzzers" "servo" "ldr")
 
 project(psat-station-test)

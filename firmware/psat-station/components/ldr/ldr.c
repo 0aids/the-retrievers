@@ -1,5 +1,4 @@
 #include "ldr.h"
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "pin_config.h"
@@ -7,6 +6,12 @@
 #include "esp_adc/adc_cali_scheme.h"
 #include "driver/gpio.h"
 #include "freertos/task.h"
+
+#if ADC_CALI_SCHEME_LINE_FITTING_SUPPORTED
+extern esp_err_t adc_cali_create_scheme_line_fitting(adc_cali_line_fitting_config_t *,  adc_cali_handle_t *);
+extern esp_err_t adc_cali_delete_scheme_line_fitting(adc_cali_handle_t *);
+#endif
+const static char* ldr_tag_c = "LDR";
 
 //
 // Global Variables
@@ -29,8 +34,6 @@ static bool adcCalibrationInit(adc_cali_handle_t* outHandle)
     // Sets the calibtration scheme to curve fitting and configures it
     if (!calibrated)
     {
-        ESP_LOGI(ldr_tag_c, "calibration scheme version is %s",
-                 "Curve Fitting");
         adc_cali_curve_fitting_config_t cali_config = {
             .unit_id  = LDR_ADC_UNIT_d,
             .chan     = LDR_ADC_CHANNEL_d,
@@ -50,8 +53,7 @@ static bool adcCalibrationInit(adc_cali_handle_t* outHandle)
     // Sets the calibtration scheme to line fitting and configures it
     if (!calibrated)
     {
-        ESP_LOGI(ldr_tag_c, "calibration scheme version is %s",
-                 "Line Fitting");
+
         adc_cali_line_fitting_config_t cali_config = {
             .unit_id  = LDR_ADC_UNIT_d,
             .atten    = LDR_ADC_ATTEN_d,
@@ -68,19 +70,6 @@ static bool adcCalibrationInit(adc_cali_handle_t* outHandle)
 
     // Checks for errors
     *outHandle = handle;
-    if (ret == ESP_OK)
-    {
-        ESP_LOGD(ldr_tag_c, "Calibration Success");
-    }
-    else if (ret == ESP_ERR_NOT_SUPPORTED || !calibrated)
-    {
-        ESP_LOGW(ldr_tag_c,
-                 "eFuse not burnt, skip software calibration");
-    }
-    else
-    {
-        ESP_LOGE(ldr_tag_c, "Invalid arg or no memory");
-    }
 
     return calibrated;
 }
@@ -136,23 +125,17 @@ int ldr_getVoltage(void)
 }
 
 
-static char ldr_stateConfigBuffer
-    [LDR_STATE_CONFIG_BUFFER_SIZE_d] = {0};
-
-    
-ldr_state_t ldr_queryState(void)
+void ldr_queryState(char* stateString)
 {
 
-    ldr_state_t emptyState = {0};
+    char*       emptyBuffer = NULL;
     FILE*       memStream;
-    char*       tempBuffer = NULL;
     size_t      size       = 0;
 
-    memStream = open_memstream(&tempBuffer, &size);
+    memStream = open_memstream(&emptyBuffer, &size);
     if (memStream == NULL)
     {
-        perror("open_memstream failed");
-        return emptyState;
+        return;
     }
 
     // This writes all the information we need to the stream
@@ -166,37 +149,51 @@ ldr_state_t ldr_queryState(void)
         LDR_STATE_CONFIG_BUFFER_SIZE_d - 1 :
         size;
     // Copies the data in temp buffer to the buffer we will return, while making sure the string ends
-    memcpy(ldr_stateConfigBuffer, tempBuffer, trueSize);
-    ldr_stateConfigBuffer[trueSize] = '\0';
-
-    // Remember to free the dynamic variable
-    free(tempBuffer);
-
-    ldr_state_t state = {.stateString =
-                             ldr_stateConfigBuffer};
-    return state;
+    memcpy(stateString, emptyBuffer, trueSize);
+    stateString[trueSize] = '\0';
 }
 
 void ldr_deinit(void)
 {
     //Tear Down
     ESP_ERROR_CHECK(adc_oneshot_del_unit(ldr_adcHandlers_g.adcOneshotHandle));
-    ESP_LOGD(ldr_tag_c, "deregister %s calibration scheme",
-             "Line Fitting");
+
+#if ADC_CALI_SCHEME_CURVE_FITTING_SUPPORTED
+    ESP_ERROR_CHECK(adc_cali_delete_scheme_curve_fitting(
+        ldr_adcHandlers_g.adcCaliChanHandle));
+#endif
+#if ADC_CALI_SCHEME_LINE_FITTING_SUPPORTED
     ESP_ERROR_CHECK(adc_cali_delete_scheme_line_fitting(
         ldr_adcHandlers_g.adcCaliChanHandle));
+#endif
 }
 
-ldr_preflightTest_t ldr_preflightTest(void)
+void ldr_preflightTest(ldr_preflightTest_t* test)
 {
-    ldr_preflightTest_t test = {};
-
-    test.stateBefore = ldr_queryState();
+    
+    // Gets the state before anything happens
+    ldr_queryState(test->stateBefore.stateString);
+    // Gets the state after the ldr is setup
     ldr_setup();
-    test.stateMiddle = ldr_queryState();
-    test.sampleData  = ldr_getVoltage();
-    ldr_deinit();
-    test.stateAfter = ldr_queryState();
+    ldr_queryState(test->stateMiddle.stateString);
+    // Gets the voltage is accurate
+    test->sampleData  = ldr_getVoltage();
 
-    return test;
+    // Gets the state after the ldr deinits
+    ldr_deinit();
+    ldr_queryState(test->stateAfter.stateString);
+}
+
+void ldr_callocTestState(ldr_preflightTest_t* test)
+{
+    test->stateBefore.stateString = calloc(LDR_STATE_CONFIG_BUFFER_SIZE_d, 1);
+    test->stateMiddle.stateString = calloc(LDR_STATE_CONFIG_BUFFER_SIZE_d, 1);
+    test->stateAfter.stateString = calloc(LDR_STATE_CONFIG_BUFFER_SIZE_d, 1);
+}
+
+void ldr_freeTestState(ldr_preflightTest_t* test)
+{
+    free(test->stateBefore.stateString);
+    free(test->stateMiddle.stateString);
+    free(test->stateAfter.stateString);
 }

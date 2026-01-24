@@ -17,6 +17,6 @@
 #define LDR_ULP_MODE_d             ADC_ULP_MODE_DISABLE
 #define LDR_ADC_ATTEN_d            ADC_ATTEN_DB_12
 #define LDR_ADC_BITWIDTH_d         ADC_BITWIDTH_DEFAULT
-#define LDR_PIN_MASK_d             (1ULL << 18)
+#define LDR_PIN_MASK_d             (1ULL << 2)
 #define LDR_STATE_CONFIG_BUFFER_SIZE_d (1024)
 
