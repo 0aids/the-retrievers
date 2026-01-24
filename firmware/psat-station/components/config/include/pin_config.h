@@ -4,7 +4,7 @@
 
 
 #define CFG_GPS_UART_NUM_d         UART_NUM_1
-#define CFG_GPS_TX_PIN_d           37
+#define CFG_GPS_TX_PIN_d           42
 #define CFG_GPS_RX_PIN_d           38 // We don't care about this. 
 #define CFG_LANDING_BUTTON_PIN_d   39
 #define CFG_PRELAUNCH_BUTTON_PIN_d 40
