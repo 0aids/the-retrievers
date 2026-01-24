@@ -93,7 +93,7 @@ typedef struct
 extern lora_globalState_t lora_globalState_g;
 
 #pragma pack(push, 1)
-typedef struct
+typedef struct __attribute__((packed))
 {
     uint8_t  preamble;
     uint8_t  numDataBytes; // Number of data bytes.
@@ -102,7 +102,7 @@ typedef struct
     uint8_t  data[lora_numDataBytes_d];
 } lora_headerPacket_t;
 
-typedef struct
+typedef struct __attribute__((packed))
 {
     uint8_t  preamble;
     uint8_t  numDataBytes;
@@ -111,7 +111,7 @@ typedef struct
     uint8_t  data[lora_numDataBytes_d];
 } lora_dataPacket_t;
 
-typedef struct
+typedef struct __attribute__((packed))
 {
     uint8_t  preamble;
     uint16_t packetNumber;

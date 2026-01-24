@@ -154,7 +154,7 @@ static void _loraFsm_broadcast()
     vTaskDelay(100 / portTICK_PERIOD_MS);
 
     loraFsm_packetWrapper_t gpsStatePacket =
-        loraFsm_packetCreate(loraFsm_packetType_stateData,
+        loraFsm_packetCreate(loraFsm_packetType_gpsData,
                              (uint8_t*)&gpsData, sizeof(gpsData));
 
     loraFsm_packetSend(&gpsStatePacket);
