@@ -2,9 +2,24 @@
 #include "pin_config.h"
 #include "esp_adc/adc_cali_scheme.h"
 #include "esp_err.h"
+#include "shared_state.h"
 
-extern esp_err_t adc_cali_delete_scheme_line_fitting(adc_cali_handle_t handle);
+extern esp_err_t
+adc_cali_delete_scheme_line_fitting(adc_cali_handle_t handle);
 
+
+#define errCheck_df(functionResult, errorType, errorReturnValue)     \
+    if (functionResult != ESP_OK)                                    \
+    {                                                                \
+        ldr_errChecks = errorType;                                   \
+        return errorReturnValue;                                     \
+    }
+#define errCheckVoid_df(functionResult, errorType)                   \
+    if (functionResult != ESP_OK)                                    \
+    {                                                                \
+        ldr_errChecks = errorType;                                   \
+        return;                                                      \
+    }
 //
 // Global Variables
 //
@@ -14,15 +29,15 @@ ldr_handlers_t ldr_adcHandlers_g = {};
 // Static variables
 static psatErrStates_e ldr_errChecks = ldrErr_none;
 
-//
-// Static Function Definitions
-//
 
-// This function sets the calibration scheme to be used when the raw adc data is converted to voltage
-static bool adcCalibrationInit(adc_cali_handle_t* outHandle)
+    //
+    // Static Function Definitions
+    //
+
+    // This function sets the calibration scheme to be used when the raw adc data is converted to voltage
+    static void adcCalibrationInit(adc_cali_handle_t* outHandle)
 {
     adc_cali_handle_t handle     = NULL;
-    esp_err_t         ret        = ESP_FAIL;
     bool              calibrated = false;
 
 #if ADC_CALI_SCHEME_CURVE_FITTING_SUPPORTED
@@ -37,12 +52,9 @@ static bool adcCalibrationInit(adc_cali_handle_t* outHandle)
             .atten    = LDR_ADC_ATTEN_d,
             .bitwidth = LDR_ADC_BITWIDTH_d,
         };
-        ret = adc_cali_create_scheme_curve_fitting(&cali_config,
-                                                   &handle);
-        if (ret == ESP_OK)
-        {
-            calibrated = true;
-        }
+        errCheckVoid_df(adc_cali_create_scheme_curve_fitting(
+                            &cali_config, &handle),
+                        ldrErr_calibrationInitErr);
     }
 #endif
 
@@ -57,31 +69,13 @@ static bool adcCalibrationInit(adc_cali_handle_t* outHandle)
             .atten    = LDR_ADC_ATTEN_d,
             .bitwidth = LDR_ADC_BITWIDTH_d,
         };
-        ret = adc_cali_create_scheme_line_fitting(&cali_config,
-                                                  &handle);
-        if (ret == ESP_OK)
-        {
-            calibrated = true;
-        }
+        errCheckVoid_df(adc_cali_create_scheme_line_fitting(&cali_config,
+                                &handle),
+                        ldrErr_caliInitErr);
     }
 #endif
 
-    // Checks for errors
     *outHandle = handle;
-    if (ret == ESP_OK)  ESP_LOGD(ldr_tag_c, "Calibration Success");
-    else if (ret == ESP_ERR_NOT_SUPPORTED || !calibrated)
-    {
-        ESP_LOGW(ldr_tag_c,
-                 "eFuse not burnt, skip software calibration");
-        ldr_errChecks = ldrErr_eFuseNotBurnt;
-    }
-    else
-    {
-        ESP_LOGE(ldr_tag_c, "Invalid arg or no memory");
-        ldr_errChecks = ldrErr_caliInit;
-    }
-
-    return calibrated;
 }
 
 //
@@ -90,21 +84,16 @@ static bool adcCalibrationInit(adc_cali_handle_t* outHandle)
 
 void ldr_setup(void)
 {
-    esp_err_t ret = ESP_FAIL;
     //-------------ADC Init---------------//
     // sets the handle and initConfig1 initialises ADC1 and disables ULP mode
     adc_oneshot_unit_init_cfg_t initConfigLDR = {
         .unit_id  = LDR_ADC_UNIT_d,
         .ulp_mode = LDR_ULP_MODE_d,
     };
-    ret = (adc_oneshot_new_unit(&initConfigLDR,
-                                         &ldr_adcHandlers_g.adcOneshotHandle));
 
-    if (ret != ESP_OK) {
-        ldr_errChecks = ldrErr_adcInit;
-        return;
-    }
-    
+    errCheckVoid_df(adc_oneshot_new_unit(&initConfigLDR,
+                                &ldr_adcHandlers_g.adcOneshotHandle), ldrErr_adcInitErr);
+
     //-------------ADC Config---------------//
     // Attenuation determines the range or maximum voltage that we can measure
     // The attenuation will be 12db, aka from 0v-3.1v
@@ -115,13 +104,11 @@ void ldr_setup(void)
         .atten    = LDR_ADC_ATTEN_d,
         .bitwidth = LDR_ADC_BITWIDTH_d,
     };
-    ret = adc_oneshot_config_channel(
-        ldr_adcHandlers_g.adcOneshotHandle, LDR_ADC_CHANNEL_d, &config);
 
-    if (ret != ESP_OK) {
-        ldr_errChecks = ldrErr_adcConfig;
-        return;
-    }
+    errCheckVoid_df(adc_oneshot_config_channel(ldr_adcHandlers_g.adcOneshotHandle,
+                                   LDR_ADC_CHANNEL_d, &config), ldrErr_adcConfigErr);
+
+
     //-------------ADC Calibration Init---------------//
     // sets the calibration handle to NULL.
     // It will be changed when the adcCalibrationInit function is called
@@ -132,34 +119,24 @@ void ldr_setup(void)
 
 int ldr_getVoltage(void)
 {
-    esp_err_t ret = ESP_FAIL;
-    int adcRaw;
-    int voltage;
+    int       adcRaw;
+    int       voltage;
 
     // Reads the raw adc value and then calibrates it to get the voltage
-    ret = (adc_oneshot_read(ldr_adcHandlers_g.adcOneshotHandle,
-                                     LDR_ADC_CHANNEL_d, &adcRaw));
-    if (ret != ESP_OK) {
-        ldr_errChecks = ldrErr_oneshotRead; 
-        return -1;
-    }
+    errCheck_df(adc_oneshot_read(ldr_adcHandlers_g.adcOneshotHandle,
+                            LDR_ADC_CHANNEL_d, &adcRaw), ldrErr_readRawValueErr,-1)
 
-    ret = (adc_cali_raw_to_voltage(
-        ldr_adcHandlers_g.adcCaliChanHandle, adcRaw, &voltage));
-    if (ret != ESP_OK) 
-    {
-        ldr_errChecks = ldrErr_voltageCali; 
-        return -1;
-    }
+
+    errCheck_df(adc_cali_raw_to_voltage(
+        ldr_adcHandlers_g.adcCaliChanHandle, adcRaw, &voltage), ldrErr_rawValueToVoltageErr, -1);
+
 
     return voltage;
 }
 
+static char ldr_stateConfigBuffer[LDR_STATE_CONFIG_BUFFER_SIZE_d] = {
+    0};
 
-static char ldr_stateConfigBuffer
-    [LDR_STATE_CONFIG_BUFFER_SIZE_d] = {0};
-
-    
 ldr_state_t ldr_queryState(void)
 {
 
@@ -172,7 +149,7 @@ ldr_state_t ldr_queryState(void)
     if (memStream == NULL)
     {
         perror("open_memstream failed");
-        ldr_errChecks = ldrErr_OpenMemStream;
+        ldr_errChecks = ldrErr_OpenMemStreamErr;
         return emptyState;
     }
 
@@ -182,8 +159,7 @@ ldr_state_t ldr_queryState(void)
     // and updates the variables 'buffer' and 'size'
     fclose(memStream);
 
-    size_t trueSize =
-        (LDR_STATE_CONFIG_BUFFER_SIZE_d - 1 < size) ?
+    size_t trueSize = (LDR_STATE_CONFIG_BUFFER_SIZE_d - 1 < size) ?
         LDR_STATE_CONFIG_BUFFER_SIZE_d - 1 :
         size;
     // Copies the data in temp buffer to the buffer we will return, while making sure the string ends
@@ -193,30 +169,18 @@ ldr_state_t ldr_queryState(void)
     // Remember to free the dynamic variable
     free(tempBuffer);
 
-    ldr_state_t state = {.stateString =
-                             ldr_stateConfigBuffer};
+    ldr_state_t state = {.stateString = ldr_stateConfigBuffer};
     return state;
 }
 
 void ldr_deinit(void)
 {
-    esp_err_t ret;
     //Tear Down
-    ret = (adc_oneshot_del_unit(ldr_adcHandlers_g.adcOneshotHandle));
-    ESP_LOGD(ldr_tag_c, "deregister %s calibration scheme",
-             "Line Fitting");
-    if (ret != ESP_OK) 
-    {
-        ldr_errChecks = ldrErr_adcDel; 
-        return;
-    }
-    ret = (adc_cali_delete_scheme_line_fitting(
-        ldr_adcHandlers_g.adcCaliChanHandle));
-    if (ret != ESP_OK) 
-    {
-        ldr_errChecks = ldrErr_caliDel; 
-        return;
-    }
+    errCheckVoid_df(adc_oneshot_del_unit(ldr_adcHandlers_g.adcOneshotHandle), ldrErr_adcDelUnitErr);
+
+    errCheckVoid_df(adc_cali_delete_scheme_line_fitting(
+        ldr_adcHandlers_g.adcCaliChanHandle), ldrErr_caliDeleteSchemeErr)
+
 }
 
 ldr_preflightTest_t ldr_preflightTest(void)
@@ -233,8 +197,7 @@ ldr_preflightTest_t ldr_preflightTest(void)
     return test;
 }
 
-
-
-psatErrStates_e check_err(void){
+psatErrStates_e check_err(void)
+{
     return ldr_errChecks;
 }
