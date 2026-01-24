@@ -10,6 +10,8 @@ from fastapi import FastAPI, APIRouter
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
+from core.parser import start_serial_tasks
+
 
 class GroundStation(FastAPI):
     def __init__(self, router_list: list[APIRouter]) -> None:
@@ -40,5 +42,7 @@ class GroundStation(FastAPI):
     @asynccontextmanager
     async def __lifespan(app: FastAPI):
         print("[bold blue]API has started!")
+        print("[blue]Starting serial stuff")
+        start_serial_tasks()
         yield
         print("[bold blue]API has been shutdown!")
