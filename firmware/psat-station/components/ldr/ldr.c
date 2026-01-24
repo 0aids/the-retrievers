@@ -1,3 +1,4 @@
+#include <pin_config.h>
 #include "ldr.h"
 #include "esp_adc/adc_cali_scheme.h"
 #include "esp_err.h"
