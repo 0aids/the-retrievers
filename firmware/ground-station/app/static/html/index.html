@@ -4,25 +4,91 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Document</title>
-        <link
-            rel="stylesheet"
-            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-            integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-            crossorigin=""
-        />
-        <script
-            src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-            crossorigin=""
-        ></script>
+        <link rel="stylesheet" href="/static/css/leaflet.css" />
+        <link href="/static/css/output.css" rel="stylesheet" />
+        <script src="/static/js/leaflet.js"></script>
         <script type="module" src="/static/js/index.js"></script>
-        <style>
-            #map {
-                height: 100vh;
-            }
-        </style>
     </head>
-    <body>
-        <div id="map"></div>
+    <body class="bg-[#050809]">
+        <nav id="topbar" class="flex sticky w-full justify-between p-2 pl-3">
+            <div id="title">
+                <h1 class="text-white text-xs">The Retrievers</h1>
+                <h3 class="text-white text-lg">Ground Station</h3>
+            </div>
+            <div id="status" class="flex gap-2">
+                <div class="bg-gray-700 text-white rounded-xl px-5 text-center">
+                    <h1 class="text-[1rem]">FSM:</h1>
+                    <h3 id="fsm-state" class="text-sm">Prelaunch</h3>
+                </div>
+                <div class="bg-gray-700 text-white rounded-xl px-5 text-center">
+                    <h1 class="text-[1rem]">GPS:</h1>
+                    <h3 id="gps-state" class="text-sm">Fix</h3>
+                </div>
+            </div>
+        </nav>
+        <main id="map-section" class="rounded-xl w-full p-2">
+            <div id="map" class="h-[40vh] rounded-xl"></div>
+        </main>
+        <section id="map-controls">
+            <button id="follow-me">Follow Me</button>
+            <button id="follow-psat">Follow PSAT</button>
+            <button id="toggle-path">Toggle Path</button>
+        </section>
+        <section id="main-data">
+            <div id="gps-data">
+                <h1>GPS Data</h1>
+                <h3>Position: <span id="gps-position"></span></h3>
+                <h3>Altitude: <span id="gps-altitude"></span></h3>
+                <h3>Speed: <span id="gps-speed"></span></h3>
+                <h3>Satelites: <span id="gps-satelites"></span></h3>
+            </div>
+            <div>
+                <div id="fsm-data">
+                    <h1>FSM Data</h1>
+                    <h3>Current State: <span id="fsm-current-state"></span></h3>
+                    <h3>Previous State: <span id="fsm-prev-state"></span></h3>
+                </div>
+
+                <div id="lora-data">
+                    <h1>Lora Data</h1>
+                    <h3>Last Packet: <span id="lora-last-packet"></span></h3>
+                    <h3>
+                        Packets Recieved: <span id="lora-packets-rx"></span>
+                    </h3>
+                </div>
+            </div>
+        </section>
+        <section id="commands">
+            <h1>Buttons</h1>
+            <div>
+                <button id="state-fast-forward-button">
+                    State Fast Forward
+                </button>
+                <button id="next-state-button">Next State</button>
+                <button id="state-override-button">State Override</button>
+            </div>
+            <div>
+                <button id="beep-2500-button">Beep 2.5s</button>
+                <button id="beep-5000-button">Beep 5s</button>
+            </div>
+        </section>
+        <section id="more-data">
+            <div id="sensors-data">
+                <h1>Sensors Data</h1>
+                <h3>Pressure: <span id="sensors-pressure"></span></h3>
+                <h3>High G: <span id="sensors-highg"></span></h3>
+                <h3>Low G: <span id="sensors-lowg"></span></h3>
+            </div>
+            <div id="other-data">
+                <h1>Other Data</h1>
+                <h3>Servo: <span id="other-servo"></span></h3>
+                <h3>Camera: <span id="other-camera"></span></h3>
+                <h3>Buzzer: <span id="other-buzzer"></span></h3>
+            </div>
+        </section>
+        <section id="log-section">
+            <h1>Log:</h1>
+            <pre id="log-data"></pre>
+        </section>
     </body>
 </html>
