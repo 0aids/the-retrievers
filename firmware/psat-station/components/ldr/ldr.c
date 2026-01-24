@@ -1,8 +1,14 @@
 #include <pin_config.h>
 #include "ldr.h"
+#include <stdlib.h>
+#include <string.h>
+#include "esp_log.h"
+#include "driver/gpio.h"
 #include "esp_adc/adc_cali_scheme.h"
 #include <esp_log.h>
 #include "esp_err.h"
+#include "pin_config.h"
+#include "freertos/task.h"
 
 extern esp_err_t adc_cali_delete_scheme_line_fitting(adc_cali_handle_t handle);
 
