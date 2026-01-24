@@ -15,6 +15,11 @@
 #include "timer.h"
 #include "rtc-board.h"
 
+#define endPacket() \
+	for (uint8_t i = 0; i < 4; i++) uart_send_data(CONFIG_DEBUG_UART, 0xaa)
+#define printb(...) printw(__VA_ARGS__); \
+	endPacket();
+
 // Returns 0 if nothing is in the buffer.
 // Otherwise it will block until receiving anything, and return the number of bytes received.
 // It will also stop recording at bufferSize to not overflow.
@@ -77,8 +82,8 @@ uint8_t txrxBuffer[2048] = {};
 
 void txDoneCallback()
 {
-    printw("txDoneCallback\r\n");
-    lora_setRx(0);
+    printb("txDoneCallback\r\n");
+    loraImpl_setRx(0);
 }
 
 void rxDoneCallback(uint8_t* payload, uint16_t len, int16_t rssi,
@@ -86,53 +91,55 @@ void rxDoneCallback(uint8_t* payload, uint16_t len, int16_t rssi,
 {
     uint16_t actualSize = (len > 2047) ? 2047 : len;
     memcpy(txrxBuffer, payload, actualSize);
-    printw("rxDoneCallback\r\n");
+    printb("rxDoneCallback\r\n");
     delay_ms(1);
     for (uint16_t i = 0; i < actualSize; i++)
     {
         uart_send_data(CONFIG_DEBUG_UART, txrxBuffer[i]);
     }
-    lora_setRx(0);
+    endPacket();
+    loraImpl_setRx(0);
 }
 
 void txTimeoutCallback()
 {
-    printw("txTimeoutCallback\r\n");
-    lora_setRx(0);
+    printb("txTimeoutCallback\r\n");
+    loraImpl_setRx(0);
 }
 
 void rxTimeoutCallback()
 {
-    printw("rxTimeoutCallback\r\n");
-    lora_setRx(0);
+    printb("rxTimeoutCallback\r\n");
+    loraImpl_setRx(0);
 }
 
 void rxErrorCallback()
 {
-    printw("rxErrorCallback\r\n");
-    lora_setRx(0);
+    printb("rxErrorCallback\r\n");
+    loraImpl_setRx(0);
 }
 // For debug prints here, set first byte to 0xff, and then append the rest.
 // Allocate 4kb array for sending and receiving.
 
 void main(void)
 {
-    board_init();
-    printw("Initializing the lora\r\n");
-    lora_init();
-    lora_setCallbacks(txDoneCallback, rxDoneCallback,
+    loraImpl_setCallbacks(txDoneCallback, rxDoneCallback,
                       txTimeoutCallback, rxTimeoutCallback,
                       rxErrorCallback);
+    board_init();
+    printb("Initializing the lora\r\n");
+    loraImpl_init();
     delay_ms(100);
-    printw("Lora initialized!\r\n");
+    printb("Lora initialized!\r\n");
+    loraImpl_setRx(0);
     uint16_t size;
     while (true)
     {
         if ((size = receiveUart(txrxBuffer, sizeof(txrxBuffer))))
         {
-            lora_send(txrxBuffer, size);
-            lora_setRx(0);
+            loraImpl_send(txrxBuffer, size);
+            loraImpl_setRx(0);
         }
-        lora_irqProcess();
+        loraImpl_irqProcess();
     }
 }
