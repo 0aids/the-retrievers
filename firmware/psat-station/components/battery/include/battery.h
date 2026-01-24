@@ -1,18 +1,9 @@
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "soc/soc_caps.h"
-#include "esp_log.h"
 #include "esp_adc/adc_oneshot.h"
 #include "esp_adc/adc_cali.h"
-#include "esp_adc/adc_cali_scheme.h"
-#include "driver/gpio.h"
-#include "soc/io_mux_reg.h"
 #include <stdbool.h>
-#include "freertos/idf_additions.h"
+
 
 const static char* battery_tag_c = "Battery";
 
@@ -44,8 +35,12 @@ typedef struct
     battery_state_t stateAfter;
 } battery_preflightTest_t;
 
-void                    battery_setup(void);
-int                     battery_getVoltage(void);
-battery_state_t         battery_queryState(void);
-void                    battery_deinit(void);
-battery_preflightTest_t battery_preflightTest(void);
+void        battery_setup(void);
+int         battery_getVoltage(void);
+void        battery_queryState(char* stateString);
+void        battery_deinit(void);
+// This function allocates dynamic memory, dont forget to free it after.
+void        battery_callocTestState(battery_preflightTest_t* test);
+void        battery_preflightTest(battery_preflightTest_t* test);
+// Call this to free the dynamic memory
+void        battery_freeTestState(battery_preflightTest_t* test);

@@ -107,36 +107,32 @@ int battery_getVoltage(void){
     return voltage;
 }
 
+void battery_queryState(char* stateString)
+{
 
+    char*       emptyBuffer = NULL;
+    FILE*       memStream;
+    size_t      size       = 0;
 
-battery_state_t battery_queryState(void){
-    battery_state.stateString = 0;
-    FILE* memStream;
-    char* tempBuffer = {0};
-    size_t size = 0;
-
-    memStream = open_memstream(&tempBuffer, &size);
-    if(memStream == NULL){
-        ESP_LOGE(battery_tag_c,"Opening memstream failed");
-        return battery_state;
+    memStream = open_memstream(&emptyBuffer, &size);
+    if (memStream == NULL)
+    {
+        return;
     }
 
-    // This function gets most of the data we want to know about the gpio pin
-    gpio_dump_io_configuration(memStream, battery_pinMask_d);
-
-    // close the memory stream to avoid ...
+    // This writes all the information we need to the stream
+    gpio_dump_io_configuration(memStream, BATTERY_PIN_MASK_d);
+    // This flushes the unwritten data
+    // and updates the variables 'buffer' and 'size'
     fclose(memStream);
 
-    // truncates the tempBuffer to 1024 bytes if the buffer ever goes over and copies the information to the state buffer
-    size_t trueSize = (battery_stateConfigBufferSize_d - 1 < size ) ? battery_stateConfigBufferSize_d - 1 : size;
-    memcpy(battery_stateConfigBuffer_g,tempBuffer, trueSize);
-    battery_stateConfigBuffer_g[trueSize] = 0;
-
-    // Remember to free the dynamic variable
-    free(tempBuffer);
-    
-    battery_state.stateString = battery_stateConfigBuffer_g;
-    return battery_state;
+    size_t trueSize =
+        (BATTERY_STATE_CONFIG_BUFFER_SIZE_d - 1 < size) ?
+        BATTERY_STATE_CONFIG_BUFFER_SIZE_d - 1 :
+        size;
+    // Copies the data in temp buffer to the buffer we will return, while making sure the string ends
+    memcpy(stateString, emptyBuffer, trueSize);
+    stateString[trueSize] = '\0';
 }
 
 void battery_deinit(void){
@@ -145,16 +141,32 @@ void battery_deinit(void){
     ESP_ERROR_CHECK(adc_cali_delete_scheme_line_fitting(battery_adcHandlers_g.adcCaliChan));
 }
 
-
-battery_preflightTest_t battery_preflightTest(void) {
-    battery_preflightTest_t test = {};
+void battery_preflightTest(battery_preflightTest_t* test)
+{
     
-    test.stateBefore = battery_queryState();
+    // Gets the state before anything happens
+    battery_queryState(test->stateBefore.stateString);
+    // Gets the state after the ldr is setup
     battery_setup();
-    test.stateMiddle = battery_queryState();
-    test.sampleData = battery_getVoltage();
-    battery_deinit();
-    test.stateAfter = battery_queryState();
+    battery_queryState(test->stateMiddle.stateString);
+    // Gets the voltage is accurate
+    test->sampleData  = battery_getVoltage();
 
-    return test;
+    // Gets the state after the ldr deinits
+    battery_deinit();
+    battery_queryState(test->stateAfter.stateString);
+}
+
+void battery_callocTestState(battery_preflightTest_t* test)
+{
+    test->stateBefore.stateString = calloc(BATTERY_STATE_CONFIG_BUFFER_SIZE_d, 1);
+    test->stateMiddle.stateString = calloc(BATTERY_STATE_CONFIG_BUFFER_SIZE_d, 1);
+    test->stateAfter.stateString = calloc(BATTERY_STATE_CONFIG_BUFFER_SIZE_d, 1);
+}
+
+void battery_freeTestState(battery_preflightTest_t* test)
+{
+    free(test->stateBefore.stateString);
+    free(test->stateMiddle.stateString);
+    free(test->stateAfter.stateString);
 }
