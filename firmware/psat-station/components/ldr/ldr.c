@@ -1,4 +1,5 @@
 #include "ldr.h"
+#include "pin_config.h"
 #include "esp_adc/adc_cali_scheme.h"
 #include "esp_err.h"
 
@@ -9,6 +10,9 @@ extern esp_err_t adc_cali_delete_scheme_line_fitting(adc_cali_handle_t handle);
 //
 
 ldr_handlers_t ldr_adcHandlers_g = {};
+
+// Static variables
+static psatErrStates_e ldr_errChecks = ldrErr_none;
 
 //
 // Static Function Definitions
@@ -64,18 +68,17 @@ static bool adcCalibrationInit(adc_cali_handle_t* outHandle)
 
     // Checks for errors
     *outHandle = handle;
-    if (ret == ESP_OK)
-    {
-        ESP_LOGD(ldr_tag_c, "Calibration Success");
-    }
+    if (ret == ESP_OK)  ESP_LOGD(ldr_tag_c, "Calibration Success");
     else if (ret == ESP_ERR_NOT_SUPPORTED || !calibrated)
     {
         ESP_LOGW(ldr_tag_c,
                  "eFuse not burnt, skip software calibration");
+        ldr_errChecks = ldrErr_eFuseNotBurnt;
     }
     else
     {
         ESP_LOGE(ldr_tag_c, "Invalid arg or no memory");
+        ldr_errChecks = ldrErr_caliInit;
     }
 
     return calibrated;
@@ -87,16 +90,22 @@ static bool adcCalibrationInit(adc_cali_handle_t* outHandle)
 
 void ldr_setup(void)
 {
-    //-------------ADC1 Init---------------//
+    esp_err_t ret = ESP_FAIL;
+    //-------------ADC Init---------------//
     // sets the handle and initConfig1 initialises ADC1 and disables ULP mode
     adc_oneshot_unit_init_cfg_t initConfigLDR = {
         .unit_id  = LDR_ADC_UNIT_d,
         .ulp_mode = LDR_ULP_MODE_d,
     };
-    ESP_ERROR_CHECK(adc_oneshot_new_unit(&initConfigLDR,
+    ret = (adc_oneshot_new_unit(&initConfigLDR,
                                          &ldr_adcHandlers_g.adcOneshotHandle));
 
-    //-------------ADC1 Config---------------//
+    if (ret != ESP_OK) {
+        ldr_errChecks = ldrErr_adcInit;
+        return;
+    }
+    
+    //-------------ADC Config---------------//
     // Attenuation determines the range or maximum voltage that we can measure
     // The attenuation will be 12db, aka from 0v-3.1v
     //
@@ -106,10 +115,14 @@ void ldr_setup(void)
         .atten    = LDR_ADC_ATTEN_d,
         .bitwidth = LDR_ADC_BITWIDTH_d,
     };
-    ESP_ERROR_CHECK(adc_oneshot_config_channel(
-        ldr_adcHandlers_g.adcOneshotHandle, LDR_ADC_CHANNEL_d, &config));
+    ret = adc_oneshot_config_channel(
+        ldr_adcHandlers_g.adcOneshotHandle, LDR_ADC_CHANNEL_d, &config);
 
-    //-------------ADC1 Calibration Init---------------//
+    if (ret != ESP_OK) {
+        ldr_errChecks = ldrErr_adcConfig;
+        return;
+    }
+    //-------------ADC Calibration Init---------------//
     // sets the calibration handle to NULL.
     // It will be changed when the adcCalibrationInit function is called
     // Then calls the adcCalibrationInit function
@@ -119,14 +132,25 @@ void ldr_setup(void)
 
 int ldr_getVoltage(void)
 {
+    esp_err_t ret = ESP_FAIL;
     int adcRaw;
     int voltage;
 
     // Reads the raw adc value and then calibrates it to get the voltage
-    ESP_ERROR_CHECK(adc_oneshot_read(ldr_adcHandlers_g.adcOneshotHandle,
+    ret = (adc_oneshot_read(ldr_adcHandlers_g.adcOneshotHandle,
                                      LDR_ADC_CHANNEL_d, &adcRaw));
-    ESP_ERROR_CHECK(adc_cali_raw_to_voltage(
+    if (ret != ESP_OK) {
+        ldr_errChecks = ldrErr_oneshotRead; 
+        return -1;
+    }
+
+    ret = (adc_cali_raw_to_voltage(
         ldr_adcHandlers_g.adcCaliChanHandle, adcRaw, &voltage));
+    if (ret != ESP_OK) 
+    {
+        ldr_errChecks = ldrErr_voltageCali; 
+        return -1;
+    }
 
     return voltage;
 }
@@ -148,6 +172,7 @@ ldr_state_t ldr_queryState(void)
     if (memStream == NULL)
     {
         perror("open_memstream failed");
+        ldr_errChecks = ldrErr_OpenMemStream;
         return emptyState;
     }
 
@@ -175,12 +200,23 @@ ldr_state_t ldr_queryState(void)
 
 void ldr_deinit(void)
 {
+    esp_err_t ret;
     //Tear Down
-    ESP_ERROR_CHECK(adc_oneshot_del_unit(ldr_adcHandlers_g.adcOneshotHandle));
+    ret = (adc_oneshot_del_unit(ldr_adcHandlers_g.adcOneshotHandle));
     ESP_LOGD(ldr_tag_c, "deregister %s calibration scheme",
              "Line Fitting");
-    ESP_ERROR_CHECK(adc_cali_delete_scheme_line_fitting(
+    if (ret != ESP_OK) 
+    {
+        ldr_errChecks = ldrErr_adcDel; 
+        return;
+    }
+    ret = (adc_cali_delete_scheme_line_fitting(
         ldr_adcHandlers_g.adcCaliChanHandle));
+    if (ret != ESP_OK) 
+    {
+        ldr_errChecks = ldrErr_caliDel; 
+        return;
+    }
 }
 
 ldr_preflightTest_t ldr_preflightTest(void)
@@ -195,4 +231,10 @@ ldr_preflightTest_t ldr_preflightTest(void)
     test.stateAfter = ldr_queryState();
 
     return test;
+}
+
+
+
+psatErrStates_e check_err(void){
+    return ldr_errChecks;
 }

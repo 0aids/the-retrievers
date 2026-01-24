@@ -23,4 +23,18 @@ typedef enum {
     lora_packetTypes_testData,
 } lora_packetTypes_e;
 
+
+typedef enum {
+    ldrErr_none,
+    ldrErr_eFuseNotBurnt,
+    ldrErr_caliInit,
+    ldrErr_adcInit,
+    ldrErr_adcConfig,
+    ldrErr_oneshotRead,
+    ldrErr_voltageCali,
+    ldrErr_OpenMemStream,
+    ldrErr_adcDel,
+    ldrErr_caliDel
+} psatErrStates_e;
+
 #endif
