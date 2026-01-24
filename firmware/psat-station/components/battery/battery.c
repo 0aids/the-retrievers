@@ -1,5 +1,13 @@
 #include "include/battery.h"   
+#include <stdlib.h>
+#include <string.h>
+#include "esp_log.h"
+#include "driver/gpio.h"
 #include "esp_adc/adc_cali_scheme.h"
+#include "esp_err.h"
+#include "pin_config.h"
+#include "freertos/task.h"
+
 
 extern esp_err_t adc_cali_delete_scheme_line_fitting(adc_cali_handle_t handle);
 
@@ -11,7 +19,7 @@ battery_state_t battery_state;
 // Static function definitions
 // This function sets the calibration scheme to be used when the raw adc data is converted to voltage
 
-static bool adcCalibrationInit(adc_unit_t unit, adc_channel_t channel, adc_atten_t atten, adc_cali_handle_t *outHandle)
+static bool adcCalibrationInit(adc_cali_handle_t *outHandle)
 {
     adc_cali_handle_t handle = NULL;
     esp_err_t ret = ESP_FAIL;
@@ -22,10 +30,10 @@ static bool adcCalibrationInit(adc_unit_t unit, adc_channel_t channel, adc_atten
     if (!calibrated) {
         ESP_LOGI(battery_tag_c, "calibration scheme version is %s", "Curve Fitting");
         adc_cali_curve_fitting_config_t cali_config = {
-            .unit_id = unit,
-            .chan = channel,
-            .atten = atten,
-            .bitwidth = ADC_BITWIDTH_DEFAULT,
+            .unit_id = BATTERY_ADC_UNIT_d,
+            .chan = BATTERY_ADC_CHANNEL_d,
+            .atten = BATTERY_ADC_ATTEN_d,
+            .bitwidth = BATTERY_ADC_BITWIDTH_d,
         };
         ret = adc_cali_create_scheme_curve_fitting(&cali_config, &handle);
         if (ret == ESP_OK) {
@@ -39,9 +47,9 @@ static bool adcCalibrationInit(adc_unit_t unit, adc_channel_t channel, adc_atten
     if (!calibrated) {
         ESP_LOGI(battery_tag_c, "calibration scheme version is %s", "Line Fitting");
         adc_cali_line_fitting_config_t cali_config = {
-            .unit_id = unit,
-            .atten = atten,
-            .bitwidth = ADC_BITWIDTH_DEFAULT,
+            .unit_id = BATTERY_ADC_UNIT_d,
+            .atten = BATTERY_ADC_ATTEN_d,
+            .bitwidth = BATTERY_ADC_BITWIDTH_d,
         };
         ret = adc_cali_create_scheme_line_fitting(&cali_config, &handle);
         if (ret == ESP_OK) {
@@ -50,7 +58,7 @@ static bool adcCalibrationInit(adc_unit_t unit, adc_channel_t channel, adc_atten
     }
 #endif
 
-    // Checks for errors
+    // Checks for errors5
     *outHandle = handle;
     if (ret == ESP_OK) {
         ESP_LOGD(battery_tag_c, "Calibration Success");
@@ -68,8 +76,8 @@ static bool adcCalibrationInit(adc_unit_t unit, adc_channel_t channel, adc_atten
 void battery_setup(void){
     // Initialises the ADC unit and disables ultra low power mode
     adc_oneshot_unit_init_cfg_t initConfigBattery = {
-        .unit_id = ADC_UNIT_2,
-        .ulp_mode = ADC_ULP_MODE_DISABLE,
+        .unit_id = BATTERY_ADC_UNIT_d,
+        .ulp_mode = BATTERY_ULP_MODE_d,
     };
     ESP_ERROR_CHECK(adc_oneshot_new_unit(&initConfigBattery,  &battery_adcHandlers_g.adcHandle));
     battery_state.unit = initConfigBattery.unit_id;
@@ -77,15 +85,15 @@ void battery_setup(void){
 
     // Configures the bitwidth (resolution of the adc signal) and attenuation (what the max voltage is)
     adc_oneshot_chan_cfg_t config = {
-        .bitwidth = ADC_BITWIDTH_DEFAULT,
-        .atten = ADC_ATTEN_DB_12,
+        .bitwidth = BATTERY_ADC_BITWIDTH_d,
+        .atten = BATTERY_ADC_ATTEN_d,
     };
-    ESP_ERROR_CHECK(adc_oneshot_config_channel(battery_adcHandlers_g.adcHandle, battery_adc1Chan0_d, &config));
+    ESP_ERROR_CHECK(adc_oneshot_config_channel(battery_adcHandlers_g.adcHandle, BATTERY_ADC_CHANNEL_d, &config));
     battery_state.bitwidth = config.bitwidth,
     battery_state.atten = config.atten;
 
     // Sets the calibration scheme for calculating voltage based off of the esp32 settings
-    adcCalibrationInit(initConfigBattery.unit_id, battery_adc1Chan0_d, config.atten, &battery_adcHandlers_g.adcCaliChan0);
+    adcCalibrationInit(&battery_adcHandlers_g.adcCaliChan);
 }
 
 // Returns the voltage(mV) measured on the pin
@@ -93,13 +101,13 @@ int battery_getVoltage(void){
     int adcRaw;
     int voltage;
 
-    ESP_ERROR_CHECK(adc_oneshot_read(battery_adcHandlers_g.adcHandle, battery_adc1Chan0_d, &adcRaw));
-    ESP_ERROR_CHECK(adc_cali_raw_to_voltage(battery_adcHandlers_g.adcCaliChan0, adcRaw, &voltage));
+    ESP_ERROR_CHECK(adc_oneshot_read(battery_adcHandlers_g.adcHandle, BATTERY_ADC_CHANNEL_d, &adcRaw));
+    ESP_ERROR_CHECK(adc_cali_raw_to_voltage(battery_adcHandlers_g.adcCaliChan, adcRaw, &voltage));
 
     return voltage;
 }
 
-char battery_stateConfigBuffer_g[battery_stateConfigBufferSize_d] = {0};
+
 
 battery_state_t battery_queryState(void){
     battery_state.stateString = 0;
@@ -134,7 +142,7 @@ battery_state_t battery_queryState(void){
 void battery_deinit(void){
     ESP_ERROR_CHECK(adc_oneshot_del_unit(battery_adcHandlers_g.adcHandle));
     ESP_LOGD(battery_tag_c, "deregister %s calibration scheme", "Line Fitting");
-    ESP_ERROR_CHECK(adc_cali_delete_scheme_line_fitting(battery_adcHandlers_g.adcCaliChan0));
+    ESP_ERROR_CHECK(adc_cali_delete_scheme_line_fitting(battery_adcHandlers_g.adcCaliChan));
 }
 
 

@@ -20,3 +20,10 @@
 #define LDR_PIN_MASK_d             (1ULL << 18)
 #define LDR_STATE_CONFIG_BUFFER_SIZE_d (1024)
 
+#define BATTERY_ADC_UNIT_d             ADC_UNIT_1
+#define BATTERY_ADC_CHANNEL_d          ADC_CHANNEL_2
+#define BATTERY_ULP_MODE_d             ADC_ULP_MODE_DISABLE
+#define BATTERY_ADC_ATTEN_d            ADC_ATTEN_DB_12
+#define BATTERY_ADC_BITWIDTH_d         ADC_BITWIDTH_DEFAULT
+#define BATTERY_PIN_MASK_d             (1ULL << 12)
+#define BATTERY_STATE_CONFIG_BUFFER_SIZE_d (1024)
