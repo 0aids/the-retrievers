@@ -10,7 +10,7 @@ from fastapi import FastAPI, APIRouter
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
-from core.parser import start_serial_tasks
+from core.serial_io import start_lora, stop_lora
 
 
 class GroundStation(FastAPI):
@@ -42,7 +42,7 @@ class GroundStation(FastAPI):
     @asynccontextmanager
     async def __lifespan(app: FastAPI):
         print("[bold blue]API has started!")
-        print("[blue]Starting serial stuff")
-        start_serial_tasks()
+        start_lora()
         yield
+        stop_lora()
         print("[bold blue]API has been shutdown!")
