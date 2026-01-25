@@ -1,3 +1,4 @@
+#include "tremo_delay.h"
 #include <loraCfg.h>
 #include <loraImpl.h>
 #include <radio.h>
@@ -37,6 +38,8 @@ static RadioEvents_t radioEvents = {
 void loraImpl_send(uint8_t* payload, uint16_t payloadSize)
 {
     Radio.Send(payload, payloadSize);
+    while (Radio.GetStatus() == RF_TX_RUNNING)
+        delay_ms(1);
 }
 
 void loraImpl_setCallbacks(void (*onTxDone)(void),

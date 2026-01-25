@@ -132,13 +132,22 @@ void main(void)
     delay_ms(100);
     printb("Lora initialized!\r\n");
     loraImpl_setRx(0);
-    uint16_t size;
+
     while (true)
     {
         if ((size = receiveUart(txrxBuffer, sizeof(txrxBuffer))))
         {
-            loraImpl_send(txrxBuffer, size);
-            loraImpl_setRx(0);
+            txrxBuffer[i++] = uart_receive_data(CONFIG_DEBUG_UART);
+            footer[i % 4] = txrxBuffer[i-1];
+            if (*(uint32_t*)footer == 0x61616161) 
+            {
+                printb("Received - Size %"PRIu16"\r\n", i);
+                loraImpl_send(txrxBuffer, i - 4);
+                delay_ms(10);
+                loraImpl_setRx(0);
+                i = 0;
+                *(uint32_t*)footer = 0;
+            }
         }
         loraImpl_irqProcess();
     }
