@@ -1,5 +1,11 @@
-void BMP280_Setup();
-void BMP280_Reset();
-void BMP280_GetCalibration();
-void BMP280_CompensatePressureAndTemperature();
-void BMP280_GetData();
+#include <stdint.h>
+#include "driver/i2c_master.h"
+#include <pin_config.h>
+
+
+void BMP280_init();
+void BMP280_dinit();
+void BMP280_reset();
+void BMP280_getCalibration();
+void BMP280_compensatePressureAndTemperature();
+void BMP280_getData();

@@ -1,28 +1,19 @@
-#include <stdint.h>
-#include "driver/i2c_master.h"
-
-#include "driver/i2c_slave.h"
-extern i2c_master_bus_handle_t BusHandle;
-
+#include "main.h"
 
 i2c_device_config_t BMP280_Config = {
         .dev_addr_length = I2C_ADDR_BIT_7, 
-        .device_address = 0x76, 
-        .scl_speed_hz = 100000,
+        .device_address = BMP280_ADDRESS, 
+        .scl_speed_hz = I2C_FREQUENCY,
     };
 
     i2c_master_dev_handle_t BMP280_Handle;
 
 
-    uint8_t BMP280_ctrlmeas[2] = {0xF4, 0b10110111};
+    uint8_t BMP280_ctrlmeas[2] = {BMP280_CTRLMEAS_ADDRESS, BMP280_CTRLMEAS_DATA};
 
-    uint8_t BMP280_configReg[2] = {0xF5, 0b00000100};
+    uint8_t BMP280_configReg[2] = {BMP280_CONFIGREG_ADDRESS, BMP280_CONFIGREG_DATA};
 
     uint8_t BMP280_RawData[6];
-
-
-
-
 
 
     uint8_t BMP280_CalibrationData[24];
@@ -40,23 +31,32 @@ i2c_device_config_t BMP280_Config = {
     int16_t dig_P8;
     int16_t dig_P9;
 
-    void BMP280_Setup() {
-        ESP_ERROR_CHECK(i2c_master_bus_add_device(BusHandle, &BMP280_Config, &BMP280_Handle));
+    void BMP280_init(i2c_master_bus_handle_t* BusHandle) {
+        ESP_ERROR_CHECK(i2c_master_bus_add_device(*BusHandle, &BMP280_Config, &BMP280_Handle));
         printf("BMP280 Added\n");
 
         ESP_ERROR_CHECK(i2c_master_transmit(BMP280_Handle, BMP280_ctrlmeas, 2, -1));
         ESP_ERROR_CHECK(i2c_master_transmit(BMP280_Handle, BMP280_configReg, 2, -1));
 
+        BMP280_getCalibration();
+
         printf("BMP280 setup\n");
     }
 
-    void BMP280_Reset() {
+    void BMP280_reset() {
 
     }
 
-    void BMP280_GetCalibration() {
+    void BMP280_dinit() {
 
-    uint8_t BMP280_CalibrationDataAddress = 0x88;
+        i2c_master_bus_rm_device(BMP280_Handle);
+
+        BMP280_reset();
+    }
+
+    void BMP280_getCalibration() {
+
+    uint8_t BMP280_CalibrationDataAddress = BMP280_CALIBRATION_DATA_ADDRESS;
 
     i2c_master_transmit_receive(BMP280_Handle, &BMP280_CalibrationDataAddress, 1, BMP280_CalibrationData, 24, -1); 
 
@@ -76,6 +76,7 @@ i2c_device_config_t BMP280_Config = {
 
     void BMP280_CompensatePressureAndTemperature(uint32_t ADC_T, uint32_t ADC_P, int32_t* temperature, double* pressure)
     {
+        //All magic numbers are magic from the data sheet and will never change so I will not make a #define for them
         double var1;
         double var2;
         double var3;
@@ -148,9 +149,9 @@ i2c_device_config_t BMP280_Config = {
     }
 
 
-    void BMP280_GetData(int32_t* Temperature, double* Pressure) {
+    void BMP280_getData(int32_t* Temperature, double* Pressure) {
         
-        uint8_t BMP280_ReadAddress = 0xF7;
+        uint8_t BMP280_ReadAddress = BMP280_READ_ADDRESS;
 
         i2c_master_transmit_receive(BMP280_Handle, &BMP280_ReadAddress, 1, BMP280_RawData, 6, -1); 
 
@@ -158,6 +159,6 @@ i2c_device_config_t BMP280_Config = {
 
         uint32_t ADC_T = ((uint32_t)(BMP280_RawData[3]) << 12) | ((uint32_t)(BMP280_RawData[4]) << 4)  | ((uint32_t)(BMP280_RawData[5]) >> 4);
 
-        BMP280_CompensatePressureAndTemperature(ADC_T, ADC_P, Temperature, Pressure);
+        BMP280_compensatePressureAndTemperature(ADC_T, ADC_P, Temperature, Pressure);
     }
  
