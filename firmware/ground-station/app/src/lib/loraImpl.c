@@ -28,6 +28,8 @@ loraImpl_globalState_t loraImpl_globalState_g = {
 void (*loraImpl_onRxDoneCallback)(uint8_t* payload, uint16_t size,
                                   int16_t rssi, int8_t snr);
 
+void (*loraImpl_sendCallback)(uint8_t* payload, uint16_t size);
+
 void loraImpl_init(void) {}
 
 void loraImpl_deinit(void) {}
@@ -43,7 +45,16 @@ void loraImpl_setCallbacks(void (*onTxDone)(void),
     loraImpl_onRxDoneCallback = onRxDone;
 }
 
-void loraImpl_send(uint8_t* payload, uint16_t payloadSize) {}
+void loraImpl_send(uint8_t* payload, uint16_t payloadSize)
+{
+    loraImpl_sendCallback(payload, payloadSize);
+}
+
+void loraImpl_setSendCallback(void (*sendCallback)(uint8_t* payload,
+                                                   uint16_t size))
+{
+    loraImpl_sendCallback = sendCallback;
+}
 
 void loraImpl_irqProcess(void) {}
 
