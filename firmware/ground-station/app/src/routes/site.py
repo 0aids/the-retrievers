@@ -12,4 +12,4 @@ site_router = APIRouter(
 
 @site_router.get("/", response_class=FileResponse)
 def home():
-    return FileResponse(join(dirname(__file__), "../../static/html/index.html"))
+    return FileResponse(join(dirname(__file__), "../../static/index.html"))
