@@ -14,6 +14,7 @@ from lib import sending_queue, lib_lora, lora_init, get_rx_done_callback
 
 DEBUG_HEADER: Final = 0x11
 FOOTER: Final = b"\xaa\xaa\xaa\xaa"
+FOOTER_SEND: Final = b"\x61\x61\x61\x61"
 BAUD_RATE: Final = 19200
 SERIAL_RETRY_DELAY: Final = 5
 SERIAL_READ_TIMEOUT: Final = None
@@ -29,39 +30,41 @@ def find_serial_port():
     return None
 
 
-def serial_main(rx_done_cb, stop_event):
-    while not stop_event.is_set():
-        port = find_serial_port()
-        if not port:
-            print("waiting for serial device...")
-            time.sleep(SERIAL_RETRY_DELAY)
-            continue
+def serial_main(rx_done_cb, stop_event: Event):
+    while True:
+        while not stop_event.is_set():
+            port = find_serial_port()
+            if not port:
+                print("waiting for serial device...")
+                time.sleep(SERIAL_RETRY_DELAY)
+                continue
 
-        try:
-            with serial.Serial(
-                port,
-                BAUD_RATE,
-                timeout=SERIAL_READ_TIMEOUT,
-            ) as ser:
-                print(f"opened serial port {port}")
+            try:
+                with serial.Serial(
+                    port,
+                    BAUD_RATE,
+                    timeout=SERIAL_READ_TIMEOUT,
+                ) as ser:
+                    print(f"opened serial port {port}")
 
-                Thread(
-                    target=_read_loop,
-                    args=(ser, rx_done_cb, stop_event),
-                    daemon=True,
-                ).start()
+                    Thread(
+                        target=_read_loop,
+                        args=(ser, rx_done_cb, stop_event),
+                        daemon=True,
+                    ).start()
 
-                Thread(
-                    target=_write_loop,
-                    args=(ser, stop_event),
-                    daemon=True,
-                ).start()
+                    Thread(
+                        target=_write_loop,
+                        args=(ser, stop_event),
+                        daemon=True,
+                    ).start()
 
-                stop_event.wait()
+                    stop_event.wait()
 
-        except SerialException as e:
-            print(f"[red]Serial error:[/red] {e}")
-            time.sleep(SERIAL_RETRY_DELAY)
+            except SerialException as e:
+                print(f"[red]Serial error:[/red] {e}")
+                time.sleep(SERIAL_RETRY_DELAY)
+        stop_event.clear()
 
 
 def start_serial(rx_done_cb, stop_event: Event):
@@ -106,7 +109,7 @@ def _write_loop(ser, stop_event):
         while not stop_event.is_set():
             try:
                 data = sending_queue.get(timeout=0.1)
-                ser.write(data)
+                ser.write(data + FOOTER_SEND)
             except Empty:
                 pass
     except Exception as e:
