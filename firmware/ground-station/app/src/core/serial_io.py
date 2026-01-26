@@ -15,7 +15,7 @@ from lib import sending_queue, lib_lora, lora_init, get_rx_done_callback
 DEBUG_HEADER: Final = 0x11
 FOOTER: Final = b"\xaa\xaa\xaa\xaa"
 FOOTER_SEND: Final = b"\x61\x61\x61\x61"
-BAUD_RATE: Final = 19200
+BAUD_RATE: Final = 115200
 SERIAL_RETRY_DELAY: Final = 5
 SERIAL_READ_TIMEOUT: Final = None
 
@@ -50,13 +50,11 @@ def serial_main(rx_done_cb, stop_event: Event):
                     Thread(
                         target=_read_loop,
                         args=(ser, rx_done_cb, stop_event),
-                        daemon=True,
                     ).start()
 
                     Thread(
                         target=_write_loop,
                         args=(ser, stop_event),
-                        daemon=True,
                     ).start()
 
                     stop_event.wait()
@@ -64,6 +62,9 @@ def serial_main(rx_done_cb, stop_event: Event):
             except SerialException as e:
                 print(f"[red]Serial error:[/red] {e}")
                 time.sleep(SERIAL_RETRY_DELAY)
+                stop_event.set()
+                time.sleep(1)
+
         stop_event.clear()
 
 
