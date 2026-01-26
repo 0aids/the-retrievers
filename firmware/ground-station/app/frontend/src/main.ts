@@ -15,12 +15,14 @@ async function poll() {
     const state = await fetchState();
     if (!state) return;
 
+    console.log(state);
+
     updateFSM(state.fsm);
     updatePsat(state.gps);
     updateGPSStatus(state.gps);
     updateLoraStatus(
         state.radio.last_packet_time,
-        state.stats.packets_recieved,
+        state.stats.packets_received,
     );
 
     if (userPos && state.gps.latitude && state.gps.longitude) {

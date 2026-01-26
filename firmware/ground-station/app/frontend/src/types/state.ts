@@ -34,6 +34,6 @@ export type ApiState = {
         last_packet_time: number | null;
     };
     stats: {
-        packets_recieved: number | null;
+        packets_received: number | null;
     };
 };

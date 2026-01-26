@@ -65,6 +65,8 @@ class StateManager:
         with self._lock:
             self._state["fsm"]["state"] = FSMState(new_state)
             self._state["fsm"]["name"] = FSMState(new_state).name
+            self._state["radio"]["last_packet_time"] = time.time()
+            self._state["stats"]["packets_received"] += 1
 
     def snapshot(self):
         with self._lock:

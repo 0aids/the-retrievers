@@ -52,7 +52,6 @@ export function updatePsat(gps: GPSState) {
         }).addTo(map);
         polyline.addTo(map);
         pathToPSAT.addTo(map);
-        console.log(pathToPSAT);
     } else {
         psatCircle.setLatLng(pos);
     }
