@@ -6,9 +6,9 @@
 #define CFG_GPS_TX_PIN_d           48 // 37 // CANNOT USE! Part of heap.
 #define CFG_GPS_RX_PIN_d           42
 #define CFG_LANDING_BUTTON_PIN_d   39
-#define CFG_PRELAUNCH_BUTTON_PIN_d 40
+#define CFG_PRELAUNCH_BUTTON_PIN_d 21
 #define CFG_LIGHT1_PIN_d           41
-#define CFG_BUZZER_PIN_d           21
+#define CFG_BUZZER_PIN_d           40
 #define CFG_SERVO_PIN_d            8
 
 #define LDR_ADC_UNIT_d                 ADC_UNIT_1
