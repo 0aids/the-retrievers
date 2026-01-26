@@ -7,6 +7,7 @@ let followPsat = false;
 
 const trail: L.LatLngExpression[] = [];
 const polyline = L.polyline(trail, { color: "red" });
+const followEl = document.getElementById("follow-psat");
 
 export function togglePath(show: boolean) {
     show ? polyline.addTo(map) : polyline.remove();
@@ -14,6 +15,10 @@ export function togglePath(show: boolean) {
 
 export function toggleFollowPSAT() {
     followPsat = !followPsat;
+
+    if (followEl) {
+        followEl.textContent = followPsat ? "Follow PSAT" : "Unfollow PSAT";
+    }
 }
 
 export function updatePsat(gps: GPSState) {
