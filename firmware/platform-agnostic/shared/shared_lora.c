@@ -17,7 +17,9 @@
 #define debug(...)                                                   \
     utils_log("[%s:%d] ", __PRETTY_FUNCTION__, __LINE__);            \
     utils_log(__VA_ARGS__)
-
+#define runCallback(X)                                               \
+    if (X)                                                           \
+        X();
 // Brief:
 // The implementation of an n-byte (max 1mb) lora packeting system
 // Which serves as an abstraction over the main lora HAL implementation.
@@ -255,8 +257,7 @@ void lora_send(uint8_t* payload, const uint16_t payloadSize)
     debug("All packets sent successfully.\r\n");
     if (lora_globalState_g.onTxDone != NULL)
     {
-
-        lora_globalState_g.onTxDone();
+        runCallback(lora_globalState_g.onTxDone);
     }
 
     // Reset all the TX states.
@@ -449,22 +450,23 @@ void lora_irqProcess(void)
                 debug("RX error occurred.\r\n");
                 // Whoever has their callback can inspect the state
                 // to figure out what went wrong.
-                lora_globalState_g.onRxError();
+                runCallback(lora_globalState_g.onRxError);
                 // Don't forget to reset the states!
                 goto lora_irqProcess_resetRxStates_gt;
 
             case lora_rxStates_rxTimeout:
                 debug("RX timeout occurred.\r\n");
-                lora_globalState_g.onRxTimeout();
+                runCallback(lora_globalState_g.onRxTimeout);
                 goto lora_irqProcess_resetRxStates_gt;
 
             case lora_rxStates_rxDone:
                 debug("RX done.\r\n");
-                lora_globalState_g.onRxDone(
-                    lora_globalState_g.dataBuffer,
-                    lora_globalState_g.dataCurrentContentSize,
-                    lora_globalState_g.backendRssi,
-                    lora_globalState_g.backendSnr);
+                if (lora_globalState_g.onRxDone)
+                    lora_globalState_g.onRxDone(
+                        lora_globalState_g.dataBuffer,
+                        lora_globalState_g.dataCurrentContentSize,
+                        lora_globalState_g.backendRssi,
+                        lora_globalState_g.backendSnr);
                 goto lora_irqProcess_resetRxStates_gt;
             default: break;
         }
