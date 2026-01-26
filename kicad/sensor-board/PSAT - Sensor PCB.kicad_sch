@@ -6241,7 +6241,7 @@
 	)
 	(wire
 		(pts
-			(xy 74.93 171.45) (xy 92.71 171.45)
+			(xy 74.93 171.45) (xy 100.33 171.45)
 		)
 		(stroke
 			(width 0)
@@ -7419,28 +7419,6 @@
 			)
 		)
 	)
-	(global_label "SDO_PRESSURE"
-		(shape input)
-		(at 133.35 189.23 180)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "33b610db-37e5-442f-8088-7e894e91ad1c")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 115.7297 189.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-	)
 	(global_label "INT1_345"
 		(shape input)
 		(at 233.68 43.18 0)
@@ -7485,7 +7463,7 @@
 			)
 		)
 	)
-	(global_label "SDO_PRESSURE"
+	(global_label "PRESSURE_ADDR"
 		(shape input)
 		(at 92.71 161.29 0)
 		(fields_autoplaced yes)
@@ -7497,7 +7475,7 @@
 		)
 		(uuid "3ffbca2e-5ac9-45aa-9a55-c1d075c32df7")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 110.3303 161.29 0)
+			(at 111.4189 161.29 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7927,7 +7905,7 @@
 	)
 	(global_label "SDA1"
 		(shape input)
-		(at 92.71 171.45 0)
+		(at 100.33 171.45 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -7937,7 +7915,7 @@
 		)
 		(uuid "b9f6f7d3-e225-4b6f-8658-720440f2ffa3")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 99.2633 171.45 0)
+			(at 106.8833 171.45 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8136,6 +8114,28 @@
 		(uuid "f5f4bf81-2f93-462a-b5e9-bca9e1571676")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 34.3891 127 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "PRESSURE_ADDR"
+		(shape input)
+		(at 133.35 189.23 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "f86945ea-a6a9-42c8-9c9a-68fbec4c7194")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 114.6411 189.23 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10681,7 +10681,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "100nF"
+		(property "Value" "1uF"
 			(at 261.874 63.5 0)
 			(effects
 				(font
@@ -11736,7 +11736,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "100nF"
+		(property "Value" "0.1uF"
 			(at 277.114 63.5 0)
 			(effects
 				(font
