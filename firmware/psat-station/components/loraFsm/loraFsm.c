@@ -157,7 +157,7 @@ static void _loraFsm_broadcast()
     vTaskDelay(100 / portTICK_PERIOD_MS);
 
     loraFsm_packetWrapper_t gpsStatePacket =
-        loraFsm_packetCreate(loraFsm_packetType_stateData,
+        loraFsm_packetCreate(loraFsm_packetType_gpsData,
                              (uint8_t*)&gpsData, sizeof(gpsData));
 
     loraFsm_packetSend(&gpsStatePacket);
@@ -170,6 +170,8 @@ static void _loraFsm_runStateIdle()
     lora_setRx(0);
     if (_rxProcessed)
     {
+        ESP_LOGI(__FUNCTION__,
+                 "Rx Received! Setting state to execute cmd");
         _rxProcessed            = false;
         _loraFsm_currentState_s = loraFsm_radioStates_executeCmd;
         return;
@@ -216,8 +218,33 @@ static void _loraFsm_runStateCmd()
         {
             ESP_LOGE(__FUNCTION__, "Buzzer Request Received!");
             psatFSM_event_t event = {
-                .global = false,
+                .global = true,
                 .type   = psatFSM_eventType_audioBeep,
+            };
+            psatFSM_postEvent(&event);
+            break;
+        }
+
+        case loraFsm_packetType_landing:
+        {
+            ESP_LOGE(__FUNCTION__,
+                     "Landing Complete Request Received!");
+            psatFSM_event_t event = {
+                .global = false,
+                .type   = psatFSM_eventType_landingConfirmed,
+            };
+            psatFSM_postEvent(&event);
+            break;
+        }
+
+        case loraFsm_packetType_prelaunch:
+        {
+            ESP_LOGE(__FUNCTION__,
+                     "Prelaunch Complete Request "
+                     "Received!");
+            psatFSM_event_t event = {
+                .global = false,
+                .type   = psatFSM_eventType_prelaunchComplete,
             };
             psatFSM_postEvent(&event);
             break;
@@ -229,7 +256,8 @@ static void _loraFsm_runStateCmd()
 
         case loraFsm_packetType_fastForwardReq:
             ESP_LOGE(__FUNCTION__,
-                     "Fast forward request received! noop");
+                     "Fast forward request received! "
+                     "noop");
             break;
 
         case loraFsm_packetType_stateOverrideReq:

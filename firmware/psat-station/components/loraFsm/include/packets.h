@@ -26,6 +26,8 @@ typedef enum __attribute__((packed))
     loraFsm_packetType_stateOverrideReq,
     loraFsm_packetType_stateDumpReq,
     loraFsm_packetType_test,
+    loraFsm_packetType_prelaunch,
+    loraFsm_packetType_landing,
 } loraFsm_packetType_e;
 
 // This will be sent as a raw buffer, up to m_dataSize bytes.
