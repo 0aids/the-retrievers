@@ -35,6 +35,7 @@ void                globalEventHandler(const psatFSM_event_t* event)
 psatFSM_state_e
 psatFSM_startStateHandler(const psatFSM_event_t* event)
 {
+    servo_init(&servo, CFG_SERVO_PIN_d);
     return psatFSM_state_prelaunch;
 }
 
@@ -46,7 +47,6 @@ psatFSM_prelaunchStateHandler(const psatFSM_event_t* event)
     switch (event->type)
     {
         case psatFSM_eventType_prelaunchComplete:
-            servo_init(&servo, CFG_SERVO_PIN_d);
             return psatFSM_state_ascent;
         default: return psatFSM_state_prelaunch;
     }
