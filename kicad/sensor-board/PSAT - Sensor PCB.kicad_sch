@@ -4557,8 +4557,20 @@
 		)
 	)
 	(rectangle
+		(start 148.59 144.78)
+		(end 174.625 169.545)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(fill
+			(type none)
+		)
+		(uuid 751b7a6f-388b-4218-8555-a4a7c8014a63)
+	)
+	(rectangle
 		(start 114.935 144.78)
-		(end 175.26 169.545)
+		(end 147.32 169.545)
 		(stroke
 			(width 0)
 			(type default)
@@ -4680,6 +4692,16 @@
 		)
 		(uuid "0d465acb-d738-4c2b-88be-e3c43e3f7737")
 	)
+	(text "Power LED\n"
+		(exclude_from_sim no)
+		(at 161.544 148.336 0)
+		(effects
+			(font
+				(size 2.54 2.54)
+			)
+		)
+		(uuid "1f569f67-04af-4b67-8ae6-d23a7417fafe")
+	)
 	(text "TEST POINTS\n"
 		(exclude_from_sim no)
 		(at 154.178 17.272 0)
@@ -4692,7 +4714,7 @@
 	)
 	(text "Mounting Holes"
 		(exclude_from_sim no)
-		(at 132.334 148.844 0)
+		(at 131.064 148.336 0)
 		(effects
 			(font
 				(size 2.54 2.54)
@@ -5022,6 +5044,10 @@
 	(no_connect
 		(at 205.74 134.62)
 		(uuid "0eee148b-f7e3-4532-8b84-ed737e5fc269")
+	)
+	(no_connect
+		(at 246.38 121.92)
+		(uuid "1c4fe861-3315-42ed-a17e-71b44999e2aa")
 	)
 	(no_connect
 		(at 246.38 127)
@@ -5685,16 +5711,6 @@
 	)
 	(wire
 		(pts
-			(xy 257.81 134.62) (xy 257.81 137.16)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "5985ccb0-4b75-4124-8a67-466197e44b65")
-	)
-	(wire
-		(pts
 			(xy 82.55 184.15) (xy 90.17 184.15)
 		)
 		(stroke
@@ -5875,16 +5891,6 @@
 	)
 	(wire
 		(pts
-			(xy 257.81 127) (xy 257.81 121.92)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "77d5c9e7-c288-4622-876c-5a20f6cb69a3")
-	)
-	(wire
-		(pts
 			(xy 26.67 36.83) (xy 38.1 36.83)
 		)
 		(stroke
@@ -5892,16 +5898,6 @@
 			(type default)
 		)
 		(uuid "79d5edba-180e-4cd0-b69b-b0ee839a2e01")
-	)
-	(wire
-		(pts
-			(xy 257.81 121.92) (xy 246.38 121.92)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "7bdb3d31-52c2-48ca-af46-c16892ad8c61")
 	)
 	(wire
 		(pts
@@ -6825,16 +6821,6 @@
 	)
 	(wire
 		(pts
-			(xy 257.81 144.78) (xy 257.81 148.59)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f00981aa-56e5-47f3-b167-585c25584e53")
-	)
-	(wire
-		(pts
 			(xy 247.65 48.26) (xy 247.65 50.8)
 		)
 		(stroke
@@ -6973,7 +6959,7 @@
 		)
 		(uuid "fff129f9-141d-46a8-8985-0c601d8940bf")
 	)
-	(global_label "3V3_unfused"
+	(global_label "3V3_uf"
 		(shape input)
 		(at 110.49 59.69 0)
 		(fields_autoplaced yes)
@@ -6985,7 +6971,7 @@
 		)
 		(uuid "07295c36-32d1-4bd1-815b-2daf8e811728")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 125.3888 59.69 0)
+			(at 119.8251 59.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6995,7 +6981,7 @@
 			)
 		)
 	)
-	(global_label "SDO_ACC1"
+	(global_label "HIGH_G_ADDR"
 		(shape input)
 		(at 87.63 97.79 0)
 		(fields_autoplaced yes)
@@ -7127,7 +7113,7 @@
 			)
 		)
 	)
-	(global_label "SDO_ACC2"
+	(global_label "LOW_G_ADDR"
 		(shape input)
 		(at 186.69 90.17 180)
 		(fields_autoplaced yes)
@@ -7145,28 +7131,6 @@
 					(size 1.27 1.27)
 				)
 				(justify right)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "SDO_ACC1"
-		(shape input)
-		(at 130.81 85.09 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "289da3df-064e-4a5c-96e4-69af3ccf7bf4")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 143.4109 85.09 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
 				(hide yes)
 			)
 		)
@@ -7281,7 +7245,7 @@
 			)
 		)
 	)
-	(global_label "3V3_fused"
+	(global_label "3V3_f"
 		(shape input)
 		(at 110.49 54.61 0)
 		(fields_autoplaced yes)
@@ -7293,7 +7257,7 @@
 		)
 		(uuid "484fa695-9c92-41a5-911e-511b71292981")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 123.0908 54.61 0)
+			(at 118.6761 54.61 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7523,28 +7487,6 @@
 			)
 		)
 	)
-	(global_label "SDO_PRESSURE"
-		(shape input)
-		(at 130.81 90.17 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "86eceab6-3bc8-4181-afdc-10c41c826e42")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 148.4303 90.17 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-	)
 	(global_label "SDA1"
 		(shape input)
 		(at 110.49 39.37 0)
@@ -7743,7 +7685,7 @@
 			)
 		)
 	)
-	(global_label "SDO_ACC2"
+	(global_label "LOW_G_ADDR"
 		(shape input)
 		(at 256.54 55.88 0)
 		(fields_autoplaced yes)
@@ -7831,28 +7773,6 @@
 			)
 		)
 	)
-	(global_label "SDO_ACC2"
-		(shape input)
-		(at 130.81 80.01 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "db51fc61-0e01-439d-b7ca-bf636722db19")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 143.4109 80.01 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-	)
 	(global_label "LIGHT1"
 		(shape input)
 		(at 158.75 133.35 0)
@@ -7875,7 +7795,7 @@
 			)
 		)
 	)
-	(global_label "SDO_ACC1"
+	(global_label "HIGH_G_ADDR"
 		(shape input)
 		(at 46.99 127 180)
 		(fields_autoplaced yes)
@@ -8017,7 +7937,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "00ad0328-6bbe-42c0-b40a-6d984440de5d")
-		(property "Reference" "#PWR024"
+		(property "Reference" "#PWR01"
 			(at 26.67 34.29 0)
 			(effects
 				(font
@@ -8067,7 +7987,7 @@
 		(instances
 			(project ""
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "#PWR024")
+					(reference "#PWR01")
 					(unit 1)
 				)
 			)
@@ -8259,7 +8179,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "05456636-7f47-4686-8cb7-d21eadaeabf7")
-		(property "Reference" "TP16"
+		(property "Reference" "TP9"
 			(at 145.796 67.564 90)
 			(effects
 				(font
@@ -8275,7 +8195,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
 			(at 154.94 64.77 0)
 			(effects
 				(font
@@ -8308,7 +8228,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "TP16")
+					(reference "TP9")
 					(unit 1)
 				)
 			)
@@ -8324,7 +8244,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "077af3be-653f-45fd-8785-84e93b1f355c")
-		(property "Reference" "#PWR013"
+		(property "Reference" "#PWR016"
 			(at 133.35 142.24 0)
 			(effects
 				(font
@@ -8374,7 +8294,7 @@
 		(instances
 			(project ""
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "#PWR013")
+					(reference "#PWR016")
 					(unit 1)
 				)
 			)
@@ -8389,7 +8309,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "0e2d71a7-acd8-4813-a165-674082da23de")
-		(property "Reference" "TP10"
+		(property "Reference" "TP8"
 			(at 143.256 59.944 90)
 			(effects
 				(font
@@ -8405,7 +8325,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
 			(at 152.4 57.15 0)
 			(effects
 				(font
@@ -8438,7 +8358,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "TP10")
+					(reference "TP8")
 					(unit 1)
 				)
 			)
@@ -8453,7 +8373,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "123e13f6-30ca-41b1-9b8c-801a74cd2308")
-		(property "Reference" "#PWR011"
+		(property "Reference" "#PWR017"
 			(at 139.7 110.49 0)
 			(effects
 				(font
@@ -8462,7 +8382,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "3.3V"
+		(property "Value" "3V3_f"
 			(at 140.97 104.902 0)
 			(effects
 				(font
@@ -8504,7 +8424,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "#PWR011")
+					(reference "#PWR017")
 					(unit 1)
 				)
 			)
@@ -8520,7 +8440,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "12d338a2-4abc-46e7-a1a1-9bb875988579")
-		(property "Reference" "#PWR017"
+		(property "Reference" "#PWR030"
 			(at 248.92 154.94 0)
 			(effects
 				(font
@@ -8570,7 +8490,7 @@
 		(instances
 			(project ""
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "#PWR017")
+					(reference "#PWR030")
 					(unit 1)
 				)
 			)
@@ -8586,7 +8506,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "13f16fbd-ef46-4da3-8749-ce21d116a1a3")
-		(property "Reference" "#PWR09"
+		(property "Reference" "#PWR028"
 			(at 213.36 90.17 0)
 			(effects
 				(font
@@ -8637,7 +8557,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "#PWR09")
+					(reference "#PWR028")
 					(unit 1)
 				)
 			)
@@ -8645,7 +8565,7 @@
 	)
 	(symbol
 		(lib_id "Device:LED")
-		(at 257.81 140.97 90)
+		(at 162.56 157.48 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -8653,7 +8573,7 @@
 		(dnp no)
 		(uuid "1e6ccb86-cd37-43cb-86f6-cd073486091c")
 		(property "Reference" "D1"
-			(at 260.35 140.208 90)
+			(at 161.798 154.94 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8662,7 +8582,7 @@
 			)
 		)
 		(property "Value" "LED"
-			(at 260.35 142.24 90)
+			(at 163.83 154.94 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8671,7 +8591,7 @@
 			)
 		)
 		(property "Footprint" "LED_SMD:LED_0805_2012Metric"
-			(at 257.81 140.97 0)
+			(at 162.56 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8680,7 +8600,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 257.81 140.97 0)
+			(at 162.56 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8689,7 +8609,7 @@
 			)
 		)
 		(property "Description" "Light emitting diode"
-			(at 257.81 140.97 0)
+			(at 162.56 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8698,7 +8618,7 @@
 			)
 		)
 		(property "Sim.Pins" "1=K 2=A"
-			(at 257.81 140.97 0)
+			(at 162.56 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8713,7 +8633,7 @@
 			(uuid "8c05c6dc-2c73-42a9-a7dd-7849c748e6de")
 		)
 		(instances
-			(project ""
+			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
 					(reference "D1")
 					(unit 1)
@@ -8731,7 +8651,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "1ee6dd88-31a2-4b20-85ab-f3364711025b")
-		(property "Reference" "#PWR01"
+		(property "Reference" "#PWR04"
 			(at 22.86 99.06 0)
 			(effects
 				(font
@@ -8782,7 +8702,7 @@
 		(instances
 			(project ""
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "#PWR01")
+					(reference "#PWR04")
 					(unit 1)
 				)
 			)
@@ -8797,7 +8717,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "2c583df0-e159-44ad-adfa-5c534c0ff9a0")
-		(property "Reference" "#PWR07"
+		(property "Reference" "#PWR08"
 			(at 54.61 109.22 0)
 			(effects
 				(font
@@ -8806,7 +8726,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "3.3V"
+		(property "Value" "3V3_f"
 			(at 61.214 109.22 90)
 			(effects
 				(font
@@ -8848,7 +8768,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "#PWR07")
+					(reference "#PWR08")
 					(unit 1)
 				)
 			)
@@ -8998,7 +8918,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "2d95f4ad-adf3-4a4d-bd4c-b9247fd9811f")
-		(property "Reference" "R1"
+		(property "Reference" "R5"
 			(at 141.224 110.49 0)
 			(effects
 				(font
@@ -9051,7 +8971,7 @@
 		(instances
 			(project ""
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "R1")
+					(reference "R5")
 					(unit 1)
 				)
 			)
@@ -9066,7 +8986,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "30bdcc61-fd85-4148-92af-ba59c2d78d93")
-		(property "Reference" "U6"
+		(property "Reference" "U2"
 			(at 44.958 164.084 0)
 			(effects
 				(font
@@ -9138,7 +9058,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "U6")
+					(reference "U2")
 					(unit 1)
 				)
 			)
@@ -9153,7 +9073,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "31e55b60-d475-44b3-b456-6bda911e59f7")
-		(property "Reference" "C8"
+		(property "Reference" "C3"
 			(at 29.718 184.15 0)
 			(effects
 				(font
@@ -9207,7 +9127,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "C8")
+					(reference "C3")
 					(unit 1)
 				)
 			)
@@ -9223,7 +9143,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "3451d970-a61c-44e6-b565-7c9592b20b95")
-		(property "Reference" "R9"
+		(property "Reference" "R11"
 			(at 205.74 115.5699 0)
 			(effects
 				(font
@@ -9277,7 +9197,7 @@
 		(instances
 			(project ""
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "R9")
+					(reference "R11")
 					(unit 1)
 				)
 			)
@@ -9292,7 +9212,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "37289173-4767-4ad9-b0ac-c118c2bcfefe")
-		(property "Reference" "U5"
+		(property "Reference" "U1"
 			(at 53.34 27.94 0)
 			(effects
 				(font
@@ -9498,7 +9418,7 @@
 		(instances
 			(project ""
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "U5")
+					(reference "U1")
 					(unit 1)
 				)
 			)
@@ -9584,7 +9504,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "39ebcbdf-69eb-4706-8684-5410efd0ed5c")
-		(property "Reference" "#PWR012"
+		(property "Reference" "#PWR033"
 			(at 269.24 31.75 0)
 			(effects
 				(font
@@ -9593,7 +9513,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "3.3V"
+		(property "Value" "3V3_f"
 			(at 269.24 25.146 90)
 			(effects
 				(font
@@ -9635,7 +9555,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "#PWR012")
+					(reference "#PWR033")
 					(unit 1)
 				)
 			)
@@ -9650,7 +9570,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "3b25fca1-bb57-422b-b63c-df25d8330b55")
-		(property "Reference" "U4"
+		(property "Reference" "U5"
 			(at 226.06 107.696 0)
 			(effects
 				(font
@@ -9887,7 +9807,72 @@
 		(instances
 			(project ""
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "U4")
+					(reference "U5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+3.3V")
+		(at 151.13 157.48 180)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "3c5ee37c-4312-4582-8f1d-8d0aa4a73002")
+		(property "Reference" "#PWR018"
+			(at 151.13 153.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "3V3_f"
+			(at 151.384 163.322 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 151.13 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 151.13 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3.3V\""
+			(at 151.13 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "79ca5f00-ad8d-48b8-b92b-79e0b3928e8e")
+		)
+		(instances
+			(project "PSAT - Sensor PCB"
+				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
+					(reference "#PWR018")
 					(unit 1)
 				)
 			)
@@ -9902,7 +9887,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "3df2eca6-01d9-4457-8fd9-ae939f905896")
-		(property "Reference" "R6"
+		(property "Reference" "R4"
 			(at 122.174 127 90)
 			(effects
 				(font
@@ -9954,7 +9939,7 @@
 		(instances
 			(project ""
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "R6")
+					(reference "R4")
 					(unit 1)
 				)
 			)
@@ -9969,7 +9954,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "3f6f4985-ed5f-4f7e-9a71-7f1e84217ab2")
-		(property "Reference" "R7"
+		(property "Reference" "R8"
 			(at 155.194 126.492 0)
 			(effects
 				(font
@@ -10021,7 +10006,7 @@
 		(instances
 			(project ""
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "R7")
+					(reference "R8")
 					(unit 1)
 				)
 			)
@@ -10037,7 +10022,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "43cf64f5-4af8-445f-b5d2-e2d50e5af3e2")
-		(property "Reference" "#PWR06"
+		(property "Reference" "#PWR07"
 			(at 31.75 74.93 0)
 			(effects
 				(font
@@ -10087,7 +10072,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "#PWR06")
+					(reference "#PWR07")
 					(unit 1)
 				)
 			)
@@ -10102,7 +10087,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "4d28d666-1460-405e-bda1-09cb9c515427")
-		(property "Reference" "TP9"
+		(property "Reference" "TP7"
 			(at 142.748 53.848 90)
 			(effects
 				(font
@@ -10118,7 +10103,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
 			(at 152.4 50.8 0)
 			(effects
 				(font
@@ -10151,7 +10136,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "TP9")
+					(reference "TP7")
 					(unit 1)
 				)
 			)
@@ -10167,7 +10152,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "4e19dd15-1100-4021-a545-09d19cf1d6e5")
-		(property "Reference" "TP6"
+		(property "Reference" "TP12"
 			(at 159.258 29.21 90)
 			(effects
 				(font
@@ -10183,7 +10168,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
 			(at 162.56 29.21 0)
 			(effects
 				(font
@@ -10216,7 +10201,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "TP6")
+					(reference "TP12")
 					(unit 1)
 				)
 			)
@@ -10231,7 +10216,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "50fbf146-dd84-437a-988d-be1391efbb39")
-		(property "Reference" "J5"
+		(property "Reference" "J2"
 			(at 99.06 7.62 0)
 			(effects
 				(font
@@ -10293,7 +10278,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "J5")
+					(reference "J2")
 					(unit 1)
 				)
 			)
@@ -10309,7 +10294,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "547ebd52-1cfe-4c44-9797-1b9d13da04b8")
-		(property "Reference" "R5"
+		(property "Reference" "R7"
 			(at 148.59 182.88 90)
 			(effects
 				(font
@@ -10361,7 +10346,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "R5")
+					(reference "R7")
 					(unit 1)
 				)
 			)
@@ -10376,7 +10361,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "5736c11f-f58f-4f4b-8426-5995f08a87ae")
-		(property "Reference" "C4"
+		(property "Reference" "C5"
 			(at 261.874 66.04 0)
 			(effects
 				(font
@@ -10430,7 +10415,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "C4")
+					(reference "C5")
 					(unit 1)
 				)
 			)
@@ -10445,7 +10430,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "5af0abf2-66c4-47d2-8270-32a2dab91ec6")
-		(property "Reference" "#PWR015"
+		(property "Reference" "#PWR019"
 			(at 152.4 110.49 0)
 			(effects
 				(font
@@ -10454,7 +10439,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "3.3V"
+		(property "Value" "3V3_f"
 			(at 155.956 104.902 0)
 			(effects
 				(font
@@ -10495,7 +10480,7 @@
 		(instances
 			(project ""
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "#PWR015")
+					(reference "#PWR019")
 					(unit 1)
 				)
 			)
@@ -10511,7 +10496,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "60381c2c-1207-48a3-8868-45c8759f2c0f")
-		(property "Reference" "TP3"
+		(property "Reference" "TP5"
 			(at 140.208 36.83 90)
 			(effects
 				(font
@@ -10527,7 +10512,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
 			(at 143.51 36.83 0)
 			(effects
 				(font
@@ -10560,7 +10545,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "TP3")
+					(reference "TP5")
 					(unit 1)
 				)
 			)
@@ -10576,7 +10561,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "6102969b-ea8c-40ff-9777-b6bf44f015d7")
-		(property "Reference" "#PWR05"
+		(property "Reference" "#PWR06"
 			(at 30.48 115.57 0)
 			(effects
 				(font
@@ -10626,7 +10611,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "#PWR05")
+					(reference "#PWR06")
 					(unit 1)
 				)
 			)
@@ -10705,7 +10690,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "6e1b397e-2251-450e-b651-bfb9de8b823d")
-		(property "Reference" "#PWR019"
+		(property "Reference" "#PWR032"
 			(at 266.7 154.94 0)
 			(effects
 				(font
@@ -10755,7 +10740,7 @@
 		(instances
 			(project ""
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "#PWR019")
+					(reference "#PWR032")
 					(unit 1)
 				)
 			)
@@ -10771,7 +10756,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "708b20b1-7962-4796-9a46-1373c9bbe614")
-		(property "Reference" "#PWR021"
+		(property "Reference" "#PWR031"
 			(at 266.7 114.3 0)
 			(effects
 				(font
@@ -10780,7 +10765,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "3.3V"
+		(property "Value" "3V3_uf"
 			(at 266.7 105.41 0)
 			(effects
 				(font
@@ -10821,7 +10806,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "#PWR021")
+					(reference "#PWR031")
 					(unit 1)
 				)
 			)
@@ -10836,7 +10821,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "720229a9-9251-490c-9149-a9082a62435e")
-		(property "Reference" "JP1"
+		(property "Reference" "JP5"
 			(at 198.628 82.804 0)
 			(effects
 				(font
@@ -10892,7 +10877,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "JP1")
+					(reference "JP5")
 					(unit 1)
 				)
 			)
@@ -10908,7 +10893,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "768cbed0-e2dd-42cf-985e-1e537f972a5d")
-		(property "Reference" "TP1"
+		(property "Reference" "TP3"
 			(at 140.208 21.59 90)
 			(effects
 				(font
@@ -10924,7 +10909,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
 			(at 143.51 21.59 0)
 			(effects
 				(font
@@ -10957,7 +10942,7 @@
 		(instances
 			(project ""
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "TP1")
+					(reference "TP3")
 					(unit 1)
 				)
 			)
@@ -10973,7 +10958,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "7dbb507a-8649-4bdd-bd35-ff5a684c248c")
-		(property "Reference" "#PWR010"
+		(property "Reference" "#PWR015"
 			(at 127 142.24 0)
 			(effects
 				(font
@@ -11023,7 +11008,7 @@
 		(instances
 			(project ""
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "#PWR010")
+					(reference "#PWR015")
 					(unit 1)
 				)
 			)
@@ -11038,7 +11023,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "822fb91a-1b19-4cff-8e28-6b9a4cd9fd91")
-		(property "Reference" "TP11"
+		(property "Reference" "TP1"
 			(at 121.666 67.564 90)
 			(effects
 				(font
@@ -11054,7 +11039,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
 			(at 130.81 64.77 0)
 			(effects
 				(font
@@ -11087,7 +11072,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "TP11")
+					(reference "TP1")
 					(unit 1)
 				)
 			)
@@ -11103,7 +11088,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "829588de-1ab8-4664-996f-a3cdd738b36d")
-		(property "Reference" "TP5"
+		(property "Reference" "TP11"
 			(at 159.258 21.59 90)
 			(effects
 				(font
@@ -11119,7 +11104,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
 			(at 162.56 21.59 0)
 			(effects
 				(font
@@ -11152,7 +11137,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "TP5")
+					(reference "TP11")
 					(unit 1)
 				)
 			)
@@ -11160,15 +11145,15 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 257.81 130.81 0)
+		(at 154.94 157.48 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(uuid "82a135b4-96ba-465d-84de-66f273288f46")
-		(property "Reference" "R8"
-			(at 260.35 129.54 0)
+		(property "Reference" "R9"
+			(at 153.67 154.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11177,7 +11162,7 @@
 			)
 		)
 		(property "Value" "1k"
-			(at 260.35 132.08 0)
+			(at 156.21 154.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11186,7 +11171,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
-			(at 256.032 130.81 90)
+			(at 154.94 159.258 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11195,7 +11180,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 257.81 130.81 0)
+			(at 154.94 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11204,7 +11189,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 257.81 130.81 0)
+			(at 154.94 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11219,9 +11204,9 @@
 			(uuid "c6123a38-a31b-4514-abb8-8cfa8e16964c")
 		)
 		(instances
-			(project ""
+			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "R8")
+					(reference "R9")
 					(unit 1)
 				)
 			)
@@ -11237,7 +11222,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "834ce4d9-9b86-4b44-acfa-cfd431b7c0cc")
-		(property "Reference" "TP4"
+		(property "Reference" "TP6"
 			(at 140.208 44.45 90)
 			(effects
 				(font
@@ -11253,7 +11238,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
 			(at 143.51 44.45 0)
 			(effects
 				(font
@@ -11286,7 +11271,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "TP4")
+					(reference "TP6")
 					(unit 1)
 				)
 			)
@@ -11301,7 +11286,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "837f7fb0-227d-445b-b3a9-d077a59ab278")
-		(property "Reference" "TP12"
+		(property "Reference" "TP2"
 			(at 121.666 72.644 90)
 			(effects
 				(font
@@ -11317,7 +11302,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
 			(at 130.81 69.85 0)
 			(effects
 				(font
@@ -11350,7 +11335,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "TP12")
+					(reference "TP2")
 					(unit 1)
 				)
 			)
@@ -11365,7 +11350,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "864fe5f0-e615-44ce-bbda-949e4cdf1def")
-		(property "Reference" "#PWR022"
+		(property "Reference" "#PWR010"
 			(at 63.5 116.84 0)
 			(effects
 				(font
@@ -11374,7 +11359,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "3.3V"
+		(property "Value" "3V3_f"
 			(at 70.104 116.84 90)
 			(effects
 				(font
@@ -11416,7 +11401,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "#PWR022")
+					(reference "#PWR010")
 					(unit 1)
 				)
 			)
@@ -11431,7 +11416,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "867f8c19-8eae-47d1-8d1c-9ef6d9895961")
-		(property "Reference" "C5"
+		(property "Reference" "C7"
 			(at 277.114 66.04 0)
 			(effects
 				(font
@@ -11485,7 +11470,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "C5")
+					(reference "C7")
 					(unit 1)
 				)
 			)
@@ -11501,7 +11486,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "88a0241d-5fb2-4175-9cc9-0274a431bac3")
-		(property "Reference" "#PWR02"
+		(property "Reference" "#PWR05"
 			(at 33.02 101.6 0)
 			(effects
 				(font
@@ -11510,7 +11495,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "3.3V"
+		(property "Value" "3V3_f"
 			(at 25.4 101.5999 90)
 			(effects
 				(font
@@ -11552,7 +11537,7 @@
 		(instances
 			(project ""
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "#PWR02")
+					(reference "#PWR05")
 					(unit 1)
 				)
 			)
@@ -11568,7 +11553,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "8c22421f-0c0e-4e65-9f13-022804681f3c")
-		(property "Reference" "R2"
+		(property "Reference" "R6"
 			(at 142.24 119.3799 0)
 			(effects
 				(font
@@ -11622,7 +11607,7 @@
 		(instances
 			(project ""
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "R2")
+					(reference "R6")
 					(unit 1)
 				)
 			)
@@ -11637,7 +11622,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "92583e70-fac0-4608-b7fb-f774dfc235eb")
-		(property "Reference" "J4"
+		(property "Reference" "J3"
 			(at 99.06 22.86 0)
 			(effects
 				(font
@@ -11698,7 +11683,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "J4")
+					(reference "J3")
 					(unit 1)
 				)
 			)
@@ -11714,7 +11699,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "935ab9c2-8384-4764-a6e6-0fe3d91b8740")
-		(property "Reference" "TP7"
+		(property "Reference" "TP13"
 			(at 159.258 36.83 90)
 			(effects
 				(font
@@ -11730,7 +11715,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
 			(at 162.56 36.83 0)
 			(effects
 				(font
@@ -11763,7 +11748,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "TP7")
+					(reference "TP13")
 					(unit 1)
 				)
 			)
@@ -11778,7 +11763,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "96f011a6-1d07-4216-83f9-14f7cb1adec6")
-		(property "Reference" "#PWR08"
+		(property "Reference" "#PWR027"
 			(at 203.2 80.01 0)
 			(effects
 				(font
@@ -11787,7 +11772,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "3.3V"
+		(property "Value" "3V3_f"
 			(at 209.804 80.01 90)
 			(effects
 				(font
@@ -11829,7 +11814,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "#PWR08")
+					(reference "#PWR027")
 					(unit 1)
 				)
 			)
@@ -11844,7 +11829,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "9ae2250a-8adf-4320-a132-3a428de49968")
-		(property "Reference" "J6"
+		(property "Reference" "J1"
 			(at 20.32 45.72 0)
 			(effects
 				(font
@@ -11902,7 +11887,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "J6")
+					(reference "J1")
 					(unit 1)
 				)
 			)
@@ -11918,7 +11903,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "9c79ce2a-d1f5-46ce-87a5-85b246470208")
-		(property "Reference" "#PWR03"
+		(property "Reference" "#PWR022"
 			(at 151.13 69.85 0)
 			(effects
 				(font
@@ -11927,7 +11912,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "3.3V"
+		(property "Value" "3V3_f"
 			(at 158.75 69.8499 90)
 			(effects
 				(font
@@ -11969,7 +11954,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "#PWR03")
+					(reference "#PWR022")
 					(unit 1)
 				)
 			)
@@ -11984,7 +11969,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "a1e901ae-44c0-4682-b3b5-87857cda5cea")
-		(property "Reference" "JP4"
+		(property "Reference" "JP1"
 			(at 30.734 28.702 0)
 			(effects
 				(font
@@ -12040,7 +12025,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "JP4")
+					(reference "JP1")
 					(unit 1)
 				)
 			)
@@ -12056,7 +12041,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "a3313ff6-547c-4e78-bc4d-4f81dccc42c6")
-		(property "Reference" "#PWR035"
+		(property "Reference" "#PWR025"
 			(at 179.07 68.58 0)
 			(effects
 				(font
@@ -12106,7 +12091,7 @@
 		(instances
 			(project ""
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "#PWR035")
+					(reference "#PWR025")
 					(unit 1)
 				)
 			)
@@ -12122,7 +12107,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "a7d89aaa-4a7c-4306-961f-160acaed741c")
-		(property "Reference" "#PWR04"
+		(property "Reference" "#PWR023"
 			(at 151.13 74.93 0)
 			(effects
 				(font
@@ -12173,7 +12158,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "#PWR04")
+					(reference "#PWR023")
 					(unit 1)
 				)
 			)
@@ -12188,7 +12173,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "a8f02550-e1a7-4d25-85e0-dd78bf167806")
-		(property "Reference" "J1"
+		(property "Reference" "J4"
 			(at 99.06 38.1 0)
 			(effects
 				(font
@@ -12250,7 +12235,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "J1")
+					(reference "J4")
 					(unit 1)
 				)
 			)
@@ -12265,7 +12250,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "ac58b5b9-dbcc-497c-833f-67f2167b1c39")
-		(property "Reference" "TP17"
+		(property "Reference" "TP10"
 			(at 145.796 72.644 90)
 			(effects
 				(font
@@ -12281,7 +12266,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
 			(at 154.94 69.85 0)
 			(effects
 				(font
@@ -12314,71 +12299,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "TP17")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 130.81 90.17 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "ae2e414c-b760-4b31-a3a1-22630da45c00")
-		(property "Reference" "TP15"
-			(at 121.666 87.884 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 121.158 90.17 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 130.81 85.09 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 130.81 85.09 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 130.81 90.17 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "f6f91da9-0a27-49f5-bff0-65d574ae9ab6")
-		)
-		(instances
-			(project "PSAT - Sensor PCB"
-				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "TP15")
+					(reference "TP10")
 					(unit 1)
 				)
 			)
@@ -12393,7 +12314,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "af6a8df8-0e87-4333-9da5-4413c464fe6e")
-		(property "Reference" "#PWR016"
+		(property "Reference" "#PWR03"
 			(at 33.02 88.9 0)
 			(effects
 				(font
@@ -12402,7 +12323,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "3.3V"
+		(property "Value" "3V3_f"
 			(at 23.368 89.154 90)
 			(effects
 				(font
@@ -12443,7 +12364,7 @@
 		(instances
 			(project ""
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "#PWR016")
+					(reference "#PWR03")
 					(unit 1)
 				)
 			)
@@ -12591,7 +12512,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "b661696a-0c8e-4c87-9b63-9fcc54c0cb03")
-		(property "Reference" "C7"
+		(property "Reference" "C4"
 			(at 42.164 184.15 0)
 			(effects
 				(font
@@ -12645,7 +12566,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "C7")
+					(reference "C4")
 					(unit 1)
 				)
 			)
@@ -12661,7 +12582,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "b75861d8-895b-48a1-8e21-a0792b41f404")
-		(property "Reference" "#PWR031"
+		(property "Reference" "#PWR029"
 			(at 246.38 80.01 0)
 			(effects
 				(font
@@ -12711,7 +12632,7 @@
 		(instances
 			(project ""
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "#PWR031")
+					(reference "#PWR029")
 					(unit 1)
 				)
 			)
@@ -12727,7 +12648,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "bf6ad4c5-f9b9-4976-85c6-e04c85a4a1e5")
-		(property "Reference" "#PWR020"
+		(property "Reference" "#PWR026"
 			(at 203.2 111.76 0)
 			(effects
 				(font
@@ -12736,7 +12657,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "3.3V"
+		(property "Value" "3V3_uf"
 			(at 203.2 102.87 0)
 			(effects
 				(font
@@ -12777,7 +12698,7 @@
 		(instances
 			(project ""
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "#PWR020")
+					(reference "#PWR026")
 					(unit 1)
 				)
 			)
@@ -12792,7 +12713,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "bfb47cf5-1834-4077-80a4-525f821985a9")
-		(property "Reference" "#PWR028"
+		(property "Reference" "#PWR013"
 			(at 83.82 144.78 0)
 			(effects
 				(font
@@ -12801,7 +12722,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "3.3V"
+		(property "Value" "3V3_f"
 			(at 91.44 144.7799 90)
 			(effects
 				(font
@@ -12843,7 +12764,7 @@
 		(instances
 			(project ""
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "#PWR028")
+					(reference "#PWR013")
 					(unit 1)
 				)
 			)
@@ -12859,7 +12780,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "c461b6aa-e68f-45e2-b038-cef8d295c4b3")
-		(property "Reference" "#PWR027"
+		(property "Reference" "#PWR021"
 			(at 160.02 189.23 0)
 			(effects
 				(font
@@ -12910,7 +12831,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "#PWR027")
+					(reference "#PWR021")
 					(unit 1)
 				)
 			)
@@ -12926,7 +12847,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "c487bc44-e84d-4d72-a3ff-b4fdb3b9d823")
-		(property "Reference" "TP2"
+		(property "Reference" "TP4"
 			(at 140.208 29.21 90)
 			(effects
 				(font
@@ -12942,7 +12863,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
 			(at 143.51 29.21 0)
 			(effects
 				(font
@@ -12975,7 +12896,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "TP2")
+					(reference "TP4")
 					(unit 1)
 				)
 			)
@@ -12991,7 +12912,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "c4a2be68-e440-4bbc-a91f-823844c51f59")
-		(property "Reference" "#PWR030"
+		(property "Reference" "#PWR012"
 			(at 78.74 38.1 0)
 			(effects
 				(font
@@ -13000,7 +12921,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "3.3V"
+		(property "Value" "3V3_f"
 			(at 78.74 29.21 0)
 			(effects
 				(font
@@ -13041,7 +12962,7 @@
 		(instances
 			(project ""
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "#PWR030")
+					(reference "#PWR012")
 					(unit 1)
 				)
 			)
@@ -13056,7 +12977,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "c51cb786-98ac-4ac8-93a8-2781a449f213")
-		(property "Reference" "JP5"
+		(property "Reference" "JP4"
 			(at 145.288 181.864 0)
 			(effects
 				(font
@@ -13112,71 +13033,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "JP5")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 130.81 85.09 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "c95911be-b863-4b03-925d-0fb568e648e3")
-		(property "Reference" "TP14"
-			(at 121.666 82.804 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 121.158 85.09 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 130.81 80.01 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 130.81 80.01 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 130.81 85.09 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "55d89991-8612-4b01-970f-133aa652e364")
-		)
-		(instances
-			(project "PSAT - Sensor PCB"
-				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "TP14")
+					(reference "JP4")
 					(unit 1)
 				)
 			)
@@ -13332,7 +13189,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "d5852293-feff-439e-bedf-7ce6f68bccd0")
-		(property "Reference" "#PWR029"
+		(property "Reference" "#PWR09"
 			(at 58.42 194.31 0)
 			(effects
 				(font
@@ -13382,7 +13239,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "#PWR029")
+					(reference "#PWR09")
 					(unit 1)
 				)
 			)
@@ -13466,7 +13323,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "de516042-c838-4e9a-8fe5-235840b17626")
-		(property "Reference" "R10"
+		(property "Reference" "R3"
 			(at 84.074 176.53 0)
 			(effects
 				(font
@@ -13520,7 +13377,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "R10")
+					(reference "R3")
 					(unit 1)
 				)
 			)
@@ -13535,7 +13392,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "de7501eb-0193-4c04-b80a-9167f49a0d1b")
-		(property "Reference" "R4"
+		(property "Reference" "R2"
 			(at 76.454 176.53 0)
 			(effects
 				(font
@@ -13589,71 +13446,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "R4")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 130.81 80.01 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "e603dbd4-1147-41ef-9b8a-da2165f01226")
-		(property "Reference" "TP13"
-			(at 121.666 77.724 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 121.158 80.01 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 130.81 74.93 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 130.81 74.93 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 130.81 80.01 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "55ad2aa8-c90f-46ab-b46a-29f885983ecf")
-		)
-		(instances
-			(project "PSAT - Sensor PCB"
-				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "TP13")
+					(reference "R2")
 					(unit 1)
 				)
 			)
@@ -13669,7 +13462,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "ec5794eb-bc9f-45a0-bba6-4d5eeb6de730")
-		(property "Reference" "R3"
+		(property "Reference" "R10"
 			(at 201.93 83.82 90)
 			(effects
 				(font
@@ -13721,7 +13514,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "R3")
+					(reference "R10")
 					(unit 1)
 				)
 			)
@@ -13806,7 +13599,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "f057fa69-c7b0-4b6f-8242-d5dfb34a7879")
-		(property "Reference" "#PWR026"
+		(property "Reference" "#PWR020"
 			(at 149.86 179.07 0)
 			(effects
 				(font
@@ -13815,7 +13608,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "3.3V"
+		(property "Value" "3V3_f"
 			(at 156.464 179.07 90)
 			(effects
 				(font
@@ -13857,7 +13650,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "#PWR026")
+					(reference "#PWR020")
 					(unit 1)
 				)
 			)
@@ -13872,7 +13665,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "f136780c-bd56-4f11-8788-48fdc4685e26")
-		(property "Reference" "U2"
+		(property "Reference" "U4"
 			(at 207.01 30.48 0)
 			(effects
 				(font
@@ -14101,7 +13894,7 @@
 		(instances
 			(project ""
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "U2")
+					(reference "U4")
 					(unit 1)
 				)
 			)
@@ -14181,7 +13974,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "f447f338-3d5e-424e-adbd-1475870f0d1a")
-		(property "Reference" "#PWR023"
+		(property "Reference" "#PWR011"
 			(at 73.66 127 0)
 			(effects
 				(font
@@ -14232,7 +14025,7 @@
 		(instances
 			(project ""
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "#PWR023")
+					(reference "#PWR011")
 					(unit 1)
 				)
 			)
@@ -14247,7 +14040,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "f74128c5-da6f-496f-931a-f14433ec09d6")
-		(property "Reference" "R11"
+		(property "Reference" "R1"
 			(at 61.214 122.936 90)
 			(effects
 				(font
@@ -14299,7 +14092,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "R11")
+					(reference "R1")
 					(unit 1)
 				)
 			)
@@ -14314,7 +14107,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "fa522062-cada-436e-a281-d394be4ba01c")
-		(property "Reference" "#PWR025"
+		(property "Reference" "#PWR02"
 			(at 26.67 46.99 0)
 			(effects
 				(font
@@ -14364,7 +14157,7 @@
 		(instances
 			(project ""
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "#PWR025")
+					(reference "#PWR02")
 					(unit 1)
 				)
 			)
@@ -14380,7 +14173,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "fab69ad1-2305-4f0e-97ae-d2ae147ec0b3")
-		(property "Reference" "TP8"
+		(property "Reference" "TP14"
 			(at 159.258 44.45 90)
 			(effects
 				(font
@@ -14396,7 +14189,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
 			(at 162.56 44.45 0)
 			(effects
 				(font
@@ -14429,7 +14222,7 @@
 		(instances
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "TP8")
+					(reference "TP14")
 					(unit 1)
 				)
 			)
@@ -14437,7 +14230,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 257.81 148.59 0)
+		(at 166.37 157.48 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -14445,8 +14238,8 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "fc708415-725f-4f93-a4b6-00128a43b8ca")
-		(property "Reference" "#PWR018"
-			(at 257.81 154.94 0)
+		(property "Reference" "#PWR024"
+			(at 166.37 163.83 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14455,15 +14248,16 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 257.81 153.67 0)
+			(at 168.91 158.7499 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
 		(property "Footprint" ""
-			(at 257.81 148.59 0)
+			(at 166.37 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14472,7 +14266,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 257.81 148.59 0)
+			(at 166.37 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14481,7 +14275,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 257.81 148.59 0)
+			(at 166.37 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14493,9 +14287,9 @@
 			(uuid "f1488f95-ef4f-44aa-8c39-9ee92954f4f5")
 		)
 		(instances
-			(project ""
+			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "#PWR018")
+					(reference "#PWR024")
 					(unit 1)
 				)
 			)
