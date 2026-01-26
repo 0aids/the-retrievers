@@ -5,6 +5,7 @@ import { updateFSM } from "./ui/fsm";
 import { userPos, panToMe } from "./map/user";
 import { fetchState, buzzer2500 } from "./api/state";
 import { updateGPSStatus } from "./ui/gps";
+import { updateLoraStatus } from "./ui/lora";
 import { updateDistance } from "./map/distance";
 import { updatePsat, toggleFollowPSAT, togglePath } from "./map/psat";
 
@@ -17,6 +18,10 @@ async function poll() {
     updateFSM(state.fsm);
     updatePsat(state.gps);
     updateGPSStatus(state.gps);
+    updateLoraStatus(
+        state.radio.last_packet_time,
+        state.stats.packets_recieved,
+    );
 
     if (userPos && state.gps.latitude && state.gps.longitude) {
         updateDistance(userPos, {
