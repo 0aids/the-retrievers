@@ -1,4 +1,6 @@
+#include <stdint.h>
 #include <stdio.h>
+#include <stdalign.h>
 #include <string.h>
 #include <shared_lora.h>
 #include "printWrapper.h"
@@ -8,16 +10,25 @@
 #include "tremo_uart.h"
 #include "tremo_gpio.h"
 #include "tremo_rcc.h"
+#include "tremo_rtc.h"
 #include "tremo_pwr.h"
 #include <inttypes.h>
 
 // Why does timer.h need to be here???
 #include "timer.h"
 #include "rtc-board.h"
+#define chosenBaudrate_d UART_BAUDRATE_19200
+
+#define endPacket() \
+	for (uint8_t i = 0; i < 4; i++) uart_send_data(CONFIG_DEBUG_UART, 0xaa)
+#define printb(...) printw(__VA_ARGS__); \
+	endPacket();
+#define interByteTickTimeout_d (50000)
 
 // Returns 0 if nothing is in the buffer.
 // Otherwise it will block until receiving anything, and return the number of bytes received.
 // It will also stop recording at bufferSize to not overflow.
+// Expect 4 bytes of 0xaaaaaaaa
 uint16_t receiveUart(uint8_t* buffer, uint16_t bufferSize)
 {
     if (uart_get_flag_status(CONFIG_DEBUG_UART,
@@ -26,11 +37,11 @@ uint16_t receiveUart(uint8_t* buffer, uint16_t bufferSize)
         return 0;
     }
     uint16_t i = 0;
-    while (uart_get_flag_status(CONFIG_DEBUG_UART,
-                                UART_FLAG_RX_FIFO_EMPTY) != SET &&
-           i != bufferSize - 1)
+    uint8_t footer[4] = {0};
+    while (!memcmp(footer, "aaaa", 4))
     {
         buffer[i++] = uart_receive_data(CONFIG_DEBUG_UART);
+        footer[(i-1) % 4] = buffer[i-1];
     }
     return i;
 }
@@ -45,7 +56,7 @@ void uart_log_init(void)
     uart_config_t uart_config;
     uart_config_init(&uart_config);
 
-    uart_config.baudrate  = UART_BAUDRATE_115200;
+    uart_config.baudrate  = chosenBaudrate_d;
     uart_config.fifo_mode = ENABLE;
     uart_init(CONFIG_DEBUG_UART, &uart_config);
     uart_cmd(CONFIG_DEBUG_UART, ENABLE);
@@ -74,11 +85,13 @@ void board_init()
 }
 
 uint8_t txrxBuffer[2048] = {};
+uint16_t i = 0;
+alignas(4) uint8_t footer[4]  = {0};
 
 void txDoneCallback()
 {
-    printw("txDoneCallback\r\n");
-    lora_setRx(0);
+    printb("txDoneCallback\r\n");
+    loraImpl_setRx(0);
 }
 
 void rxDoneCallback(uint8_t* payload, uint16_t len, int16_t rssi,
@@ -86,53 +99,81 @@ void rxDoneCallback(uint8_t* payload, uint16_t len, int16_t rssi,
 {
     uint16_t actualSize = (len > 2047) ? 2047 : len;
     memcpy(txrxBuffer, payload, actualSize);
-    printw("rxDoneCallback\r\n");
+    printb("rxDoneCallback\r\n");
     delay_ms(1);
     for (uint16_t i = 0; i < actualSize; i++)
     {
         uart_send_data(CONFIG_DEBUG_UART, txrxBuffer[i]);
     }
-    lora_setRx(0);
+    endPacket();
+    loraImpl_setRx(0);
+    i = 0;
+    *(uint32_t*)footer = 0;
 }
 
 void txTimeoutCallback()
 {
-    printw("txTimeoutCallback\r\n");
-    lora_setRx(0);
+    printb("txTimeoutCallback\r\n");
+    loraImpl_setRx(0);
 }
 
 void rxTimeoutCallback()
 {
-    printw("rxTimeoutCallback\r\n");
-    lora_setRx(0);
+    printb("rxTimeoutCallback\r\n");
+    loraImpl_setRx(0);
 }
 
 void rxErrorCallback()
 {
-    printw("rxErrorCallback\r\n");
-    lora_setRx(0);
+    printb("rxErrorCallback\r\n");
+    loraImpl_setRx(0);
 }
 // For debug prints here, set first byte to 0xff, and then append the rest.
 // Allocate 4kb array for sending and receiving.
 
+
 void main(void)
 {
-    board_init();
-    printw("Initializing the lora\r\n");
-    lora_init();
-    lora_setCallbacks(txDoneCallback, rxDoneCallback,
+    loraImpl_setCallbacks(txDoneCallback, rxDoneCallback,
                       txTimeoutCallback, rxTimeoutCallback,
                       rxErrorCallback);
+    board_init();
+    printb("Initializing the lora\r\n");
+    loraImpl_init();
     delay_ms(100);
-    printw("Lora initialized!\r\n");
-    uint16_t size;
+    printb("Lora initialized!\r\n");
+    loraImpl_setRx(0);
+    // Ticks because the RTC doesn't even fucking work.
+    uint32_t lastTick = 0;
+    uint32_t currTick = 0;
+    uint32_t tick = 0;
+
     while (true)
     {
-        if ((size = receiveUart(txrxBuffer, sizeof(txrxBuffer))))
+        tick++;
+        if (uart_get_flag_status(CONFIG_DEBUG_UART,
+                             UART_FLAG_RX_FIFO_EMPTY) != SET)
         {
-            lora_send(txrxBuffer, size);
-            lora_setRx(0);
+            lastTick = currTick;
+            currTick = tick;
+            uint8_t receivedData = uart_receive_data(CONFIG_DEBUG_UART);
+            if (currTick-lastTick > interByteTickTimeout_d && i!= 0) {
+                i = 0;
+                *(uint32_t*)footer = 0;
+            }
+            txrxBuffer[i++] = receivedData;
+            footer[i % 4] = txrxBuffer[i-1];
+            if (*(uint32_t*)footer == 0x61616161) 
+            {
+
+                printb("Received - Size %"PRIu16"\r\n", i);
+                loraImpl_send(txrxBuffer, i - 4);
+                delay_ms(10);
+                loraImpl_setRx(0);
+                i = 0;
+                *(uint32_t*)footer = 0;
+            }
         }
-        lora_irqProcess();
+        loraImpl_irqProcess();
     }
 }
