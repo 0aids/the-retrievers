@@ -61,15 +61,16 @@ static void _loraFsm_runStateBeacon();
 static void _loraFsm_runStateTxRoutine();
 
 static loraFsm_radioStates_e _loraFsm_currentState_s;
-static bool                  _rxProcessed           = false;
-static struct {
+static bool                  _rxProcessed = false;
+static struct
+{
     helpers_malloced_t mp;
-    uint32_t currentlyUsedSize;
-} rxBuffer = {0};
-static uint64_t              lastSuccessfulPing_sec = 0;
-static uint64_t              timeSinceBeacon_sec    = 0;
+    uint32_t           currentlyUsedSize;
+} rxBuffer                             = {0};
+static uint64_t lastSuccessfulPing_sec = 0;
+static uint64_t timeSinceBeacon_sec    = 0;
 
-static void                  _loraFsm_onRxError()
+static void     _loraFsm_onRxError()
 {
     ESP_LOGI(__FUNCTION__, "onRxError");
 }
@@ -88,12 +89,14 @@ static void _loraFsm_onRxDone(uint8_t* payload, uint16_t payloadSize,
 {
     if (!helpers_smartAlloc(&rxBuffer.mp, payloadSize))
     {
-        ESP_LOGE(__FUNCTION__, "Failed to allocate buffer for rxDone!");
+        ESP_LOGE(__FUNCTION__,
+                 "Failed to allocate buffer for rxDone!");
         return;
     }
     memcpy(rxBuffer.mp.buffer, payload, payloadSize);
     rxBuffer.currentlyUsedSize = payloadSize;
-    ESP_LOGI(__FUNCTION__, "rx done! payload size: %"PRIu16, payloadSize);
+    ESP_LOGI(__FUNCTION__, "rx done! payload size: %" PRIu16,
+             payloadSize);
     _rxProcessed = true;
 }
 
@@ -167,6 +170,8 @@ static void _loraFsm_runStateIdle()
     lora_setRx(0);
     if (_rxProcessed)
     {
+        ESP_LOGI(__FUNCTION__,
+                 "Rx Received! Setting state to execute cmd");
         _rxProcessed            = false;
         _loraFsm_currentState_s = loraFsm_radioStates_executeCmd;
         return;
@@ -195,12 +200,14 @@ static void _loraFsm_runStateIdle()
 }
 static void _loraFsm_runStateCmd()
 {
+    ESP_LOGE(__FUNCTION__, "Received command, parsing!");
     // Figure out what the command is.
-    loraFsm_packetWrapper_t packet =
-        loraFsm_packetParse(rxBuffer.mp.buffer, rxBuffer.currentlyUsedSize);
+    loraFsm_packetWrapper_t packet = loraFsm_packetParse(
+        rxBuffer.mp.buffer, rxBuffer.currentlyUsedSize);
     if (!packet.wellFormed)
     {
-        ESP_LOGE(__FUNCTION__, "Unable to run state cmd, packet parsing failed!");
+        ESP_LOGE(__FUNCTION__,
+                 "Unable to run state cmd, packet parsing failed!");
         _loraFsm_currentState_s = loraFsm_radioStates_idle;
         return;
     }
@@ -211,8 +218,33 @@ static void _loraFsm_runStateCmd()
         {
             ESP_LOGE(__FUNCTION__, "Buzzer Request Received!");
             psatFSM_event_t event = {
-                .global = false,
+                .global = true,
                 .type   = psatFSM_eventType_audioBeep,
+            };
+            psatFSM_postEvent(&event);
+            break;
+        }
+
+        case loraFsm_packetType_landing:
+        {
+            ESP_LOGE(__FUNCTION__,
+                     "Landing Complete Request Received!");
+            psatFSM_event_t event = {
+                .global = false,
+                .type   = psatFSM_eventType_landingConfirmed,
+            };
+            psatFSM_postEvent(&event);
+            break;
+        }
+
+        case loraFsm_packetType_prelaunch:
+        {
+            ESP_LOGE(__FUNCTION__,
+                     "Prelaunch Complete Request "
+                     "Received!");
+            psatFSM_event_t event = {
+                .global = false,
+                .type   = psatFSM_eventType_prelaunchComplete,
             };
             psatFSM_postEvent(&event);
             break;
@@ -224,12 +256,14 @@ static void _loraFsm_runStateCmd()
 
         case loraFsm_packetType_fastForwardReq:
             ESP_LOGE(__FUNCTION__,
-                     "Fast forward request received! noop");
+                     "Fast forward request received! "
+                     "noop");
             break;
 
         case loraFsm_packetType_stateOverrideReq:
             ESP_LOGE(__FUNCTION__, "Overriding state!");
-            psatFSM_stateOverride(*(psatFSM_state_e*)(&packet.packetInterpreter->data));
+            psatFSM_stateOverride(
+                *(psatFSM_state_e*)(&packet.packetInterpreter->data));
             break;
 
         default: ESP_LOGE(__FUNCTION__, "Invalid request!"); break;

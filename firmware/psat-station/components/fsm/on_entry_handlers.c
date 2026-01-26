@@ -32,7 +32,7 @@ void psatFSM_prelaunchEntryHandler()
 
 void psatFSM_ascentEntryHandler()
 {
-    // button_enable(button_id_ldr);
+    button_enable(button_id_ldr);
 }
 
 void psatFSM_deployPendingEntryHandler() {}
