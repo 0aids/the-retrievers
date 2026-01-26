@@ -4,9 +4,11 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Ground Station</title>
+
         <link rel="stylesheet" href="/static/css/index.css" />
         <link rel="stylesheet" href="/static/css/leaflet.css" />
         <script type="module" src="/src/main.ts"></script>
+
         <style>
             body {
                 font-family: "Inter", sans-serif;
@@ -20,145 +22,208 @@
             }
         </style>
     </head>
-    <body class="bg-[#050809] text-white">
+
+    <body class="bg-[#050809] text-gray-100">
         <nav
             id="topbar"
-            class="sticky top-0 z-50 bg-[#050809]/90 backdrop-blur-md border-b border-gray-800 w-full flex justify-between items-center p-3 shadow-lg"
+            class="sticky top-0 z-50 bg-[#050809]/90 backdrop-blur-md border-b border-gray-800 px-4 py-3 flex items-center justify-between"
         >
-            <div id="title" class="leading-tight py-1">
+            <div>
                 <h1
-                    class="text-gray-400 text-[0.65rem] uppercase tracking-widest font-bold"
+                    class="text-[0.6rem] uppercase tracking-widest text-gray-400 font-bold"
                 >
                     The Retrievers
                 </h1>
-                <h3 class="text-white text-xl font-bold">Ground Station</h3>
+                <h2 class="text-lg font-bold">Ground Station</h2>
             </div>
-            <div id="status" class="flex gap-2">
+
+            <div class="flex gap-2">
                 <div
-                    class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-1 flex flex-col items-center"
+                    class="bg-gray-900 border border-gray-800 rounded-lg px-2 py-1 text-center"
                 >
-                    <span class="text-[0.6rem] text-gray-400 uppercase"
-                        >FSM</span
-                    >
-                    <div class="flex items-center gap-1">
-                        <h3 id="fsm-state" class="text-xs font-bold">
-                            Prelaunch
-                        </h3>
-                    </div>
+                    <p class="text-[0.55rem] uppercase text-gray-400">FSM</p>
+                    <p id="fsm-state" class="text-xs font-semibold">
+                        Prelaunch
+                    </p>
                 </div>
+
                 <div
-                    class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-1 flex flex-col items-center"
+                    class="bg-gray-900 border border-gray-800 rounded-lg px-2 py-1 text-center"
                 >
-                    <span class="text-[0.6rem] text-gray-400 uppercase"
-                        >GPS</span
-                    >
-                    <div class="flex items-center gap-1">
+                    <p class="text-[0.55rem] uppercase text-gray-400">GPS</p>
+                    <div class="flex items-center gap-1 justify-center">
                         <span
                             id="fix-status"
                             style="background-color: red"
-                            class="w-2 h-2 rounded-xl animate-pulse shadow-xl"
+                            class="w-2 h-2 rounded-full animate-pulse"
                         ></span>
-                        <h3 id="gps-state" class="text-xs font-bold">No Fix</h3>
+                        <p id="gps-state" class="text-xs font-semibold">
+                            No Fix
+                        </p>
                     </div>
                 </div>
             </div>
         </nav>
-        <main id="map-section" class="rounded-xl w-full p-2">
+
+        <section class="p-2">
             <div
-                style="z-index: 10"
                 id="map"
-                class="h-[40vh] md:h-[90vh] rounded-xl"
+                style="z-index: 10"
+                class="h-[45vh] rounded-xl border border-gray-800 shadow-xl overflow-hidden"
             ></div>
-        </main>
-        <section id="map-controls" class="flex justify-between px-3">
+        </section>
+
+        <section id="map-controls" class="grid grid-cols-3 gap-2 px-2 pb-2">
             <button
                 id="follow-me"
-                class="bg-gray-700 px-5 py-3 rounded-xl text-white text-md hover:bg-gray-600"
+                class="bg-gray-900 border border-gray-700 py-3 rounded-xl text-sm font-medium active:bg-gray-700"
             >
-                Go to Me
+                Me
             </button>
+
             <button
                 id="follow-psat"
-                class="bg-gray-700 px-5 py-3 rounded-xl text-white text-md hover:bg-gray-600"
+                class="bg-gray-900 border border-gray-700 py-3 rounded-xl text-sm font-medium active:bg-gray-700"
             >
-                Follow PSAT
+                PSAT
             </button>
+
             <button
                 id="toggle-path"
-                class="bg-gray-700 px-5 py-3 rounded-xl text-white text-md hover:bg-gray-600"
+                class="bg-gray-900 border border-gray-700 py-3 rounded-xl text-sm font-medium active:bg-gray-700"
             >
-                Toggle Path
+                Path
             </button>
         </section>
-        <section id="main-data" class="flex w-full">
+
+        <section class="px-3 space-y-3">
             <div
                 id="gps-data"
-                class="bg-gray-800 border border-gray-700 rounded-lg w-min-"
+                class="bg-gray-900 border border-gray-800 rounded-xl p-3"
             >
-                <h1>GPS Data</h1>
-                <h3>Position: <span id="gps-position"></span></h3>
-                <h3>Altitude: <span id="gps-altitude"></span></h3>
-                <h3>Speed: <span id="gps-speed"></span></h3>
-                <h3>Satelites: <span id="gps-satelites"></span></h3>
+                <h3 class="text-xs uppercase tracking-wider text-gray-400 mb-2">
+                    GPS
+                </h3>
+                <div class="text-sm space-y-1">
+                    <p>Pos: <span id="gps-position"></span></p>
+                    <p>Alt: <span id="gps-altitude"></span></p>
+                    <p>Spd: <span id="gps-speed"></span></p>
+                    <p>Sats: <span id="gps-satelites"></span></p>
+                </div>
             </div>
-            <div>
-                <div
-                    id="fsm-data"
-                    class="bg-gray-800 border border-gray-700 rounded-lg w-full"
-                >
-                    <h1>FSM Data</h1>
-                    <h3>Current State: <span id="fsm-current-state"></span></h3>
-                    <h3>Previous State: <span id="fsm-prev-state"></span></h3>
-                </div>
 
-                <div
-                    id="lora-data"
-                    class="bg-gray-800 border border-gray-700 rounded-lg"
-                >
-                    <h1>Lora Data</h1>
-                    <h3>Last Packet: <span id="lora-last-packet"></span></h3>
-                    <h3>
-                        Packets Recieved: <span id="lora-packets-rx"></span>
-                    </h3>
-                </div>
+            <div
+                id="fsm-data"
+                class="bg-gray-900 border border-gray-800 rounded-xl p-3"
+            >
+                <h3 class="text-xs uppercase tracking-wider text-gray-400 mb-2">
+                    FSM
+                </h3>
+                <p class="text-sm">
+                    Current:
+                    <span id="fsm-current-state" class="font-semibold"></span>
+                </p>
+                <p class="text-xs text-gray-400">
+                    Prev: <span id="fsm-prev-state"></span>
+                </p>
+            </div>
+
+            <div
+                id="lora-data"
+                class="bg-gray-900 border border-gray-800 rounded-xl p-3"
+            >
+                <h3 class="text-xs uppercase tracking-wider text-gray-400 mb-2">
+                    LoRa
+                </h3>
+                <p class="text-sm">Last: <span id="lora-last-packet"></span></p>
+                <p class="text-sm">RX: <span id="lora-packets-rx"></span></p>
             </div>
         </section>
-        <section id="commands">
-            <h1>Buttons</h1>
-            <div>
-                <button id="state-fast-forward-button">
-                    State Fast Forward
+
+        <section id="commands" class="px-3 py-3 space-y-2">
+            <h3 class="text-xs uppercase tracking-wider text-gray-400">
+                Commands
+            </h3>
+
+            <div class="grid grid-cols-2 gap-2">
+                <button
+                    id="state-fast-forward-button"
+                    class="bg-gray-800 py-3 rounded-xl text-sm active:bg-gray-600"
+                >
+                    Fast Fwd
                 </button>
-                <button id="next-state-button">Next State</button>
-                <button id="state-override-button">State Override</button>
-            </div>
-            <div>
+
+                <button
+                    id="next-state-button"
+                    class="bg-gray-800 py-3 rounded-xl text-sm active:bg-gray-600"
+                >
+                    Next
+                </button>
+
+                <button
+                    id="state-override-button"
+                    class="bg-gray-800 py-3 rounded-xl text-sm active:bg-gray-600"
+                >
+                    Override
+                </button>
+
                 <button
                     id="beep-2500-button"
-                    class="bg-gray-700 px-5 py-3 rounded-xl text-white text-md hover:bg-gray-600"
+                    class="bg-gray-800 py-3 rounded-xl text-sm active:bg-gray-600"
                 >
                     Beep 2.5s
                 </button>
-                <button id="beep-5000-button">Beep 5s</button>
+
+                <button
+                    id="beep-5000-button"
+                    class="bg-gray-800 py-3 rounded-xl text-sm active:bg-gray-600"
+                >
+                    Beep 5s
+                </button>
             </div>
         </section>
-        <section id="more-data">
-            <div id="sensors-data">
-                <h1>Sensors Data</h1>
-                <h3>Pressure: <span id="sensors-pressure"></span></h3>
-                <h3>High G: <span id="sensors-highg"></span></h3>
-                <h3>Low G: <span id="sensors-lowg"></span></h3>
+
+        <section class="px-3 space-y-3">
+            <div
+                id="sensors-data"
+                class="bg-gray-900 border border-gray-800 rounded-xl p-3"
+            >
+                <h3 class="text-xs uppercase tracking-wider text-gray-400 mb-2">
+                    Sensors
+                </h3>
+                <p class="text-sm">
+                    Pressure: <span id="sensors-pressure"></span>
+                </p>
+                <p class="text-sm">High G: <span id="sensors-highg"></span></p>
+                <p class="text-sm">Low G: <span id="sensors-lowg"></span></p>
             </div>
-            <div id="other-data">
-                <h1>Other Data</h1>
-                <h3>Servo: <span id="other-servo"></span></h3>
-                <h3>Camera: <span id="other-camera"></span></h3>
-                <h3>Buzzer: <span id="other-buzzer"></span></h3>
+
+            <div
+                id="other-data"
+                class="bg-gray-900 border border-gray-800 rounded-xl p-3"
+            >
+                <h3 class="text-xs uppercase tracking-wider text-gray-400 mb-2">
+                    Other
+                </h3>
+                <p class="text-sm">Servo: <span id="other-servo"></span></p>
+                <p class="text-sm">Camera: <span id="other-camera"></span></p>
+                <p class="text-sm">Buzzer: <span id="other-buzzer"></span></p>
             </div>
         </section>
-        <section id="log-section">
-            <h1>Log:</h1>
-            <pre id="log-data"></pre>
+
+        <section class="px-3 py-4">
+            <div
+                id="log-section"
+                class="bg-black border border-gray-800 rounded-xl p-3"
+            >
+                <h3 class="text-xs uppercase tracking-wider text-gray-400 mb-2">
+                    Log
+                </h3>
+                <pre
+                    id="log-data"
+                    class="text-xs text-green-400 max-h-48 overflow-y-auto no-scrollbar"
+                ></pre>
+            </div>
         </section>
     </body>
 </html>

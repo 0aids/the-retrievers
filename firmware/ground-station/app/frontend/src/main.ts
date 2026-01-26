@@ -42,5 +42,6 @@ document.getElementById("follow-me")?.addEventListener("click", () => {
 });
 
 document.getElementById("beep-2500-button")?.addEventListener("click", () => {
+    alert("Sending buzz request");
     buzzer2500();
 });
