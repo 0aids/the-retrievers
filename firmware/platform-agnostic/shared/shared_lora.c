@@ -8,14 +8,14 @@
 #endif
 
 #ifndef lora_defaultBufferSizeMalloc_d
-#warning "lora_defaultBufferSizeMalloc_d not defined, defaulting to 500KiB"
+#warning                                                             \
+    "lora_defaultBufferSizeMalloc_d not defined, defaulting to 500KiB"
 // 500KiB by default
 #define lora_defaultBufferSizeMalloc_d (1 << 19)
 #endif
 
 #define debug(...)                                                   \
-    utils_log("[%s:%d] ", __PRETTY_FUNCTION__,          \
-              __LINE__);                                             \
+    utils_log("[%s:%d] ", __PRETTY_FUNCTION__, __LINE__);            \
     utils_log(__VA_ARGS__)
 
 // Brief:
@@ -51,7 +51,8 @@ static bool _lora_waitUntilTxDone(void)
     debug("Waiting for TX to complete...\r\n");
     uint16_t time = 0;
     // Force a timeout after some time anyways.
-    while (!lora_globalState_g.backendTxDone && time++ < loraCfg_txTimeout_ms_d)
+    while (!lora_globalState_g.backendTxDone &&
+           time++ < loraCfg_txTimeout_ms_d)
     {
         loraImpl_irqProcess();
         utils_sleepMs(1);
@@ -75,12 +76,13 @@ static uint8_t rxBuffer[lora_numBufferBytes_d] = {0};
 void lora_init()
 {
     debug("Initializing lora...\r\r\n");
-    // Initialize the buffer (malloc or stack depending of if we have malloc)
-    #ifdef lora_hasMalloc_d
-    lora_globalState_g.dataBuffer = malloc(lora_defaultBufferSizeMalloc_d);
-    #else
+// Initialize the buffer (malloc or stack depending of if we have malloc)
+#ifdef lora_hasMalloc_d
+    lora_globalState_g.dataBuffer =
+        malloc(lora_defaultBufferSizeMalloc_d);
+#else
     lora_globalState_g.dataBuffer = rxBuffer;
-    #endif
+#endif
     loraImpl_init();
     loraImpl_setRx(0);
     loraImpl_setCallbacks(
@@ -251,7 +253,11 @@ void lora_send(uint8_t* payload, const uint16_t payloadSize)
     }
 
     debug("All packets sent successfully.\r\n");
-    lora_globalState_g.onTxDone();
+    if (lora_globalState_g.onTxDone != NULL)
+    {
+
+        lora_globalState_g.onTxDone();
+    }
 
     // Reset all the TX states.
     lora_globalState_g.backendTxTimeout = false;
@@ -270,12 +276,12 @@ static bool _lora_appendData(uint8_t* payload, uint16_t size)
 {
     debug("Appending %d bytes to data buffer.\r\n", size);
     if (lora_globalState_g.dataCurrentContentSize + size >
-    #ifdef lora_defaultBufferSizeMalloc_d
+#ifdef lora_defaultBufferSizeMalloc_d
         lora_defaultBufferSizeMalloc_d
-    #else
+#else
         lora_numBufferBytes_d
-    #endif
-        )
+#endif
+    )
     {
         debug("Failed to append data, buffer full.\r\n");
         lora_globalState_g.errorType =
@@ -322,8 +328,9 @@ bool _lora_processHeaderPacket(uint8_t* payload, uint16_t size)
     lora_globalState_g.currentPacketNumber     = 1;
     lora_globalState_g.currentTotalPacketCount = header.numPackets;
     lora_globalState_g.dataCurrentContentSize  = 0;
-    debug("Header packet processed successfully. Total packets: %d\r\n",
-          header.numPackets);
+    debug(
+        "Header packet processed successfully. Total packets: %d\r\n",
+        header.numPackets);
 
     // Append
     if (!_lora_appendData(header.data, header.numDataBytes))
@@ -482,7 +489,8 @@ lora_irqProcess_resetRxStates_gt:
 void _lora_backendRxDoneCallback(uint8_t* payload, uint16_t size,
                                  int16_t rssi, int8_t snr)
 {
-    debug("Backend RX done callback. Received %d bytes. RSSI: %d, SNR: %d\r\n",
+    debug("Backend RX done callback. Received %d bytes. RSSI: %d, "
+          "SNR: %d\r\n",
           size, rssi, snr);
     // Obvious error checking
     if (size < 1)
@@ -509,7 +517,7 @@ void _lora_backendRxDoneCallback(uint8_t* payload, uint16_t size,
             }
             else
             {
-                lora_globalState_g.errorType = 
+                lora_globalState_g.errorType =
                     lora_rxErrorTypes_firstPacketWasNotHeader;
                 goto _lora_backendRxDoneCallback_error_gt;
             }
@@ -539,7 +547,7 @@ void _lora_backendRxDoneCallback(uint8_t* payload, uint16_t size,
             }
             else
             {
-                lora_globalState_g.errorType = 
+                lora_globalState_g.errorType =
                     lora_rxErrorTypes_expectedDataOrFooterGotUnknown;
                 goto _lora_backendRxDoneCallback_error_gt;
             }

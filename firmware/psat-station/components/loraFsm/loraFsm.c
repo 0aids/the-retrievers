@@ -61,15 +61,16 @@ static void _loraFsm_runStateBeacon();
 static void _loraFsm_runStateTxRoutine();
 
 static loraFsm_radioStates_e _loraFsm_currentState_s;
-static bool                  _rxProcessed           = false;
-static struct {
+static bool                  _rxProcessed = false;
+static struct
+{
     helpers_malloced_t mp;
-    uint32_t currentlyUsedSize;
-} rxBuffer = {0};
-static uint64_t              lastSuccessfulPing_sec = 0;
-static uint64_t              timeSinceBeacon_sec    = 0;
+    uint32_t           currentlyUsedSize;
+} rxBuffer                             = {0};
+static uint64_t lastSuccessfulPing_sec = 0;
+static uint64_t timeSinceBeacon_sec    = 0;
 
-static void                  _loraFsm_onRxError()
+static void     _loraFsm_onRxError()
 {
     ESP_LOGI(__FUNCTION__, "onRxError");
 }
@@ -88,12 +89,14 @@ static void _loraFsm_onRxDone(uint8_t* payload, uint16_t payloadSize,
 {
     if (!helpers_smartAlloc(&rxBuffer.mp, payloadSize))
     {
-        ESP_LOGE(__FUNCTION__, "Failed to allocate buffer for rxDone!");
+        ESP_LOGE(__FUNCTION__,
+                 "Failed to allocate buffer for rxDone!");
         return;
     }
     memcpy(rxBuffer.mp.buffer, payload, payloadSize);
     rxBuffer.currentlyUsedSize = payloadSize;
-    ESP_LOGI(__FUNCTION__, "rx done! payload size: %"PRIu16, payloadSize);
+    ESP_LOGI(__FUNCTION__, "rx done! payload size: %" PRIu16,
+             payloadSize);
     _rxProcessed = true;
 }
 
@@ -195,12 +198,14 @@ static void _loraFsm_runStateIdle()
 }
 static void _loraFsm_runStateCmd()
 {
+    ESP_LOGE(__FUNCTION__, "Received command, parsing!");
     // Figure out what the command is.
-    loraFsm_packetWrapper_t packet =
-        loraFsm_packetParse(rxBuffer.mp.buffer, rxBuffer.currentlyUsedSize);
+    loraFsm_packetWrapper_t packet = loraFsm_packetParse(
+        rxBuffer.mp.buffer, rxBuffer.currentlyUsedSize);
     if (!packet.wellFormed)
     {
-        ESP_LOGE(__FUNCTION__, "Unable to run state cmd, packet parsing failed!");
+        ESP_LOGE(__FUNCTION__,
+                 "Unable to run state cmd, packet parsing failed!");
         _loraFsm_currentState_s = loraFsm_radioStates_idle;
         return;
     }
@@ -229,7 +234,8 @@ static void _loraFsm_runStateCmd()
 
         case loraFsm_packetType_stateOverrideReq:
             ESP_LOGE(__FUNCTION__, "Overriding state!");
-            psatFSM_stateOverride(*(psatFSM_state_e*)(&packet.packetInterpreter->data));
+            psatFSM_stateOverride(
+                *(psatFSM_state_e*)(&packet.packetInterpreter->data));
             break;
 
         default: ESP_LOGE(__FUNCTION__, "Invalid request!"); break;
