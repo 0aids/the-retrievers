@@ -32,6 +32,9 @@ navigator.geolocation.watchPosition(
 
 export function panToMe() {
     if (userPos) {
-        map.panTo([userPos.lat, userPos.lon] as L.LatLngExpression);
+        map.panTo([userPos.lat, userPos.lon] as L.LatLngExpression, {
+            animate: true,
+            duration: 0.6,
+        });
     }
 }

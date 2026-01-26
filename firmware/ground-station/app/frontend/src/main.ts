@@ -33,20 +33,36 @@ async function poll() {
 
 setInterval(poll, 1000);
 
-document.getElementById("toggle-path")?.addEventListener("click", () => {
+const togglePathBtn = document.getElementById("toggle-path");
+const followPsatBtn = document.getElementById("follow-psat");
+const followMeBtn = document.getElementById("follow-me");
+const beepBtn = document.getElementById("beep-2500-button");
+
+togglePathBtn?.addEventListener("click", () => {
     showPath = !showPath;
     togglePath(showPath);
+    togglePathBtn.classList.toggle("gs-btn-active", showPath);
 });
 
-document.getElementById("follow-psat")?.addEventListener("click", () => {
+followPsatBtn?.addEventListener("click", () => {
     toggleFollowPSAT();
+    followPsatBtn.classList.toggle("gs-btn-active");
 });
 
-document.getElementById("follow-me")?.addEventListener("click", () => {
+followMeBtn?.addEventListener("click", () => {
     panToMe();
+    followMeBtn.classList.add("gs-btn-active");
+    setTimeout(() => followMeBtn.classList.remove("gs-btn-active"), 700);
 });
 
-document.getElementById("beep-2500-button")?.addEventListener("click", () => {
-    alert("Sending buzz request");
+beepBtn?.addEventListener("click", () => {
+    beepBtn.setAttribute("disabled", "true");
+    beepBtn.classList.add("opacity-60");
+
     buzzer2500();
+
+    setTimeout(() => {
+        beepBtn.removeAttribute("disabled");
+        beepBtn.classList.remove("opacity-60");
+    }, 1500);
 });

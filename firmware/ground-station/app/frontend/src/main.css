@@ -1,1 +1,89 @@
 @import "tailwindcss";
+
+/* --------- touch/button feedback --------- */
+.gs-btn {
+    transition:
+        transform 0.08s ease,
+        box-shadow 0.12s ease,
+        background-color 0.12s ease;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    will-change: transform;
+}
+.gs-btn:active {
+    transform: scale(0.96);
+    box-shadow: inset 0 0 0 999px rgba(255, 255, 255, 0.04);
+}
+
+/* active style for toggle buttons */
+.gs-btn-active {
+    border-color: rgba(56, 189, 248, 0.9);
+    box-shadow:
+        0 4px 18px rgba(2, 6, 23, 0.6),
+        0 0 0 4px rgba(56, 189, 248, 0.06);
+}
+
+/* subtle flash to denote new log entry */
+.log-flash {
+    background-color: rgba(34, 197, 94, 0.06);
+    transition: background-color 0.25s;
+}
+
+/* --------- pulsing marker (divIcon) --------- */
+.pulse-marker {
+    position: relative;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #ef4444; /* red base */
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.25);
+    display: block;
+    transform: translate(-50%, -50%);
+}
+.pulse-marker .pulse-ring {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 18px;
+    height: 18px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: rgba(233, 63, 63, 0.35);
+    animation: psat-pulse 1400ms infinite ease-out;
+    will-change: transform, opacity;
+}
+@keyframes psat-pulse {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.9;
+    }
+    70% {
+        transform: translate(-50%, -50%) scale(2.4);
+        opacity: 0.08;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(2.6);
+        opacity: 0;
+    }
+}
+
+/* user marker (blue) */
+.pulse-marker.user {
+    background: #3b82f6;
+}
+.pulse-marker.user .pulse-ring {
+    background: rgba(59, 130, 246, 0.28);
+}
+
+/* small circle used for precise dot (optional) */
+.small-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: white;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.45);
+}
