@@ -1,5 +1,6 @@
 from lib import lora_send
 
 
-def handle_command(cmd: str, args: dict):
-    lora_send(b"\x05")
+def handle_command(cmd: int, args: dict):
+    print("Bytes:", cmd.to_bytes())
+    lora_send(cmd.to_bytes())

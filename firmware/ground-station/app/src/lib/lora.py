@@ -10,6 +10,7 @@ LIBRARY_PATH = join(dirname(__file__), "libLoraParser.so")
 
 PACKET_FSM = 6
 PACKET_GPS = 4
+PACKET_PING = 1
 
 lib_lora = ctypes.CDLL(LIBRARY_PATH)
 sending_queue: Queue[bytes] = Queue()
@@ -31,13 +32,14 @@ def lora_receive_callback(payload, size, _rss, _snr):
 
     print(f"[bold blue]Data of size {size} recieved: {data}")
 
-    # the 50 is till aidan reflashes firmware
-    if packet_type == PACKET_FSM and size < 50:
+    if packet_type == PACKET_FSM:
         state = FSMState(data[1])
         state_manager.update_state(state)
         print(f"[green]FSM changed state to: {state.name}")
-
-    elif packet_type == PACKET_GPS or size > 50:
+    elif packet_type == PACKET_PING:
+        print("[green]pong em back fr")
+        lora_send(b"\x02")
+    elif packet_type == PACKET_GPS:
         gps = GPSStruct.from_buffer_copy(data[1:])
         state_manager.update_gps(
             {

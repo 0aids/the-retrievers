@@ -11,13 +11,14 @@ command_router = APIRouter(
 
 
 class Command(BaseModel):
-    cmd: str
+    cmd: int
     args: dict = {}
 
 
 @command_router.post("/api/command")
 def send_command(command: Command):
     try:
+        print("Handle Command...")
         handle_command(command.cmd, command.args)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
