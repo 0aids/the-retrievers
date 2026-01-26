@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <stdio.h>
 #include <stdalign.h>
 #include <string.h>
@@ -9,6 +10,7 @@
 #include "tremo_uart.h"
 #include "tremo_gpio.h"
 #include "tremo_rcc.h"
+#include "tremo_rtc.h"
 #include "tremo_pwr.h"
 #include <inttypes.h>
 
@@ -21,6 +23,7 @@
 	for (uint8_t i = 0; i < 4; i++) uart_send_data(CONFIG_DEBUG_UART, 0xaa)
 #define printb(...) printw(__VA_ARGS__); \
 	endPacket();
+#define interByteTickTimeout_d (50000)
 
 // Returns 0 if nothing is in the buffer.
 // Otherwise it will block until receiving anything, and return the number of bytes received.
@@ -128,6 +131,7 @@ void rxErrorCallback()
 // For debug prints here, set first byte to 0xff, and then append the rest.
 // Allocate 4kb array for sending and receiving.
 
+
 void main(void)
 {
     loraImpl_setCallbacks(txDoneCallback, rxDoneCallback,
@@ -139,16 +143,29 @@ void main(void)
     delay_ms(100);
     printb("Lora initialized!\r\n");
     loraImpl_setRx(0);
+    // Ticks because the RTC doesn't even fucking work.
+    uint32_t lastTick = 0;
+    uint32_t currTick = 0;
+    uint32_t tick = 0;
 
     while (true)
     {
+        tick++;
         if (uart_get_flag_status(CONFIG_DEBUG_UART,
                              UART_FLAG_RX_FIFO_EMPTY) != SET)
         {
-            txrxBuffer[i++] = uart_receive_data(CONFIG_DEBUG_UART);
+            lastTick = currTick;
+            currTick = tick;
+            uint8_t receivedData = uart_receive_data(CONFIG_DEBUG_UART);
+            if (currTick-lastTick > interByteTickTimeout_d && i!= 0) {
+                i = 0;
+                *(uint32_t*)footer = 0;
+            }
+            txrxBuffer[i++] = receivedData;
             footer[i % 4] = txrxBuffer[i-1];
             if (*(uint32_t*)footer == 0x61616161) 
             {
+
                 printb("Received - Size %"PRIu16"\r\n", i);
                 loraImpl_send(txrxBuffer, i - 4);
                 delay_ms(10);
