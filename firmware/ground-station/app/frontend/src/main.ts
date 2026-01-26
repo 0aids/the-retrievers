@@ -3,7 +3,7 @@ import "./map/map";
 
 import { updateFSM } from "./ui/fsm";
 import { userPos, panToMe } from "./map/user";
-import { fetchState } from "./api/state";
+import { fetchState, buzzer2500 } from "./api/state";
 import { updateGPSStatus } from "./ui/gps";
 import { updateDistance } from "./map/distance";
 import { updatePsat, toggleFollowPSAT, togglePath } from "./map/psat";
@@ -26,7 +26,7 @@ async function poll() {
     }
 }
 
-setInterval(poll, 500);
+setInterval(poll, 1000);
 
 document.getElementById("toggle-path")?.addEventListener("click", () => {
     showPath = !showPath;
@@ -39,4 +39,8 @@ document.getElementById("follow-psat")?.addEventListener("click", () => {
 
 document.getElementById("follow-me")?.addEventListener("click", () => {
     panToMe();
+});
+
+document.getElementById("beep-2500-button")?.addEventListener("click", () => {
+    buzzer2500();
 });

@@ -90,10 +90,10 @@
                 Toggle Path
             </button>
         </section>
-        <section id="main-data">
+        <section id="main-data" class="flex w-full">
             <div
                 id="gps-data"
-                class="bg-gray-800 border border-gray-700 rounded-lg"
+                class="bg-gray-800 border border-gray-700 rounded-lg w-min-"
             >
                 <h1>GPS Data</h1>
                 <h3>Position: <span id="gps-position"></span></h3>
@@ -102,13 +102,19 @@
                 <h3>Satelites: <span id="gps-satelites"></span></h3>
             </div>
             <div>
-                <div id="fsm-data">
+                <div
+                    id="fsm-data"
+                    class="bg-gray-800 border border-gray-700 rounded-lg w-full"
+                >
                     <h1>FSM Data</h1>
                     <h3>Current State: <span id="fsm-current-state"></span></h3>
                     <h3>Previous State: <span id="fsm-prev-state"></span></h3>
                 </div>
 
-                <div id="lora-data">
+                <div
+                    id="lora-data"
+                    class="bg-gray-800 border border-gray-700 rounded-lg"
+                >
                     <h1>Lora Data</h1>
                     <h3>Last Packet: <span id="lora-last-packet"></span></h3>
                     <h3>
@@ -127,7 +133,12 @@
                 <button id="state-override-button">State Override</button>
             </div>
             <div>
-                <button id="beep-2500-button">Beep 2.5s</button>
+                <button
+                    id="beep-2500-button"
+                    class="bg-gray-700 px-5 py-3 rounded-xl text-white text-md hover:bg-gray-600"
+                >
+                    Beep 2.5s
+                </button>
                 <button id="beep-5000-button">Beep 5s</button>
             </div>
         </section>
