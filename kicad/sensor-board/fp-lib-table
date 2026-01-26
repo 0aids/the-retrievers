@@ -9,4 +9,5 @@
   (lib (name "LSM6DSOX")(type "KiCad")(uri "/Users/sid/Desktop/Coding/Other/PSAT/the-retrievers/kicad/footprint-libraries/LSM6DSOX.pretty")(options "")(descr ""))
   (lib (name "adxl345")(type "KiCad")(uri "${KIPRJMOD}/adxl345.pretty")(options "")(descr ""))
   (lib (name "ADXL345")(type "KiCad")(uri "/Users/sid/Desktop/Coding/Other/PSAT/the-retrievers/kicad/footprint-libraries/ADXL345.pretty")(options "")(descr ""))
+  (lib (name "footprints")(type "KiCad")(uri "C:/Users/admin/Documents/GitHub/the-retrievers/kicad/footprint-libraries/footprints.pretty")(options "")(descr ""))
 )
