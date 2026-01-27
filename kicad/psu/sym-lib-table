@@ -12,4 +12,5 @@
   (lib (name "PSAT_Library PC")(type "KiCad")(uri "C:/Dev/APSS/the-retrievers/kicad/symbol-libaries/PSAT_Library.kicad_sym")(options "")(descr ""))
   (lib (name "2026-01-26_05-30-52")(type "KiCad")(uri "${KIPRJMOD}/symbol-libaries/2026-01-26_05-30-52.kicad_sym")(options "")(descr ""))
   (lib (name "UJ20-C-H-G-SMT-1-P16-TR")(type "KiCad")(uri "${KIPRJMOD}/external-libraries/UJ20-C-H-G-SMT-1-P16-TR.kicad_sym")(options "")(descr ""))
+  (lib (name "NCP176AMX330TCG")(type "KiCad")(uri "/Users/sid/Desktop/Coding/Other/PSAT/the-retrievers/kicad/symbol-libaries/NCP176AMX330TCG.kicad_sym")(options "")(descr ""))
 )
