@@ -4494,7 +4494,7 @@
 	)
 	(text "Power LED\n"
 		(exclude_from_sim no)
-		(at 161.544 148.336 0)
+		(at 161.544 147.32 0)
 		(effects
 			(font
 				(size 2.54 2.54)
@@ -6071,7 +6071,7 @@
 	)
 	(wire
 		(pts
-			(xy 139.7 124.46) (xy 139.7 125.73)
+			(xy 139.7 116.84) (xy 139.7 125.73)
 		)
 		(stroke
 			(width 0)
@@ -6819,28 +6819,6 @@
 		)
 		(uuid "fff129f9-141d-46a8-8985-0c601d8940bf")
 	)
-	(global_label "3V3_uf"
-		(shape input)
-		(at 110.49 59.69 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "07295c36-32d1-4bd1-815b-2daf8e811728")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 119.8251 59.69 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-	)
 	(global_label "HIGH_G_ADDR"
 		(shape input)
 		(at 87.63 97.79 0)
@@ -6942,28 +6920,6 @@
 		(uuid "22ccea3a-55a5-4b35-8780-cdea9bff82ed")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 118.1923 21.59 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "5V"
-		(shape input)
-		(at 110.49 57.15 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "245b6cf6-ac0e-45db-85b4-031df7c1638e")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 115.7733 57.15 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7171,28 +7127,6 @@
 			)
 		)
 	)
-	(global_label "3V3_f"
-		(shape input)
-		(at 110.49 54.61 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "484fa695-9c92-41a5-911e-511b71292981")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 118.6761 54.61 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-	)
 	(global_label "SCL2"
 		(shape input)
 		(at 162.56 41.91 0)
@@ -7283,7 +7217,7 @@
 	)
 	(global_label "GPS_UART_TX"
 		(shape input)
-		(at 152.4 55.88 0)
+		(at 152.4 54.61 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -7293,7 +7227,7 @@
 		)
 		(uuid "53bc6cae-c1de-40fe-a8e8-434c6b41c723")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 167.9037 55.88 0)
+			(at 167.9037 54.61 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7404,28 +7338,6 @@
 		(uuid "67c2b7de-193c-4ab4-8d21-d87b2f3f588a")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 245.3737 45.72 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-	)
-	(global_label "GND"
-		(shape input)
-		(at 110.49 52.07 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "79070da8-3ba9-4150-8e01-8ced6c9b33a8")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 117.3457 52.07 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7723,7 +7635,7 @@
 	)
 	(global_label "GPS_UART_RX"
 		(shape input)
-		(at 152.4 62.23 0)
+		(at 152.4 59.69 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -7733,7 +7645,7 @@
 		)
 		(uuid "cfc43366-9126-4e27-a702-8b5152f87cc8")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 168.2061 62.23 0)
+			(at 168.2061 59.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8208,7 +8120,7 @@
 	)
 	(symbol
 		(lib_id "Connector:TestPoint")
-		(at 154.94 69.85 90)
+		(at 154.94 64.77 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -8216,7 +8128,7 @@
 		(dnp no)
 		(uuid "05456636-7f47-4686-8cb7-d21eadaeabf7")
 		(property "Reference" "TP9"
-			(at 145.796 67.564 90)
+			(at 145.796 62.484 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8224,7 +8136,7 @@
 			)
 		)
 		(property "Value" "TestPoint"
-			(at 145.288 69.85 90)
+			(at 145.288 64.77 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8232,7 +8144,7 @@
 			)
 		)
 		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
-			(at 154.94 64.77 0)
+			(at 154.94 59.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8241,7 +8153,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 154.94 64.77 0)
+			(at 154.94 59.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8250,7 +8162,7 @@
 			)
 		)
 		(property "Description" "test point"
-			(at 154.94 69.85 0)
+			(at 154.94 64.77 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8337,8 +8249,75 @@
 		)
 	)
 	(symbol
+		(lib_id "power:VBUS")
+		(at 154.94 74.93 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "0cd29dd3-5993-4435-84a1-a8e69b05daea")
+		(property "Reference" "#PWR040"
+			(at 151.13 74.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "3V3_LDO"
+			(at 158.75 74.9299 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 154.94 74.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 154.94 74.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"VBUS\""
+			(at 154.94 74.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "b638cca0-127f-481b-a6a4-b476d26b2fb8")
+		)
+		(instances
+			(project "PSAT - Sensor PCB"
+				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
+					(reference "#PWR040")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Connector:TestPoint")
-		(at 152.4 62.23 90)
+		(at 152.4 59.69 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -8346,7 +8325,7 @@
 		(dnp no)
 		(uuid "0e2d71a7-acd8-4813-a165-674082da23de")
 		(property "Reference" "TP8"
-			(at 143.256 59.944 90)
+			(at 143.256 57.404 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8354,7 +8333,7 @@
 			)
 		)
 		(property "Value" "TestPoint"
-			(at 142.748 62.23 90)
+			(at 142.748 59.69 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8362,7 +8341,7 @@
 			)
 		)
 		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
-			(at 152.4 57.15 0)
+			(at 152.4 54.61 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8371,7 +8350,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 152.4 57.15 0)
+			(at 152.4 54.61 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8380,7 +8359,7 @@
 			)
 		)
 		(property "Description" "test point"
-			(at 152.4 62.23 0)
+			(at 152.4 59.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8408,7 +8387,7 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "123e13f6-30ca-41b1-9b8c-801a74cd2308")
+		(uuid "12c21a2a-2d25-427c-b0ab-950e4abb9f0b")
 		(property "Reference" "#PWR017"
 			(at 139.7 110.49 0)
 			(effects
@@ -8418,13 +8397,12 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "3V3_f"
-			(at 140.97 104.902 0)
+		(property "Value" "3V3_LDO"
+			(at 133.858 104.648 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify left)
 			)
 		)
 		(property "Footprint" ""
@@ -8455,7 +8433,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "5b021bf2-396f-4fd4-97a2-d7c40bdc2daa")
+			(uuid "43214124-745d-4f8a-b48d-87b7146307bd")
 		)
 		(instances
 			(project "PSAT - Sensor PCB"
@@ -8601,7 +8579,7 @@
 	)
 	(symbol
 		(lib_id "Device:LED")
-		(at 162.56 157.48 180)
+		(at 163.83 154.94 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -8609,7 +8587,7 @@
 		(dnp no)
 		(uuid "1e6ccb86-cd37-43cb-86f6-cd073486091c")
 		(property "Reference" "D1"
-			(at 161.798 154.94 90)
+			(at 163.068 152.4 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8618,7 +8596,7 @@
 			)
 		)
 		(property "Value" "LED"
-			(at 163.83 154.94 90)
+			(at 165.1 152.4 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8627,7 +8605,7 @@
 			)
 		)
 		(property "Footprint" "LED_SMD:LED_0805_2012Metric"
-			(at 162.56 157.48 0)
+			(at 163.83 154.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8636,7 +8614,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 162.56 157.48 0)
+			(at 163.83 154.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8645,7 +8623,7 @@
 			)
 		)
 		(property "Description" "Light emitting diode"
-			(at 162.56 157.48 0)
+			(at 163.83 154.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8654,7 +8632,7 @@
 			)
 		)
 		(property "Sim.Pins" "1=K 2=A"
-			(at 162.56 157.48 0)
+			(at 163.83 154.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -8745,6 +8723,73 @@
 		)
 	)
 	(symbol
+		(lib_id "power:GND")
+		(at 167.64 165.1 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "21a6d483-177f-4f43-a6a5-67cf6eebb4a7")
+		(property "Reference" "#PWR039"
+			(at 167.64 171.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 170.18 166.3699 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 167.64 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 167.64 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 167.64 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "6ba5a706-15a2-4549-a020-62036a2ac3c3")
+		)
+		(instances
+			(project "PSAT - Sensor PCB"
+				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
+					(reference "#PWR039")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:VBUS")
 		(at 58.42 109.22 270)
 		(unit 1)
@@ -8762,7 +8807,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "3V3_f"
+		(property "Value" "3V3_BUCK"
 			(at 61.214 109.22 90)
 			(effects
 				(font
@@ -9240,6 +9285,71 @@
 		)
 	)
 	(symbol
+		(lib_id "power:GND")
+		(at 110.49 52.07 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "361c0020-fed9-41c8-97de-d2e912493a3c")
+		(property "Reference" "#PWR035"
+			(at 116.84 52.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 115.824 52.07 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 110.49 52.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 110.49 52.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 110.49 52.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "57b64752-362b-4a32-9429-bf89799d4c4b")
+		)
+		(instances
+			(project "PSAT - Sensor PCB"
+				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
+					(reference "#PWR035")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "ESP32-CAM:ESP32-CAM")
 		(at 53.34 49.53 0)
 		(unit 1)
@@ -9549,7 +9659,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "3V3_f"
+		(property "Value" "3V3_BUCK"
 			(at 269.24 25.146 90)
 			(effects
 				(font
@@ -9851,7 +9961,7 @@
 	)
 	(symbol
 		(lib_id "power:+3.3V")
-		(at 151.13 157.48 180)
+		(at 152.4 154.94 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -9859,7 +9969,7 @@
 		(dnp no)
 		(uuid "3c5ee37c-4312-4582-8f1d-8d0aa4a73002")
 		(property "Reference" "#PWR018"
-			(at 151.13 153.67 0)
+			(at 152.4 151.13 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9867,8 +9977,8 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "3V3_f"
-			(at 151.384 163.322 90)
+		(property "Value" "3V3_BUCK"
+			(at 151.13 154.178 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9876,7 +9986,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 151.13 157.48 0)
+			(at 152.4 154.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9885,7 +9995,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 151.13 157.48 0)
+			(at 152.4 154.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9894,7 +10004,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"+3.3V\""
-			(at 151.13 157.48 0)
+			(at 152.4 154.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9931,7 +10041,7 @@
 				)
 			)
 		)
-		(property "Value" "10k"
+		(property "Value" "3.7k"
 			(at 124.714 127 90)
 			(effects
 				(font
@@ -10115,32 +10225,34 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 152.4 55.88 90)
+		(lib_id "Device:LED")
+		(at 163.83 165.1 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "4d28d666-1460-405e-bda1-09cb9c515427")
-		(property "Reference" "TP7"
-			(at 142.748 53.848 90)
+		(uuid "459310e6-de0d-4eff-80ed-8f63f0792db5")
+		(property "Reference" "D2"
+			(at 163.068 162.56 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify right)
 			)
 		)
-		(property "Value" "TestPoint"
-			(at 142.748 55.88 90)
+		(property "Value" "LED"
+			(at 166.37 160.02 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify right)
 			)
 		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
-			(at 152.4 50.8 0)
+		(property "Footprint" "LED_SMD:LED_0805_2012Metric"
+			(at 163.83 165.1 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10149,7 +10261,83 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 152.4 50.8 0)
+			(at 163.83 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Light emitting diode"
+			(at 163.83 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Pins" "1=K 2=A"
+			(at 163.83 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "42085a92-5adb-49aa-9ed7-b5abbf167879")
+		)
+		(pin "1"
+			(uuid "28c44edf-3019-4df6-93e6-34bf6b33b51f")
+		)
+		(instances
+			(project "PSAT - Sensor PCB"
+				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
+					(reference "D2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 152.4 54.61 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "4d28d666-1460-405e-bda1-09cb9c515427")
+		(property "Reference" "TP7"
+			(at 142.748 52.578 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 142.748 54.61 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
+			(at 152.4 49.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 152.4 49.53 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10158,7 +10346,7 @@
 			)
 		)
 		(property "Description" "test point"
-			(at 152.4 55.88 0)
+			(at 152.4 54.61 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10458,71 +10646,6 @@
 		)
 	)
 	(symbol
-		(lib_id "power:+3.3V")
-		(at 152.4 106.68 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "5af0abf2-66c4-47d2-8270-32a2dab91ec6")
-		(property "Reference" "#PWR019"
-			(at 152.4 110.49 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "3V3_f"
-			(at 155.956 104.902 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 152.4 106.68 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 152.4 106.68 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+3.3V\""
-			(at 152.4 106.68 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "f5dab968-ab7f-44ff-84bc-a1124ca5c61f")
-		)
-		(instances
-			(project ""
-				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "#PWR019")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Connector:TestPoint")
 		(at 143.51 41.91 90)
 		(unit 1)
@@ -10717,6 +10840,70 @@
 		)
 	)
 	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 154.94 74.93 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "6ba647cb-c88e-4abf-aaf2-d19a8f78c061")
+		(property "Reference" "TP11"
+			(at 145.796 72.644 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 145.288 74.93 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
+			(at 154.94 69.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 154.94 69.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "test point"
+			(at 154.94 74.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "416b7890-7894-457e-a4b8-879b1ee388f5")
+		)
+		(instances
+			(project "PSAT - Sensor PCB"
+				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
+					(reference "TP11")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:GND")
 		(at 266.7 148.59 0)
 		(unit 1)
@@ -10801,7 +10988,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "3V3_uf"
+		(property "Value" "3V3_LDO"
 			(at 266.7 105.41 0)
 			(effects
 				(font
@@ -11181,7 +11368,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 154.94 157.48 90)
+		(at 156.21 154.94 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -11189,7 +11376,7 @@
 		(dnp no)
 		(uuid "82a135b4-96ba-465d-84de-66f273288f46")
 		(property "Reference" "R9"
-			(at 153.67 154.94 0)
+			(at 154.94 152.4 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11198,7 +11385,7 @@
 			)
 		)
 		(property "Value" "1k"
-			(at 156.21 154.94 0)
+			(at 157.48 152.4 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11207,7 +11394,7 @@
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
-			(at 154.94 159.258 90)
+			(at 156.21 156.718 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11216,7 +11403,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 154.94 157.48 0)
+			(at 156.21 154.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11225,7 +11412,7 @@
 			)
 		)
 		(property "Description" "Resistor"
-			(at 154.94 157.48 0)
+			(at 156.21 154.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11395,7 +11582,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "3V3_f"
+		(property "Value" "3V3_BUCK"
 			(at 70.104 116.84 90)
 			(effects
 				(font
@@ -11531,7 +11718,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "3V3_f"
+		(property "Value" "3V3_BUCK"
 			(at 25.4 101.5999 90)
 			(effects
 				(font
@@ -11580,17 +11767,26 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:R")
-		(at 139.7 120.65 0)
+		(lib_id "power:+3.3V")
+		(at 110.49 59.69 270)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "8c22421f-0c0e-4e65-9f13-022804681f3c")
-		(property "Reference" "R6"
-			(at 142.24 119.3799 0)
+		(uuid "8aa48553-e2f9-4b73-b2b8-7b7cfd3daddd")
+		(property "Reference" "#PWR037"
+			(at 106.68 59.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "3V3_LDO"
+			(at 114.3 59.6899 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11598,17 +11794,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "100k"
-			(at 142.24 121.9199 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
-			(at 137.922 120.65 90)
+		(property "Footprint" ""
+			(at 110.49 59.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11616,8 +11803,8 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "~"
-			(at 139.7 120.65 0)
+		(property "Datasheet" ""
+			(at 110.49 59.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11625,25 +11812,87 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Resistor"
-			(at 139.7 120.65 0)
+		(property "Description" "Power symbol creates a global label with name \"+3.3V\""
+			(at 110.49 59.69 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 				(hide yes)
 			)
-		)
-		(pin "2"
-			(uuid "33098123-23b5-4ade-a295-61a9fd592fc4")
 		)
 		(pin "1"
-			(uuid "cf036cb0-870f-4bed-99e0-f9bbc7a4f778")
+			(uuid "a869b97e-05e5-4073-8849-f8997f066b95")
 		)
 		(instances
-			(project ""
+			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
-					(reference "R6")
+					(reference "#PWR037")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+3.3V")
+		(at 152.4 165.1 180)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8cab69aa-3a84-48f2-8b70-3dc0be39b489")
+		(property "Reference" "#PWR038"
+			(at 152.4 161.29 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "3V3_LDO"
+			(at 151.13 164.338 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 152.4 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 152.4 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3.3V\""
+			(at 152.4 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "84c4daad-fb6c-414f-a35a-f679421144c1")
+		)
+		(instances
+			(project "PSAT - Sensor PCB"
+				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
+					(reference "#PWR038")
 					(unit 1)
 				)
 			)
@@ -11792,6 +12041,73 @@
 	)
 	(symbol
 		(lib_id "power:VBUS")
+		(at 110.49 54.61 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "935df466-6362-4439-8bf1-4ddaf75a90d9")
+		(property "Reference" "#PWR034"
+			(at 106.68 54.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "3V3_BUCK"
+			(at 114.3 54.6099 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 110.49 54.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 110.49 54.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"VBUS\""
+			(at 110.49 54.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "18466134-d015-45e4-ae33-9befaf6d66c4")
+		)
+		(instances
+			(project "PSAT - Sensor PCB"
+				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
+					(reference "#PWR034")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:VBUS")
 		(at 207.01 80.01 270)
 		(unit 1)
 		(exclude_from_sim no)
@@ -11808,7 +12124,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "3V3_f"
+		(property "Value" "3V3_BUCK"
 			(at 209.804 80.01 90)
 			(effects
 				(font
@@ -11858,7 +12174,7 @@
 	)
 	(symbol
 		(lib_id "power:VBUS")
-		(at 154.94 69.85 270)
+		(at 154.94 64.77 270)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -11867,7 +12183,7 @@
 		(fields_autoplaced yes)
 		(uuid "9c79ce2a-d1f5-46ce-87a5-85b246470208")
 		(property "Reference" "#PWR022"
-			(at 151.13 69.85 0)
+			(at 151.13 64.77 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11875,8 +12191,8 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "3V3_f"
-			(at 158.75 69.8499 90)
+		(property "Value" "3V3_BUCK"
+			(at 158.75 64.7699 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11885,7 +12201,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 154.94 69.85 0)
+			(at 154.94 64.77 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11894,7 +12210,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 154.94 69.85 0)
+			(at 154.94 64.77 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11903,7 +12219,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"VBUS\""
-			(at 154.94 69.85 0)
+			(at 154.94 64.77 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12062,7 +12378,7 @@
 	)
 	(symbol
 		(lib_id "power:VBUS")
-		(at 154.94 74.93 270)
+		(at 154.94 69.85 270)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -12071,7 +12387,7 @@
 		(fields_autoplaced yes)
 		(uuid "a7d89aaa-4a7c-4306-961f-160acaed741c")
 		(property "Reference" "#PWR023"
-			(at 151.13 74.93 0)
+			(at 151.13 69.85 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12080,7 +12396,7 @@
 			)
 		)
 		(property "Value" "5V"
-			(at 158.75 74.9299 90)
+			(at 158.75 69.8499 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12089,7 +12405,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 154.94 74.93 0)
+			(at 154.94 69.85 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12098,7 +12414,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 154.94 74.93 0)
+			(at 154.94 69.85 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12107,7 +12423,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"VBUS\""
-			(at 154.94 74.93 0)
+			(at 154.94 69.85 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12206,7 +12522,7 @@
 	)
 	(symbol
 		(lib_id "Connector:TestPoint")
-		(at 154.94 74.93 90)
+		(at 154.94 69.85 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -12214,7 +12530,7 @@
 		(dnp no)
 		(uuid "ac58b5b9-dbcc-497c-833f-67f2167b1c39")
 		(property "Reference" "TP10"
-			(at 145.796 72.644 90)
+			(at 145.796 67.564 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12222,7 +12538,7 @@
 			)
 		)
 		(property "Value" "TestPoint"
-			(at 145.288 74.93 90)
+			(at 145.288 69.85 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12230,7 +12546,7 @@
 			)
 		)
 		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
-			(at 154.94 69.85 0)
+			(at 154.94 64.77 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12239,7 +12555,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 154.94 69.85 0)
+			(at 154.94 64.77 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12248,7 +12564,7 @@
 			)
 		)
 		(property "Description" "test point"
-			(at 154.94 74.93 0)
+			(at 154.94 69.85 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12286,8 +12602,8 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "3V3_f"
-			(at 23.368 89.154 90)
+		(property "Value" "3V3_BUCK"
+			(at 20.32 88.9 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12602,6 +12918,73 @@
 		)
 	)
 	(symbol
+		(lib_id "power:+5V")
+		(at 110.49 57.15 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "beef37a1-97ac-4c4d-a6ff-76a31285e661")
+		(property "Reference" "#PWR036"
+			(at 106.68 57.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "5V"
+			(at 114.3 57.1499 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 110.49 57.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 110.49 57.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+5V\""
+			(at 110.49 57.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "16dcd0ab-a573-4b72-aa23-249090110ee1")
+		)
+		(instances
+			(project "PSAT - Sensor PCB"
+				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
+					(reference "#PWR036")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:+3.3V")
 		(at 203.2 107.95 0)
 		(unit 1)
@@ -12620,7 +13003,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "3V3_uf"
+		(property "Value" "3V3_LDO"
 			(at 203.2 102.87 0)
 			(effects
 				(font
@@ -12685,7 +13068,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "3V3_f"
+		(property "Value" "3V3_BUCK"
 			(at 91.44 144.7799 90)
 			(effects
 				(font
@@ -12884,7 +13267,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "3V3_f"
+		(property "Value" "3V3_BUCK"
 			(at 78.74 29.21 0)
 			(effects
 				(font
@@ -12997,6 +13380,140 @@
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
 					(reference "JP4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 156.21 165.1 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "c8326c3c-d6ff-45d0-869d-8ae4251db673")
+		(property "Reference" "R6"
+			(at 154.94 162.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "1k"
+			(at 157.48 162.56 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder"
+			(at 156.21 166.878 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 156.21 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 156.21 165.1 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "725e7449-e310-458a-abd2-3d64d6bf774a")
+		)
+		(pin "1"
+			(uuid "c670a083-70eb-43ca-99c8-a1d67b641ee3")
+		)
+		(instances
+			(project "PSAT - Sensor PCB"
+				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
+					(reference "R6")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+3.3V")
+		(at 152.4 106.68 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "cc15bbf2-8897-4c8d-b830-e6c2e5dfa84c")
+		(property "Reference" "#PWR019"
+			(at 152.4 110.49 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "3V3_LDO"
+			(at 146.558 104.648 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 152.4 106.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 152.4 106.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3.3V\""
+			(at 152.4 106.68 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "225d5368-086f-4bdf-803b-1d03ccd24d7a")
+		)
+		(instances
+			(project "PSAT - Sensor PCB"
+				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
+					(reference "#PWR019")
 					(unit 1)
 				)
 			)
@@ -13648,7 +14165,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "3V3_f"
+		(property "Value" "3V3_BUCK"
 			(at 156.464 179.07 90)
 			(effects
 				(font
@@ -14270,7 +14787,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 166.37 157.48 0)
+		(at 167.64 154.94 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -14279,7 +14796,7 @@
 		(fields_autoplaced yes)
 		(uuid "fc708415-725f-4f93-a4b6-00128a43b8ca")
 		(property "Reference" "#PWR024"
-			(at 166.37 163.83 0)
+			(at 167.64 161.29 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14288,7 +14805,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 168.91 158.7499 0)
+			(at 170.18 156.2099 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14297,7 +14814,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 166.37 157.48 0)
+			(at 167.64 154.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14306,7 +14823,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 166.37 157.48 0)
+			(at 167.64 154.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14315,7 +14832,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 166.37 157.48 0)
+			(at 167.64 154.94 0)
 			(effects
 				(font
 					(size 1.27 1.27)
