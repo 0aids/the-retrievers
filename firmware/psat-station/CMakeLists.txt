@@ -7,6 +7,14 @@ set(EXTRA_COMPONENT_DIRS
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 
+option(TEST "Set the psat station testing flag" 0)
+if(TEST)
+    add_compile_definitions(
+      "PSAT_STATION_TESTING_d"
+    )
+endif()
+unset(TEST CACHE) 
+
 project(psat-station)
 idf_build_set_property(
     INCLUDE_DIRECTORIES
