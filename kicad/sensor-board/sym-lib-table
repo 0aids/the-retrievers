@@ -8,4 +8,5 @@
   (lib (name "NCP176AMX330TCG")(type "KiCad")(uri "C:/Users/admin/Documents/GitHub/the-retrievers/kicad/symbol-libaries/NCP176AMX330TCG.kicad_sym")(options "")(descr ""))
   (lib (name "PSAT_Library")(type "KiCad")(uri "C:/Users/admin/Documents/GitHub/the-retrievers/kicad/symbol-libaries/PSAT_Library.kicad_sym")(options "")(descr ""))
   (lib (name "UJ20-C-H-G-SMT-P16-TR")(type "KiCad")(uri "C:/Users/admin/Documents/GitHub/the-retrievers/kicad/symbol-libaries/UJ20-C-H-G-SMT-P16-TR.kicad_sym")(options "")(descr ""))
+  (lib (name "2026-01-29_08-52-09")(type "KiCad")(uri "C:/Users/admin/Documents/GitHub/the-retrievers/kicad/symbol-libaries/2026-01-29_08-52-09.kicad_sym")(options "")(descr ""))
 )

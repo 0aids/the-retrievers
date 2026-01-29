@@ -10,4 +10,5 @@
   (lib (name "ADXL345")(type "KiCad")(uri "C:/Users/admin/Documents/GitHub/the-retrievers/kicad/footprint-libraries/ADXL345.pretty")(options "")(descr ""))
   (lib (name "footprints")(type "KiCad")(uri "C:/Users/admin/Documents/GitHub/the-retrievers/kicad/footprint-libraries/footprints.pretty")(options "")(descr ""))
   (lib (name "gps")(type "KiCad")(uri "C:/Users/admin/Documents/GitHub/the-retrievers/kicad/footprint-libraries/gps.pretty")(options "")(descr ""))
+  (lib (name "BMI323")(type "KiCad")(uri "C:/Users/admin/Documents/GitHub/the-retrievers/kicad/footprint-libraries/BMI323.pretty")(options "")(descr ""))
 )
