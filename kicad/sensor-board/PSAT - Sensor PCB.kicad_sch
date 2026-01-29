@@ -9111,7 +9111,7 @@
 				)
 			)
 		)
-		(property "Footprint" "ESP32-CAM:ESP32-CAM"
+		(property "Footprint" "footprints:ESPCam"
 			(at 55.88 52.07 0)
 			(effects
 				(font
@@ -10259,7 +10259,7 @@
 				)
 			)
 		)
-		(property "Footprint" "533980471:MOLEX_533980471"
+		(property "Footprint" "PSAT_Library:MOLEX_533980471"
 			(at 101.6 90.17 0)
 			(effects
 				(font
@@ -10906,7 +10906,7 @@
 				)
 			)
 		)
-		(property "Footprint" "533980471:MOLEX_533980471"
+		(property "Footprint" "PSAT_Library:MOLEX_533980471"
 			(at 101.6 118.11 0)
 			(effects
 				(font
@@ -11757,7 +11757,7 @@
 				)
 			)
 		)
-		(property "Footprint" "533980471:MOLEX_533980471"
+		(property "Footprint" "PSAT_Library:MOLEX_533980471"
 			(at 101.6 35.56 0)
 			(effects
 				(font
@@ -12046,6 +12046,71 @@
 			(project "PSAT - Sensor PCB"
 				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
 					(reference "#PWR026")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 114.3 85.09 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "903bfe86-270b-4ee9-8cc7-3a16caac53d1")
+		(property "Reference" "#PWR048"
+			(at 120.65 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 119.634 85.09 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 114.3 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 114.3 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 114.3 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "4a20ef9e-7537-4eac-b6d4-2c977b404636")
+		)
+		(instances
+			(project "PSAT - Sensor PCB"
+				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
+					(reference "#PWR048")
 					(unit 1)
 				)
 			)
@@ -13027,7 +13092,7 @@
 				)
 			)
 		)
-		(property "Footprint" "533980471:MOLEX_533980471"
+		(property "Footprint" "PSAT_Library:MOLEX_533980471"
 			(at 101.6 63.5 0)
 			(effects
 				(font
@@ -14139,6 +14204,71 @@
 	)
 	(symbol
 		(lib_id "power:GND")
+		(at 114.3 82.55 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "e496b407-8004-4360-9fb7-e884e6250527")
+		(property "Reference" "#PWR047"
+			(at 120.65 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 119.634 82.55 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 114.3 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 114.3 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 114.3 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "dae8498a-8e3f-4c37-b626-c653c4180633")
+		)
+		(instances
+			(project "PSAT - Sensor PCB"
+				(path "/4cbf6b5d-7ed3-4842-986c-5d7275bd15b0"
+					(reference "#PWR047")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
 		(at 114.3 113.03 90)
 		(unit 1)
 		(exclude_from_sim no)
@@ -14498,7 +14628,7 @@
 				)
 			)
 		)
-		(property "Footprint" "ADXL345:PQFN80P500X300X100-14N"
+		(property "Footprint" "ADXL345:adxl345"
 			(at 207.01 50.8 0)
 			(effects
 				(font
