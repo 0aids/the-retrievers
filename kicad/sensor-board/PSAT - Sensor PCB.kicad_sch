@@ -4390,6 +4390,16 @@
 	)
 	(wire
 		(pts
+			(xy 115.57 40.64) (xy 114.3 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "27b44625-94f3-4ce1-a2e1-bef91ae91b54")
+	)
+	(wire
+		(pts
 			(xy 53.34 184.15) (xy 53.34 187.96)
 		)
 		(stroke
@@ -4687,6 +4697,16 @@
 			(type default)
 		)
 		(uuid "688142de-ba72-469c-9d78-f9ed25a21e09")
+	)
+	(wire
+		(pts
+			(xy 115.57 43.18) (xy 114.3 43.18)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "68e174cb-cdd7-484d-8ad9-18935dbadc13")
 	)
 	(wire
 		(pts
@@ -5736,7 +5756,7 @@
 	)
 	(global_label "LIGHT1"
 		(shape input)
-		(at 114.3 43.18 0)
+		(at 115.57 40.64 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -5746,7 +5766,7 @@
 		)
 		(uuid "a86ae693-19cd-468a-ad1f-ef0f0c1f46ef")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 123.6957 43.18 0)
+			(at 124.9657 40.64 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5890,7 +5910,7 @@
 	)
 	(global_label "LIGHT2"
 		(shape input)
-		(at 114.3 40.64 0)
+		(at 115.57 43.18 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -5900,7 +5920,7 @@
 		)
 		(uuid "d313f71b-4763-40fb-8bb7-2a20d107b0f1")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 123.6957 40.64 0)
+			(at 124.9657 43.18 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -9676,7 +9696,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "3V3_BUCK"
+		(property "Value" "3V3_LDO"
 			(at 257.81 60.9599 90)
 			(effects
 				(font
