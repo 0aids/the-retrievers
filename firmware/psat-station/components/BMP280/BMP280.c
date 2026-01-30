@@ -2,21 +2,23 @@
 #include "pin_config.h"
 #include "shared_state.h"
 
-bool                   I2C_initalised        = false;
-bool                   powerConfigured       = false;
-bool                   measurementConfigured = false;
-bool                   calibrated           = false;
+static bool              I2C_initalised        = false;
+static bool              powerConfigured       = false;
+static bool              measurementConfigured = false;
+static bool              calibrated            = false;
 
-static psatErrStates_e BMP280_err = noError;
+static psatErrStates_e   BMP280_err = noError;
 
 BMP280_preflightStatus_t BMP280_preflightStatus = {0};
 
-static void BMP280_compensatePressureAndTemperature(uint32_t ADC_T, uint32_t ADC_P, int32_t* temperature, double* pressure);
+static void              BMP280_compensatePressureAndTemperature(
+                 uint32_t ADC_T, uint32_t ADC_P, int32_t* temperature,
+                 double* pressure);
 
-i2c_device_config_t    BMP280_Config = {
-       .dev_addr_length = I2C_ADDR_BIT_7,
-       .device_address  = BMP280_ADDRESS,
-       .scl_speed_hz    = I2C_FREQUENCY,
+i2c_device_config_t BMP280_Config = {
+    .dev_addr_length = I2C_ADDR_BIT_7,
+    .device_address  = BMP280_ADDRESS,
+    .scl_speed_hz    = I2C_FREQUENCY,
 };
 
 i2c_master_dev_handle_t BMP280_handle;
@@ -24,55 +26,59 @@ i2c_master_dev_handle_t BMP280_handle;
 uint8_t                 BMP280_ctrlmeas[2] = {BMP280_CTRLMEAS_ADDRESS,
                                               BMP280_CTRLMEAS_DATA};
 
-uint8_t  BMP280_configReg[2] = {BMP280_CONFIGREG_ADDRESS,
-                                BMP280_CONFIGREG_DATA};
+uint8_t         BMP280_configReg[2] = {BMP280_CONFIGREG_ADDRESS,
+                                       BMP280_CONFIGREG_DATA};
 
-uint8_t  BMP280_resetData[2] = {BMP280_RESET_ADDRESS,
-                                BMP280_RESET_DATA};
+uint8_t         BMP280_resetData[2] = {BMP280_RESET_ADDRESS,
+                                       BMP280_RESET_DATA};
 
-uint8_t  BMP280_RawData[6];
+uint8_t         BMP280_RawData[6];
 
-uint8_t  BMP280_CalibrationData[24];
+uint8_t         BMP280_CalibrationData[24];
 
-uint16_t dig_T1 = 0;
-int16_t  dig_T2 = 0;
-int16_t  dig_T3 = 0;
-uint16_t dig_P1 = 0;
-int16_t  dig_P2 = 0;
-int16_t  dig_P3 = 0;
-int16_t  dig_P4 = 0;
-int16_t  dig_P5 = 0;
-int16_t  dig_P6 = 0;
-int16_t  dig_P7 = 0;
-int16_t  dig_P8 = 0;
-int16_t  dig_P9 = 0;
+uint16_t        dig_T1 = 0;
+int16_t         dig_T2 = 0;
+int16_t         dig_T3 = 0;
+uint16_t        dig_P1 = 0;
+int16_t         dig_P2 = 0;
+int16_t         dig_P3 = 0;
+int16_t         dig_P4 = 0;
+int16_t         dig_P5 = 0;
+int16_t         dig_P6 = 0;
+int16_t         dig_P7 = 0;
+int16_t         dig_P8 = 0;
+int16_t         dig_P9 = 0;
 
-psatErrStates_e BMP280_checkErr() {
+psatErrStates_e BMP280_checkErr()
+{
     psatErrStates_e temp = BMP280_err;
-    BMP280_err = noError;
+    BMP280_err           = noError;
     return temp;
 }
 
-BMP280_status_t BMP280_queryStatus() {
+BMP280_status_t BMP280_queryStatus()
+{
     BMP280_status_t status;
 
-    status.calibrated = calibrated;
-    status.I2C_initalised = I2C_initalised;
+    status.calibrated            = calibrated;
+    status.I2C_initalised        = I2C_initalised;
     status.measurementConfigured = measurementConfigured;
-    status.calibrated = calibrated;
+    status.calibrated            = calibrated;
 
     return status;
 }
 
-BMP280_preflightStatus_t BMP280_preflightTest() {
+BMP280_preflightStatus_t BMP280_preflightTest()
+{
     i2c_master_bus_handle_t TestBusHandle;
     BMP280_init(&TestBusHandle);
-    BMP280_getData(&BMP280_preflightStatus.temperature, &BMP280_preflightStatus.pressure);
+    BMP280_preflightStatus.temperature = BMP280_getTemperature();
+    BMP280_preflightStatus.pressure = BMP280_getPressure();
     BMP280_deinit();
     return BMP280_preflightStatus;
 }
 
-void     BMP280_init(i2c_master_bus_handle_t* BusHandle)
+void BMP280_init(i2c_master_bus_handle_t* BusHandle)
 {
 
     if (i2c_master_bus_add_device(*BusHandle, &BMP280_Config,
@@ -121,7 +127,7 @@ void BMP280_reset()
 
 void BMP280_deinit()
 {
-    
+
     BMP280_reset();
 
     if (i2c_master_bus_rm_device(BMP280_handle) != ESP_OK)
@@ -129,7 +135,6 @@ void BMP280_deinit()
         BMP280_err = BMP280_i2cBusRemoval_failed;
         return;
     }
-
 }
 
 void BMP280_getCalibration()
@@ -163,10 +168,9 @@ void BMP280_getCalibration()
     calibrated = true;
 }
 
-static void BMP280_compensatePressureAndTemperature(uint32_t ADC_T,
-                                             uint32_t ADC_P,
-                                             int32_t* temperature,
-                                             double*  pressure)
+static void BMP280_compensatePressureAndTemperature(
+    uint32_t ADC_T, uint32_t ADC_P, int32_t* temperature,
+    double* pressure)
 {
     //All magic numbers are magic from the datasheet and will never change so I will not make a #define for them
     // - zac
@@ -240,7 +244,7 @@ static void BMP280_compensatePressureAndTemperature(uint32_t ADC_T,
 
 int32_t BMP280_getTemperature()
 {
-    double Pressure = 0;
+    double  Pressure    = 0;
     int32_t Temperature = 0;
 
     uint8_t BMP280_ReadAddress = BMP280_READ_ADDRESS;
@@ -262,16 +266,15 @@ int32_t BMP280_getTemperature()
         ((uint32_t)(BMP280_RawData[4]) << 4) |
         ((uint32_t)(BMP280_RawData[5]) >> 4);
 
-    BMP280_compensatePressureAndTemperature(ADC_T, ADC_P, &Temperature,
-                                            &Pressure);
+    BMP280_compensatePressureAndTemperature(ADC_T, ADC_P,
+                                            &Temperature, &Pressure);
     return Temperature;
 }
-
 
 double BMP280_getPressure()
 {
     int32_t Temperature = 0;
-    double Pressure = 0;
+    double  Pressure    = 0;
 
     uint8_t BMP280_ReadAddress = BMP280_READ_ADDRESS;
 
@@ -292,8 +295,8 @@ double BMP280_getPressure()
         ((uint32_t)(BMP280_RawData[4]) << 4) |
         ((uint32_t)(BMP280_RawData[5]) >> 4);
 
-    BMP280_compensatePressureAndTemperature(ADC_T, ADC_P, &Temperature,
-                                            &Pressure);
+    BMP280_compensatePressureAndTemperature(ADC_T, ADC_P,
+                                            &Temperature, &Pressure);
 
     return Pressure;
 }

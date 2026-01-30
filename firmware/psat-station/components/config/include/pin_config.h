@@ -18,7 +18,6 @@
 #define LDR_ADC_BITWIDTH_d             ADC_BITWIDTH_DEFAULT
 #define LDR_PIN_MASK_d                 (1ULL << 2)
 #define LDR_STATE_CONFIG_BUFFER_SIZE_d (1024)
-<<<<<<< HEAD
 
 #define I2C_AUTO -1
 #define I2C_SDA_1 21
@@ -51,5 +50,3 @@
 #define ADXL345_FIFO_TRANSMIT_DATA 0b00000000
 #define ADXL345_DATA_REGISTER 0x32
 #define ADXL345_ADDRESS 0x1D
-=======
->>>>>>> origin/master

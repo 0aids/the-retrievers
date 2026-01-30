@@ -1,3 +1,3 @@
-idf_component_register(SRCS "main.c"
+idf_component_register(SRCS "I2C.c"
                     INCLUDE_DIRS "include"
     REQUIRES driver config shared)

@@ -1,4 +1,4 @@
-#include "main.h"
+#include "I2C.h"
 
 
 
@@ -16,8 +16,6 @@ void I2C_init(i2c_master_bus_handle_t* BusHandle, gpio_num_t SDA, gpio_num_t SCL
 
 
     ESP_ERROR_CHECK(i2c_new_master_bus(&MasterConfig, BusHandle));
-    printf("I2C bus created\n");
-
 }
 
 void I2C_dinit(i2c_master_bus_handle_t* BusHandle) {
