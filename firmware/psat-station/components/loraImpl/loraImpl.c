@@ -58,7 +58,7 @@ static void _loraImpl_rxDoneTask(void*)
     {
         if (rxDoneIsrSemaphore == NULL)
         {
-            vTaskDelay(100 / portTICK_PERIOD_MS);
+            vTaskDelay(10 / portTICK_PERIOD_MS);
             continue;
         }
         if (xSemaphoreTake(rxDoneIsrSemaphore, 10000) == pdTRUE)

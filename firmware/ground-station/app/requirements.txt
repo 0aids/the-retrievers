@@ -1,0 +1,6 @@
+rich
+uvicorn
+fastapi
+pydantic
+python-dotenv
+python-multipart
