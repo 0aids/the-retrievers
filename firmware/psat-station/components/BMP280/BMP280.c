@@ -238,36 +238,9 @@ static void BMP280_compensatePressureAndTemperature(uint32_t ADC_T,
     *pressure = ADC_P;
 }
 
-void BMP280_getTemperature(int32_t* Temperature)
+int32_t BMP280_getTemperature()
 {
     double Pressure = 0;
-
-    uint8_t BMP280_ReadAddress = BMP280_READ_ADDRESS;
-
-    if (i2c_master_transmit_receive(
-            BMP280_handle, &BMP280_ReadAddress,
-            sizeof(BMP280_ReadAddress), BMP280_RawData,
-            sizeof(BMP280_RawData), I2c_WAIT_TIME_MS) != ESP_OK)
-    {
-        BMP280_err = BMP280_dataRead_failed;
-        return;
-    }
-
-    uint32_t ADC_P = ((uint32_t)(BMP280_RawData[0]) << 12) |
-        ((uint32_t)(BMP280_RawData[1]) << 4) |
-        ((uint32_t)(BMP280_RawData[2]) >> 4);
-
-    uint32_t ADC_T = ((uint32_t)(BMP280_RawData[3]) << 12) |
-        ((uint32_t)(BMP280_RawData[4]) << 4) |
-        ((uint32_t)(BMP280_RawData[5]) >> 4);
-
-    BMP280_compensatePressureAndTemperature(ADC_T, ADC_P, Temperature,
-                                            &Pressure);
-}
-
-
-void BMP280_getPressure(double* Pressure)
-{
     int32_t Temperature = 0;
 
     uint8_t BMP280_ReadAddress = BMP280_READ_ADDRESS;
@@ -278,7 +251,7 @@ void BMP280_getPressure(double* Pressure)
             sizeof(BMP280_RawData), I2c_WAIT_TIME_MS) != ESP_OK)
     {
         BMP280_err = BMP280_dataRead_failed;
-        return;
+        return Temperature;
     }
 
     uint32_t ADC_P = ((uint32_t)(BMP280_RawData[0]) << 12) |
@@ -290,5 +263,37 @@ void BMP280_getPressure(double* Pressure)
         ((uint32_t)(BMP280_RawData[5]) >> 4);
 
     BMP280_compensatePressureAndTemperature(ADC_T, ADC_P, &Temperature,
-                                            Pressure);
+                                            &Pressure);
+    return Temperature;
+}
+
+
+double BMP280_getPressure()
+{
+    int32_t Temperature = 0;
+    double Pressure = 0;
+
+    uint8_t BMP280_ReadAddress = BMP280_READ_ADDRESS;
+
+    if (i2c_master_transmit_receive(
+            BMP280_handle, &BMP280_ReadAddress,
+            sizeof(BMP280_ReadAddress), BMP280_RawData,
+            sizeof(BMP280_RawData), I2c_WAIT_TIME_MS) != ESP_OK)
+    {
+        BMP280_err = BMP280_dataRead_failed;
+        return Pressure;
+    }
+
+    uint32_t ADC_P = ((uint32_t)(BMP280_RawData[0]) << 12) |
+        ((uint32_t)(BMP280_RawData[1]) << 4) |
+        ((uint32_t)(BMP280_RawData[2]) >> 4);
+
+    uint32_t ADC_T = ((uint32_t)(BMP280_RawData[3]) << 12) |
+        ((uint32_t)(BMP280_RawData[4]) << 4) |
+        ((uint32_t)(BMP280_RawData[5]) >> 4);
+
+    BMP280_compensatePressureAndTemperature(ADC_T, ADC_P, &Temperature,
+                                            &Pressure);
+
+    return Pressure;
 }
