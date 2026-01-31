@@ -12,5 +12,5 @@
   (lib (name "LSM6DSOX")(type "KiCad")(uri "${KIPRJMOD}/footprint-libraries/LSM6DSOX.pretty")(options "")(descr ""))
   (lib (name "mpu6000")(type "KiCad")(uri "${KIPRJMOD}/footprint-libraries/mpu6000.pretty")(options "")(descr ""))
   (lib (name "PSAT_Library")(type "KiCad")(uri "${KIPRJMOD}/footprint-libraries/PSAT_Library.pretty")(options "")(descr ""))
-  (lib (name "footprints")(type "KiCad")(uri "/Users/sid/Desktop/Coding/Other/PSAT/the-retrievers/kicad/footprint-libraries/footprints.pretty")(options "")(descr ""))
+  (lib (name "footprints")(type "KiCad")(uri "/Users/sid/Desktop/Coding/Other/PSAT/the-retrievers/kicad/footprint-libraries/footprints.pretty")(options "")(descr "")(disabled))
 )

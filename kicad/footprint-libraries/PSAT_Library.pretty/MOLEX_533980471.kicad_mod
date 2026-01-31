@@ -349,4 +349,15 @@
 		(uuid "a12312cc-1cec-47f0-b3f0-13b42e559124")
 	)
 	(embedded_fonts no)
+	(model "/Users/sid/Downloads/533980471/533980471.step"
+		(offset
+			(xyz 0 0.5 3.7)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -90 -0 -0)
+		)
+	)
 )
