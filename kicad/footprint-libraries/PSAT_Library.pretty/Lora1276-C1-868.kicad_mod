@@ -136,6 +136,46 @@
 		(layer "F.Paste")
 		(uuid "2f9436a6-75c1-47e8-82ba-dc347fcb87af")
 	)
+	(fp_line
+		(start -9.4 -0.4)
+		(end -9.4 16.3)
+		(stroke
+			(width 0.05)
+			(type default)
+		)
+		(layer "F.CrtYd")
+		(uuid "214a2699-c57e-4b1b-910e-87f2129e9c2a")
+	)
+	(fp_line
+		(start -9.4 16.3)
+		(end 9.4 16.3)
+		(stroke
+			(width 0.05)
+			(type default)
+		)
+		(layer "F.CrtYd")
+		(uuid "881319b5-bd88-409e-b02d-b255f3dcaa60")
+	)
+	(fp_line
+		(start 9.4 -0.4)
+		(end -9.4 -0.4)
+		(stroke
+			(width 0.05)
+			(type default)
+		)
+		(layer "F.CrtYd")
+		(uuid "555e52db-d119-409f-b072-afc3ffa2bfd5")
+	)
+	(fp_line
+		(start 9.4 16.3)
+		(end 9.4 -0.4)
+		(stroke
+			(width 0.05)
+			(type default)
+		)
+		(layer "F.CrtYd")
+		(uuid "7c5bb702-e2ae-4c7f-bc84-b34a7dfb43aa")
+	)
 	(fp_text user "${REFERENCE}"
 		(at 0 2.5 0)
 		(unlocked yes)

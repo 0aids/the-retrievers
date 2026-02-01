@@ -27,7 +27,7 @@
 				(justify left bottom)
 			)
 		)
-		(property "Footprint" "533980471:MOLEX_533980471"
+		(property "Footprint" "PSAT_Library:MOLEX_533980471"
 			(at 0 0 0)
 			(effects
 				(font
