@@ -37,9 +37,9 @@
         "other_text_thickness": 0.15,
         "other_text_upright": false,
         "pads": {
-          "drill": 3.0,
-          "height": 3.25,
-          "width": 3.25
+          "drill": 0.0,
+          "height": 1.0,
+          "width": 1.0
         },
         "silk_line_width": 0.1,
         "silk_text_italic": false,
@@ -223,6 +223,14 @@
         {
           "diameter": 0.0,
           "drill": 0.0
+        },
+        {
+          "diameter": 0.6,
+          "drill": 0.3
+        },
+        {
+          "diameter": 0.8,
+          "drill": 0.4
         }
       ],
       "zones_allow_external_fillets": false
@@ -497,7 +505,16 @@
     },
     "net_colors": null,
     "netclass_assignments": null,
-    "netclass_patterns": []
+    "netclass_patterns": [
+      {
+        "netclass": "Default",
+        "pattern": "/CAM_IO21"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "/SERVO_IO48"
+      }
+    ]
   },
   "pcbnew": {
     "last_paths": {
@@ -687,7 +704,7 @@
     ],
     [
       "56e29116-eeed-430d-b848-aa0aa6b02ec3",
-      "Buzzer Power"
+      "BUZZER_IO38 Power"
     ]
   ],
   "text_variables": {}

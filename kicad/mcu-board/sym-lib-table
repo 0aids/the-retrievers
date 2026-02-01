@@ -6,4 +6,6 @@
   (lib (name "ESP32-S3-WROOM-1U-N16R8")(type "KiCad")(uri "${KIPRJMOD}/external-libraries/ESP32-S3-WROOM-1U-N16R8.kicad_sym")(options "")(descr ""))
   (lib (name "2025-12-08_14-39-30")(type "KiCad")(uri "${KIPRJMOD}/external-libraries/KiCADv6/2025-12-08_14-39-30.kicad_sym")(options "")(descr ""))
   (lib (name "UJ20-C-H-G-SMT-P16-TR")(type "KiCad")(uri "${KIPRJMOD}/symbol-libaries/UJ20-C-H-G-SMT-P16-TR.kicad_sym")(options "")(descr ""))
+  (lib (name "2026-01-26_05-30-52")(type "KiCad")(uri "${KIPRJMOD}/symbol-libaries/2026-01-26_05-30-52.kicad_sym")(options "")(descr ""))
+  (lib (name "NCP176AMX330TCG")(type "KiCad")(uri "${KIPRJMOD}/symbol-libaries/NCP176AMX330TCG.kicad_sym")(options "")(descr ""))
 )

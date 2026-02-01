@@ -203,44 +203,44 @@
 		(uuid "0104ff9c-1996-40c7-aa2e-61c3166cfce9")
 	)
 	(fp_line
-		(start -6.345 -3.37)
-		(end 6.345 -3.37)
+		(start -5.6 -2.6)
+		(end 5.6 -2.6)
 		(stroke
 			(width 0.05)
 			(type solid)
 		)
 		(layer "F.CrtYd")
-		(uuid "b90a1acd-49db-498b-9748-bca53d3fd5b6")
+		(uuid "5f6f8ff9-1fe2-4025-91f7-48a6a2e45d12")
 	)
 	(fp_line
-		(start -6.345 3.37)
-		(end -6.345 -3.37)
+		(start -5.6 2.5)
+		(end -5.6 -2.6)
 		(stroke
 			(width 0.05)
 			(type solid)
 		)
 		(layer "F.CrtYd")
-		(uuid "333a9dcb-9848-4d19-9a4e-64ced07bf842")
+		(uuid "f4697526-f189-4ee5-8786-56fc6ab9a7f2")
 	)
 	(fp_line
-		(start -6.345 3.37)
-		(end 6.345 3.37)
+		(start -5.6 2.5)
+		(end 5.6 2.5)
 		(stroke
 			(width 0.05)
 			(type solid)
 		)
 		(layer "F.CrtYd")
-		(uuid "23ebb8ed-c986-41aa-86cd-d94cf8807c70")
+		(uuid "9ef82434-3198-40b0-bbe9-91447b75730f")
 	)
 	(fp_line
-		(start 6.345 -3.37)
-		(end 6.345 3.37)
+		(start 5.6 -2.6)
+		(end 5.6 2.5)
 		(stroke
 			(width 0.05)
 			(type solid)
 		)
 		(layer "F.CrtYd")
-		(uuid "c8e0f0e6-ff12-47e0-b394-110577e0a5ae")
+		(uuid "dce109cb-bb87-4a32-a2da-7d92d5d6d5ec")
 	)
 	(fp_line
 		(start -5.075 -2.1)
@@ -349,4 +349,15 @@
 		(uuid "a12312cc-1cec-47f0-b3f0-13b42e559124")
 	)
 	(embedded_fonts no)
+	(model "/home/aids/git/psat2025/the-retrievers/kicad/3d-files/533980471.stp"
+		(offset
+			(xyz 0 2.05 5.7)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 90 -0 -180)
+		)
+	)
 )
