@@ -37,9 +37,9 @@
         "other_text_thickness": 0.15,
         "other_text_upright": false,
         "pads": {
-          "drill": 0.8,
-          "height": 1.27,
-          "width": 2.54
+          "drill": 3.0,
+          "height": 4.0,
+          "width": 4.0
         },
         "silk_line_width": 0.1,
         "silk_text_italic": false,
@@ -58,7 +58,40 @@
           "width": 0.0
         }
       ],
-      "drc_exclusions": [],
+      "drc_exclusions": [
+        [
+          "clearance|187900000|49005000|c6a9e9d9-dd2d-44f1-a37b-5ec0266d2566|7727eeec-6528-4823-aa88-8615e2118b88",
+          ""
+        ],
+        [
+          "clearance|187900000|49655000|7727eeec-6528-4823-aa88-8615e2118b88|174c0fed-39a0-464d-977c-45f035d905f1",
+          ""
+        ],
+        [
+          "clearance|187900000|50305000|174c0fed-39a0-464d-977c-45f035d905f1|a635eca9-c32b-43ef-a632-a43df3b288db",
+          ""
+        ],
+        [
+          "clearance|190400000|49295000|f0bb477f-4189-4fb1-8fa2-8bcf9060b28c|5644bf17-a83a-46e6-a4f1-741d6c7e86d5",
+          ""
+        ],
+        [
+          "clearance|190400000|49945000|499e0361-51e8-4007-81c6-e2358e041b23|f0bb477f-4189-4fb1-8fa2-8bcf9060b28c",
+          ""
+        ],
+        [
+          "clearance|190400000|50595000|b9a748e4-f92b-456c-9cad-cb5e507934a8|499e0361-51e8-4007-81c6-e2358e041b23",
+          ""
+        ],
+        [
+          "copper_edge_clearance|188879492|41368000|b71aced5-73bd-41ce-8b1e-56c163e0c933|bfe66a69-437e-4287-a53a-ec8a8bf74883",
+          ""
+        ],
+        [
+          "copper_edge_clearance|223520508|41368000|b71aced5-73bd-41ce-8b1e-56c163e0c933|25ddd3e2-f533-4495-b00b-ef13c4cfa16c",
+          ""
+        ]
+      ],
       "meta": {
         "version": 2
       },
@@ -138,7 +171,7 @@
         "min_through_hole_diameter": 0.15,
         "min_track_width": 0.1,
         "min_via_annular_width": 0.2,
-        "min_via_diameter": 0.25,
+        "min_via_diameter": 0.2,
         "solder_mask_to_copper_clearance": 0.0,
         "use_height_for_length_calcs": true
       },
@@ -658,6 +691,36 @@
           "label": "#",
           "name": "${ITEM_NUMBER}",
           "show": false
+        },
+        {
+          "group_by": false,
+          "label": "Manufacturer Part",
+          "name": "Manufacturer Part",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "Supplier Part",
+          "name": "Supplier Part",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "LCSC Part Name",
+          "name": "LCSC Part Name",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "Supplier",
+          "name": "Supplier",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "Manufacturer",
+          "name": "Manufacturer",
+          "show": false
         }
       ],
       "filter_string": "",
@@ -695,8 +758,16 @@
       "version": 1
     },
     "net_format_name": "",
+    "ngspice": {
+      "fix_include_paths": true,
+      "meta": {
+        "version": 0
+      },
+      "model_mode": 4,
+      "workbook_filename": ""
+    },
     "page_layout_descr_file": "",
-    "plot_directory": "",
+    "plot_directory": "../../../../../../../Downloads/",
     "space_save_all_events": true,
     "spice_current_sheet_as_root": false,
     "spice_external_command": "spice \"%I\"",
