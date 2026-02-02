@@ -13,7 +13,7 @@ void BMP280_getCalibration();
 double BMP280_getPressure();
 // in degrees C
 int32_t BMP280_getTemperature();
-psatErrStates_e BMP280_checkErr();
+psatErr_state_e BMP280_checkErr();
 
 BMP280_preflightStatus_t BMP280_preflightTest();
 BMP280_status_t BMP280_queryStatus();

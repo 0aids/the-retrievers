@@ -7,7 +7,7 @@ static bool              powerConfigured       = false;
 static bool              measurementConfigured = false;
 static bool              calibrated            = false;
 
-static psatErrStates_e   BMP280_err = noError;
+static psatErr_state_e   BMP280_err = noError;
 
 BMP280_preflightStatus_t BMP280_preflightStatus = {0};
 
@@ -49,9 +49,9 @@ int16_t         dig_P7 = 0;
 int16_t         dig_P8 = 0;
 int16_t         dig_P9 = 0;
 
-psatErrStates_e BMP280_checkErr()
+psatErr_state_e BMP280_checkErr()
 {
-    psatErrStates_e temp = BMP280_err;
+    psatErr_state_e temp = BMP280_err;
     BMP280_err           = noError;
     return temp;
 }
@@ -73,7 +73,7 @@ BMP280_preflightStatus_t BMP280_preflightTest()
     i2c_master_bus_handle_t TestBusHandle;
     BMP280_init(&TestBusHandle);
     BMP280_preflightStatus.temperature = BMP280_getTemperature();
-    BMP280_preflightStatus.pressure = BMP280_getPressure();
+    BMP280_preflightStatus.pressure    = BMP280_getPressure();
     BMP280_deinit();
     return BMP280_preflightStatus;
 }
