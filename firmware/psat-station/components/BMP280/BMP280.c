@@ -2,12 +2,12 @@
 #include "pin_config.h"
 #include "shared_state.h"
 
-static bool              I2C_initalised        = false;
-static bool              powerConfigured       = false;
-static bool              measurementConfigured = false;
-static bool              calibrated            = false;
-
-static psatErr_state_e   BMP280_err = noError;
+static BMP280_status_t   BMP280_status = {.I2C_initalised  = false,
+                                          .powerConfigured = false,
+                                          .measurementConfigured =
+                                              false,
+                                          .calibrated = false};
+static psatErr_state_e   BMP280_err    = noError;
 
 BMP280_preflightStatus_t BMP280_preflightStatus = {0};
 
@@ -58,14 +58,7 @@ psatErr_state_e BMP280_checkErr()
 
 BMP280_status_t BMP280_queryStatus()
 {
-    BMP280_status_t status;
-
-    status.calibrated            = calibrated;
-    status.I2C_initalised        = I2C_initalised;
-    status.measurementConfigured = measurementConfigured;
-    status.calibrated            = calibrated;
-
-    return status;
+    return BMP280_status;
 }
 
 BMP280_preflightStatus_t BMP280_preflightTest()
@@ -88,7 +81,7 @@ void BMP280_init(i2c_master_bus_handle_t* BusHandle)
         return;
     }
 
-    I2C_initalised = true;
+    BMP280_status.I2C_initalised = true;
 
     if (i2c_master_transmit(BMP280_handle, BMP280_ctrlmeas,
                             sizeof(BMP280_ctrlmeas),
@@ -98,7 +91,7 @@ void BMP280_init(i2c_master_bus_handle_t* BusHandle)
         return;
     }
 
-    powerConfigured = true;
+    BMP280_status.powerConfigured = true;
 
     if (i2c_master_transmit(BMP280_handle, BMP280_configReg,
                             sizeof(BMP280_configReg),
@@ -108,7 +101,7 @@ void BMP280_init(i2c_master_bus_handle_t* BusHandle)
         return;
     }
 
-    measurementConfigured = true;
+    BMP280_status.measurementConfigured = true;
 
     BMP280_getCalibration();
 }
@@ -165,7 +158,7 @@ void BMP280_getCalibration()
     memcpy(&dig_P7, BMP280_CalibrationData + 18, 2);
     memcpy(&dig_P8, BMP280_CalibrationData + 20, 2);
     memcpy(&dig_P9, BMP280_CalibrationData + 22, 2);
-    calibrated = true;
+    BMP280_status.calibrated = true;
 }
 
 static void BMP280_compensatePressureAndTemperature(
