@@ -51,8 +51,18 @@
     X(BMP280_measurementConfig_failed)                               \
     X(BMP280_calibration_failed)                                     \
     X(BMP280_i2cBusRemoval_failed)                                   \
-    X(BMP280_dataRead_failed)                                        \
-    X(BMP280_reset_failed)
+    X(BMP280_dataRead_failed)
+
+#define PSAT_FSM_COMPONENTS_LIST                                     \
+    X(psatFSM_component_ldr)                                         \
+    X(psatFSM_component_gps)                                         \
+    X(psatFSM_component_buzzers)                                     \
+    X(psatFSM_component_battery)                                     \
+    X(psatFSM_component_camera)                                      \
+    X(psatFSM_component_servo)                                       \
+    X(psatFSM_component_timers)                                      \
+    X(psatFSM_component_bmp280)                                      \
+    X(psatFSM_component__COUNT)
 
 // DEFINE ENUMS FOR EACH LIST
 #define X(name) name,
@@ -64,6 +74,10 @@ typedef enum
 {
     PSAT_FSM_EVENT_TYPE_LIST
 } psatFSM_eventType_e;
+typedef enum
+{
+    PSAT_FSM_COMPONENTS_LIST
+} psatFSM_component_e;
 typedef enum
 {
     PSAT_ERR_TYPE_LIST
@@ -165,7 +179,20 @@ psatFSM_eventTypeToString(psatFSM_eventType_e type)
     case name: return #name;
         PSAT_FSM_EVENT_TYPE_LIST
 #undef X
-        default: return "Invalid State";
+        default: return "Invalid Event Type";
+    }
+}
+
+static inline const char*
+psatFSM_componentToString(psatFSM_component_e type)
+{
+    switch (type)
+    {
+#define X(name)                                                      \
+    case name: return #name;
+        PSAT_FSM_EVENT_TYPE_LIST
+#undef X
+        default: return "Invalid Component";
     }
 }
 
