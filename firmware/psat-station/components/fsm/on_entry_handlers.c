@@ -67,3 +67,4 @@ void psatFSM_landingEntryHandler() {}
 void psatFSM_recoveryEntryHandler() {}
 void psatFSM_lowPowerEntryHandler() {}
 void psatFSM_errorEntryHandler() {}
+void psatFSM_permanentErrorEntryHandler() {}

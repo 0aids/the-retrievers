@@ -1,7 +1,7 @@
 #include "state_handlers.h"
 
 #include <stdio.h>
-
+#include "components.h"
 #include "buttons.h"
 #include "buzzer.h"
 #include "esp_log.h"
@@ -11,7 +11,9 @@
 #include "pin_config.h"
 #include "ldr_task.h"
 #include "servo.h"
+#include "errors.h"
 #include "timers.h"
+#include "esp_timer.h"
 
 static servo_data_t servo;
 
@@ -157,10 +159,67 @@ psatFSM_lowPowerStateHandler(const psatFSM_event_t* event)
 psatFSM_state_e
 psatFSM_errorStateHandler(const psatFSM_event_t* event)
 {
-    // static const char* TAG = "PSAT_FSM-Error";
+    static const char* TAG = "PSAT_FSM-Error";
 
-    switch (event->type)
+    int                errorId = event->arg;
+    psatErr_error_t*   error   = psatErr_getErrorById(errorId);
+
+    ESP_LOGI(TAG, "Recieved error with code %s",
+             psatErr_codeToString(error->code));
+
+    psatFSM_component_t* component =
+        psatFSM_getComponent(error->originComponent);
+
+    if (component->recoveryContext.retry_count == 0)
     {
-        default: return psatFSM_state_error;
+
+        if (component->recover)
+        {
+            component->recover();
+        }
+        else
+        {
+            if (component->deinit)
+                component->deinit();
+            if (component->init)
+                component->init();
+        }
     }
+    else if (component->recoveryContext.retry_count == 1)
+    {
+        vTaskDelay(pdMS_TO_TICKS(5000));
+        if (component->recover)
+        {
+            component->recover();
+        }
+        else
+        {
+            if (component->deinit)
+                component->deinit();
+            if (component->init)
+                component->init();
+        }
+    }
+    else if (component->recoveryContext.retry_count == 2)
+    {
+        vTaskDelay(pdMS_TO_TICKS(5000));
+        // on exit
+        vTaskDelay(pdMS_TO_TICKS(5000));
+        // on entry
+    }
+    else
+    {
+        return psatFSM_state_permanentError;
+    }
+
+    component->recoveryContext.retry_count++;
+    component->recoveryContext.last_recovery_timestamp =
+        esp_timer_get_time();
+
+    return error->originState;
+}
+
+psatFSM_state_e
+psatFSM_permanentErrorStateHandler(const psatFSM_event_t* event)
+{
 }
