@@ -42,6 +42,7 @@
     X(psatFSM_component_ldr)                                         \
     X(psatFSM_component_gps)                                         \
     X(psatFSM_component_buzzers)                                     \
+    X(psatFSM_component_buttons)                                     \
     X(psatFSM_component_battery)                                     \
     X(psatFSM_component_camera)                                      \
     X(psatFSM_component_servo)                                       \
@@ -153,8 +154,8 @@ typedef struct
     int                 id;
     psatErr_code_e      code;
     int64_t             timestamp;
-    psatFSM_component_e origin_component;
-    psatFSM_state_e     origin_state;
+    psatFSM_component_e originComponent;
+    psatFSM_state_e     originState;
     // maybe i could add a severerity here
 } psatErr_error_t;
 
