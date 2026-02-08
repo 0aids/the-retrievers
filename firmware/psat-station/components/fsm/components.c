@@ -1,3 +1,9 @@
+// TODO: each component needs init and deinit
+// TODO: Modify to account for start tasks and kill tasks
+// TODO: component will know if it is a task based on or not, and if it is, it will stoptask, deinit, init and start task
+// TODO: if its not then just deinit, init
+// TODO: also if recovery function is defined we just run that instead
+
 #include "esp_log.h"
 
 #include "components.h"
@@ -96,4 +102,17 @@ void psatFSM_initAll()
     {
         psatFSM_initComponent(componentId);
     }
+}
+
+psatFSM_component_t*
+psatFSM_getComponent(psatFSM_component_e componentId)
+{
+    if (componentId < 0 || componentId >= psatFSM_component__COUNT)
+    {
+        ESP_LOGW(TAG, "Invalid component Id Provided (%i)",
+                 componentId);
+        return NULL;
+    }
+
+    return &componentTable[componentId];
 }
