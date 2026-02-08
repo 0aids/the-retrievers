@@ -49,6 +49,12 @@
     X(psatFSM_component_bmp280)                                      \
     X(psatFSM_component__COUNT)
 
+#define PSAT_FSM_COMPONENTS_STATUS_LIST                              \
+    X(psatFSM_componentStatus_unRegistered)                          \
+    X(psatFSM_componentStatus_disabled)                              \
+    X(psatFSM_componentStatus_enabled)                               \
+    X(psatFSM_componentStatus_recovery)
+
 // TODO: suffixes for the error codes, currently ive just made them all _failed
 #define PSAT_ERR_CODE_LIST                                           \
     X(psatErr_none)                                                  \
@@ -88,6 +94,10 @@ typedef enum
 } psatFSM_component_e;
 typedef enum
 {
+    PSAT_FSM_COMPONENTS_STATUS_LIST
+} psatFSM_componentStatus_e;
+typedef enum
+{
     PSAT_ERR_CODE_LIST
 } psatErr_code_e;
 #undef X
@@ -97,6 +107,7 @@ typedef struct
 {
     int                 global;
     psatFSM_eventType_e type;
+    int                 arg; // for errors
 } psatFSM_event_t;
 
 // GLOBAL STATE
@@ -118,6 +129,34 @@ typedef struct
     psatFSM_stateHandler_t stateHandler;
     void (*onStateExit)(void);
 } psatFsm_state_t;
+
+// Component Definition
+typedef struct
+{
+    int     retry_count;
+    int64_t last_recovery_timestamp;
+} psatFSM_componentRecoveryContext_t;
+
+typedef struct
+{
+    void (*init)(void);
+    void (*deinit)(void);
+    void (*recover)(void);
+    psatFSM_componentStatus_e          status;
+    psatFSM_componentRecoveryContext_t recoveryContext;
+
+} psatFSM_component_t;
+
+// Error Defintion
+typedef struct
+{
+    int                 id;
+    psatErr_code_e      code;
+    int64_t             timestamp;
+    psatFSM_component_e origin_component;
+    psatFSM_state_e     origin_state;
+    // maybe i could add a severerity here
+} psatErr_error_t;
 
 // BMP280 (PRESSURE SENSOR) STATE AND PREFLIGHT
 typedef struct
@@ -201,6 +240,19 @@ psatFSM_componentToString(psatFSM_component_e type)
         PSAT_FSM_COMPONENTS_LIST
 #undef X
         default: return "psatFSM_component_invalid";
+    }
+}
+
+static inline const char*
+psatFSM_componentStatusToString(psatFSM_componentStatus_e type)
+{
+    switch (type)
+    {
+#define X(name)                                                      \
+    case name: return #name;
+        PSAT_FSM_COMPONENTS_STATUS_LIST
+#undef X
+        default: return "psatFSM_componentStatus_invalid";
     }
 }
 
