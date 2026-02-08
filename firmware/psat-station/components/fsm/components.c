@@ -88,3 +88,12 @@ void psatFSM_deinitComponent(psatFSM_component_e componentId)
         "%s component has been deinitialised and is now disabled",
         psatFSM_componentToString(componentId));
 }
+
+void psatFSM_initAll()
+{
+    for (int componentId = 0; componentId < psatFSM_component__COUNT;
+         componentId++)
+    {
+        psatFSM_initComponent(componentId);
+    }
+}
