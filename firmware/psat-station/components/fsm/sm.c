@@ -17,12 +17,12 @@ static QueueHandle_t     eventQueue_s = NULL;
 static SemaphoreHandle_t stateMutex_s = NULL;
 
 // move to new file stateTable.c and include a get by state id
-static psatFsm_state_t   stateTable[] = {
+static psatFsm_state_t stateTable[] = {
     [psatFSM_state_start] = {.state = psatFSM_state_start,
                              .defaultNextState =
-                                   psatFSM_state_prelaunch, .onStateExit = psatFSM_startExitHandler,
+                                 psatFSM_state_prelaunch, .onStateExit = psatFSM_startExitHandler,
                              .stateHandler =
-                                   psatFSM_startStateHandler},
+                                 psatFSM_startStateHandler},
     [psatFSM_state_prelaunch] =
         {.state            = psatFSM_state_prelaunch,
                              .defaultNextState = psatFSM_state_ascent,
@@ -71,12 +71,12 @@ static psatFsm_state_t   stateTable[] = {
                              .onStateEntry     = psatFSM_lowPowerEntryHandler,
                              .onStateExit      = psatFSM_lowPowerExitHandler,
                              .stateHandler     = psatFSM_lowPowerStateHandler},
-    [psatFSM_state_error] = {.state = psatFSM_state_error,
+    [psatFSM_state_error] = {.state            = psatFSM_state_error,
                              .defaultNextState = psatFSM_state_error,
                              .onStateEntry =
-                                   psatFSM_errorEntryHandler, .onStateExit = psatFSM_errorExitHandler,
+                                 psatFSM_errorEntryHandler, .onStateExit = psatFSM_errorExitHandler,
                              .stateHandler =
-                                   psatFSM_errorStateHandler},
+                                 psatFSM_errorStateHandler},
 };
 
 void psatFSM_postEvent(const psatFSM_event_t* event)

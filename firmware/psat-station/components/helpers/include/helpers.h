@@ -2,8 +2,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 // Convention:
-    // _oma suffix - Owning Malloc Pointer -- if you receive this that means you now own the pointer.
-    // _nma suffix - Non-owning malloc pointer -- if you receive this you do not own the pointer.
+// _oma suffix - Owning Malloc Pointer -- if you receive this that means you now own the pointer.
+// _nma suffix - Non-owning malloc pointer -- if you receive this you do not own the pointer.
 
 /**
  * @brief Print detailed heap usage information
@@ -33,4 +33,5 @@ bool helpers_smartFree(helpers_malloced_t* data);
 
 // Mallocs a new spot, moves all the data, and then frees the previous.
 // On failure returns false and doesn't modify anything.
-bool helpers_smartMoveRealloc(helpers_malloced_t* data, uint32_t newBufferSize);
+bool helpers_smartMoveRealloc(helpers_malloced_t* data,
+                              uint32_t            newBufferSize);

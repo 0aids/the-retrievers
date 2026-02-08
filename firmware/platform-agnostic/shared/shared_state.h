@@ -14,6 +14,7 @@
     X(psatFSM_state_recovery)                                        \
     X(psatFSM_state_lowPower)                                        \
     X(psatFSM_state_error)                                           \
+    X(psatFSM_state_permanentError)                                  \
                                                                      \
     X(psatFSM_state__COUNT)
 

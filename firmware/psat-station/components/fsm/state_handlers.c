@@ -222,4 +222,8 @@ psatFSM_errorStateHandler(const psatFSM_event_t* event)
 psatFSM_state_e
 psatFSM_permanentErrorStateHandler(const psatFSM_event_t* event)
 {
+    switch (event->type)
+    {
+        default: return psatFSM_state_permanentError;
+    }
 }
