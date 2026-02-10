@@ -99,8 +99,7 @@ void gps_init()
 
 void gps_deinit()
 {
-    ESP_LOGI("GPS", "GPS Deinit");
-    uart_flush(CFG_GPS_UART_NUM_d);
+    ESP_LOGI("GPS", "GPS Deinit");;
     uart_driver_delete(CFG_GPS_UART_NUM_d);
 }
 
