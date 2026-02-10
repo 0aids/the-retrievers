@@ -1,3 +1,5 @@
+#pragma once
+
 #include "shared_state.h"
 
 void psatFSM_registerComponent(psatFSM_component_e componentId,
