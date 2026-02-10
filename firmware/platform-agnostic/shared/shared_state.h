@@ -57,6 +57,11 @@
     X(psatFSM_componentStatus_enabled)                               \
     X(psatFSM_componentStatus_recovery)
 
+#define PSAT_FSM_COMPONENTS_TYPES_LIST                               \
+    X(psatFSM_componentType_task)                                    \
+    X(psatFSM_componentType_normal)                                  \
+    X(psatFSM_componentType_multiple)
+
 // TODO: suffixes for the error codes, currently ive just made them all _failed
 #define PSAT_ERR_CODE_LIST                                           \
     X(psatErr_none)                                                  \
@@ -98,6 +103,10 @@ typedef enum
 {
     PSAT_FSM_COMPONENTS_STATUS_LIST
 } psatFSM_componentStatus_e;
+typedef enum
+{
+    PSAT_FSM_COMPONENTS_TYPES_LIST
+} psatFSM_componentType_e;
 typedef enum
 {
     PSAT_ERR_CODE_LIST
@@ -143,7 +152,14 @@ typedef struct
 {
     void (*init)(void);
     void (*deinit)(void);
+
+    // for task based components eg gps:
+    void (*start)(void);
+    void (*stop)(void);
+
     void (*recover)(void);
+
+    psatFSM_componentType_e            type;
     psatFSM_componentStatus_e          status;
     psatFSM_componentRecoveryContext_t recoveryContext;
 
