@@ -99,15 +99,16 @@ void gps_init()
 
 void gps_deinit()
 {
-    ESP_LOGI("GPS", "GPS Deinit");;
+    ESP_LOGI("GPS", "GPS Deinit");
+    uart_flush(CFG_GPS_UART_NUM_d);
     uart_driver_delete(CFG_GPS_UART_NUM_d);
 }
 
 void gps_startTask()
 {
     ESP_LOGI("GPS", "Starting GPS Task");
-    xTaskCreate(gps_task, "gps_task", GPS_TASK_STACK, NULL,
-                GPS_TASK_PRIO, &gpsTask_s);
+    xTaskCreatePinnedToCore(gps_task, "gps_task", GPS_TASK_STACK,
+                            NULL, GPS_TASK_PRIO, &gpsTask_s, 0);
 }
 
 void gps_killTask()

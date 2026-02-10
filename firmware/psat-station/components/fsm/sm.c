@@ -162,8 +162,8 @@ void psatFSM_start()
 
 void psatFSM_startAsTask()
 {
-    xTaskCreate(psatFSM_start, "fsm_task", 4096, NULL, 10,
-                &xHandleSM_s);
+    xTaskCreatePinnedToCore(psatFSM_start, "fsm_task", 4096, NULL, configMAX_PRIORITIES,
+                            &xHandleSM_s, 1);
 }
 
 void psatFSM_killTask()
