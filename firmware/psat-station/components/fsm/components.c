@@ -13,10 +13,10 @@ static const char*         TAG = "PSAT_COMPONENT";
 static psatFSM_component_t componentTable[psatFSM_component__COUNT] =
     {0};
 
-void psatFSM_registerComponent(psatFSM_component_e componentId,
-                               void (*init)(void),
-                               void (*deinit)(void),
-                               void (*recover)(void))
+void psatFSM_registerComponent(
+    psatFSM_component_e componentId, psatFSM_componentType_e type,
+    void (*init)(void), void (*deinit)(void), void (*recover)(void),
+    void (*start)(void), void (*stop)(void))
 {
     if (componentId < 0 || componentId >= psatFSM_component__COUNT)
     {
@@ -29,6 +29,7 @@ void psatFSM_registerComponent(psatFSM_component_e componentId,
         .init            = init,
         .deinit          = deinit,
         .status          = psatFSM_componentStatus_disabled,
+        .type            = type,
         .recover         = recover,
         .recoveryContext = {
                             .last_recovery_timestamp = 0,
