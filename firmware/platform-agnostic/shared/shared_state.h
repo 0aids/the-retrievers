@@ -3,39 +3,89 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#define PSAT_FSM_STATE_LIST   \
-    X(psatFSM_state_start)     \
-    X(psatFSM_state_prelaunch)  \
-    X(psatFSM_state_ascent)      \
-    X(psatFSM_state_deployPending)\
-    X(psatFSM_state_deployed)      \
-    X(psatFSM_state_descent)        \
-    X(psatFSM_state_landing)         \
-    X(psatFSM_state_recovery)         \
-    X(psatFSM_state_lowPower)          \
-    X(psatFSM_state_error)              \
-    X(psatFSM_state__COUNT)              
-                                          
-#define PSAT_FSM_EVENT_TYPE_LIST           \
-    X(psatFSM_eventType_startPrelaunch)     \
-    X(psatFSM_eventType_prelaunchComplete)   \
-    X(psatFSM_eventType_deploymentPending)    \
-    X(psatFSM_eventType_deploymentTimeout)     \
-    X(psatFSM_eventType_deploymentConfirmed)    \
-    X(psatFSM_eventType_timer1s)                 \
-    X(psatFSM_eventType_timer5s)                  \
-    X(psatFSM_eventType_timer10s)                  \
-    X(psatFSM_eventType_cameraOn)                   \
-    X(psatFSM_eventType_cameraStop)                  \
-    X(psatFSM_eventType_unfoldMechanism)              \
-    X(psatFSM_eventType_landingConfirmed)              \
-    X(psatFSM_eventType_audioOn)                        \
-    X(psatFSM_eventType_audioOff)                        \
-    X(psatFSM_eventType_audioBeep)                        \
-    X(psatFSM_eventType_loraCommand)                       \
-    X(psatFSM_eventType_error)                              \
+#define PSAT_FSM_STATE_LIST                                          \
+    X(psatFSM_state_start)                                           \
+    X(psatFSM_state_prelaunch)                                       \
+    X(psatFSM_state_ascent)                                          \
+    X(psatFSM_state_deployPending)                                   \
+    X(psatFSM_state_deployed)                                        \
+    X(psatFSM_state_descent)                                         \
+    X(psatFSM_state_landing)                                         \
+    X(psatFSM_state_recovery)                                        \
+    X(psatFSM_state_lowPower)                                        \
+    X(psatFSM_state_error)                                           \
+    X(psatFSM_state_permanentError)                                  \
+                                                                     \
+    X(psatFSM_state__COUNT)
+
+#define PSAT_FSM_EVENT_TYPE_LIST                                     \
+    X(psatFSM_eventType_startPrelaunch)                              \
+    X(psatFSM_eventType_prelaunchComplete)                           \
+    X(psatFSM_eventType_deploymentPending)                           \
+    X(psatFSM_eventType_deploymentTimeout)                           \
+    X(psatFSM_eventType_deploymentConfirmed)                         \
+    X(psatFSM_eventType_timer1s)                                     \
+    X(psatFSM_eventType_timer5s)                                     \
+    X(psatFSM_eventType_timer10s)                                    \
+    X(psatFSM_eventType_cameraOn)                                    \
+    X(psatFSM_eventType_cameraStop)                                  \
+    X(psatFSM_eventType_unfoldMechanism)                             \
+    X(psatFSM_eventType_landingConfirmed)                            \
+    X(psatFSM_eventType_audioOn)                                     \
+    X(psatFSM_eventType_audioOff)                                    \
+    X(psatFSM_eventType_audioBeep)                                   \
+    X(psatFSM_eventType_loraCommand)                                 \
+    X(psatFSM_eventType_error)                                       \
+                                                                     \
     X(psatFSM_eventType__COUNT)
 
+#define PSAT_FSM_COMPONENTS_LIST                                     \
+    X(psatFSM_component_ldr)                                         \
+    X(psatFSM_component_gps)                                         \
+    X(psatFSM_component_buzzers)                                     \
+    X(psatFSM_component_buttons)                                     \
+    X(psatFSM_component_battery)                                     \
+    X(psatFSM_component_camera)                                      \
+    X(psatFSM_component_servo)                                       \
+    X(psatFSM_component_timers)                                      \
+    X(psatFSM_component_bmp280)                                      \
+    X(psatFSM_component__COUNT)
+
+#define PSAT_FSM_COMPONENTS_STATUS_LIST                              \
+    X(psatFSM_componentStatus_unRegistered)                          \
+    X(psatFSM_componentStatus_disabled)                              \
+    X(psatFSM_componentStatus_enabled)                               \
+    X(psatFSM_componentStatus_recovery)
+
+#define PSAT_FSM_COMPONENTS_TYPES_LIST                               \
+    X(psatFSM_componentType_task)                                    \
+    X(psatFSM_componentType_normal)                                  \
+    X(psatFSM_componentType_multiple)
+
+// TODO: suffixes for the error codes, currently ive just made them all _failed
+#define PSAT_ERR_CODE_LIST                                           \
+    X(psatErr_none)                                                  \
+                                                                     \
+    X(psatErr_ldr_calibrationInit_failed)                            \
+    X(psatErr_ldr_adcInit_failed)                                    \
+    X(psatErr_ldr_adcConfig_failed)                                  \
+    X(psatErr_ldr_readRawValue_failed)                               \
+    X(psatErr_ldr_voltage_failed)                                    \
+    X(psatErr_ldr_openMemStr_failed)                                 \
+    X(psatErr_ldr_adcDelUnit_failed)                                 \
+    X(psatErr_ldr_caliDeleteScheme_failed)                           \
+                                                                     \
+    X(psatErr_bmp280_i2cBusAddition_failed)                          \
+    X(psatErr_bmp280_powerConfig_failed)                             \
+    X(psatErr_bmp280_measurementConfig_failed)                       \
+    X(psatErr_bmp280_calibration_failed)                             \
+    X(psatErr_bmp280_i2cBusRemoval_failed)                           \
+    X(psatErr_bmp280_dataRead_failed)                                \
+    X(psatErr_bmp280_reset_failed)                                   \
+                                                                     \
+    X(psatErr__COUNT)
+
+// DEFINE ENUMS FOR EACH LIST
 #define X(name) name,
 typedef enum
 {
@@ -45,15 +95,41 @@ typedef enum
 {
     PSAT_FSM_EVENT_TYPE_LIST
 } psatFSM_eventType_e;
+typedef enum
+{
+    PSAT_FSM_COMPONENTS_LIST
+} psatFSM_component_e;
+typedef enum
+{
+    PSAT_FSM_COMPONENTS_STATUS_LIST
+} psatFSM_componentStatus_e;
+typedef enum
+{
+    PSAT_FSM_COMPONENTS_TYPES_LIST
+} psatFSM_componentType_e;
+typedef enum
+{
+    PSAT_ERR_CODE_LIST
+} psatErr_code_e;
 #undef X
 
+// STATE MACHINE EVENT
 typedef struct
 {
     int                 global;
     psatFSM_eventType_e type;
+    int                 arg; // for errors
 } psatFSM_event_t;
 
-// State Definition
+// GLOBAL STATE
+typedef struct
+{
+    psatFSM_state_e currentFSMState;
+} psatGlobal_state_t;
+
+extern psatGlobal_state_t psat_globalState;
+
+// STATE DEFINITION
 typedef psatFSM_state_e (*psatFSM_stateHandler_t)(
     const psatFSM_event_t* event);
 typedef struct
@@ -65,8 +141,42 @@ typedef struct
     void (*onStateExit)(void);
 } psatFsm_state_t;
 
-//BMP280 Pressure Sensor State and Preflight
+// Component Definition
+typedef struct
+{
+    int     retry_count;
+    int64_t last_recovery_timestamp;
+} psatFSM_componentRecoveryContext_t;
 
+typedef struct
+{
+    void (*init)(void);
+    void (*deinit)(void);
+
+    // for task based components eg gps:
+    void (*start)(void);
+    void (*stop)(void);
+
+    void (*recover)(void);
+
+    psatFSM_componentType_e            type;
+    psatFSM_componentStatus_e          status;
+    psatFSM_componentRecoveryContext_t recoveryContext;
+
+} psatFSM_component_t;
+
+// Error Defintion
+typedef struct
+{
+    int                 id;
+    psatErr_code_e      code;
+    int64_t             timestamp;
+    psatFSM_component_e originComponent;
+    psatFSM_state_e     originState;
+    // maybe i could add a severerity here
+} psatErr_error_t;
+
+// BMP280 (PRESSURE SENSOR) STATE AND PREFLIGHT
 typedef struct
 {
     bool I2C_initalised;
@@ -74,15 +184,15 @@ typedef struct
     bool measurementConfigured;
     bool calibrated;
 
-} BMP280_status_t;
+} bmp280_status_t;
 
 typedef struct
 {
     int32_t temperature;
     double  pressure;
-} BMP280_preflightStatus_t;
+} bmp280_preflightStatus_t;
 
-// GPS Data
+// GPS DATA
 typedef struct
 {
     float   latitude;
@@ -112,7 +222,7 @@ typedef struct
     bool    altitudeValid; // altitude, geoidal
 } gps_data_t;
 
-// Functions to print out enums:
+// FUNCTIONS TO CONVERT ENUM TO A STRING
 static inline const char* psatFSM_stateToString(psatFSM_state_e state)
 {
     switch (state)
@@ -121,7 +231,7 @@ static inline const char* psatFSM_stateToString(psatFSM_state_e state)
     case name: return #name;
         PSAT_FSM_STATE_LIST
 #undef X
-        default: return "Invalid State";
+        default: return "psatFSM_state_invalid";
     }
 }
 
@@ -134,43 +244,44 @@ psatFSM_eventTypeToString(psatFSM_eventType_e type)
     case name: return #name;
         PSAT_FSM_EVENT_TYPE_LIST
 #undef X
-        default: return "Invalid State";
+        default: return "psatFSM_eventType_invalid";
     }
 }
 
-// Global State
-typedef struct
+static inline const char*
+psatFSM_componentToString(psatFSM_component_e type)
 {
-    psatFSM_state_e currentFSMState;
-} psatGlobal_state_t;
-
-extern psatGlobal_state_t psat_globalState;
-
-/////////TO BE ORGANISED BY AIDAN////////
-
-#define allError_xmacro       \
-    X(noError)                 \
-    X(ldrErr_calibrationInitErr)\
-    X(ldrErr_adcInitErr)         \
-    X(ldrErr_adcConfigErr)        \
-    X(ldrErr_readRawValueErr)      \
-    X(ldrErr_VoltageErr)            \
-    X(ldrErr_OpenMemStr)             \
-    X(ldrErr_adcDelUnitErr)           \
-    X(ldrErr_caliDeleteSchemeErr)      \
-    X(BMP280_i2cBusAddition_failed)     \
-    X(BMP280_powerConfig_failed)         \
-    X(BMP280_measurementConfig_failed)    \
-    X(BMP280_calibration_failed)           \
-    X(BMP280_i2cBusRemoval_failed)          \
-    X(BMP280_dataRead_failed)                \
-    X(BMP280_reset_failed)
-
-typedef enum
-{
-#define X(name) name,
-    allError_xmacro
+    switch (type)
+    {
+#define X(name)                                                      \
+    case name: return #name;
+        PSAT_FSM_COMPONENTS_LIST
 #undef X
-} psatErrStates_e;
+        default: return "psatFSM_component_invalid";
+    }
+}
 
-const char* printErrorType(psatErrStates_e err);
+static inline const char*
+psatFSM_componentStatusToString(psatFSM_componentStatus_e type)
+{
+    switch (type)
+    {
+#define X(name)                                                      \
+    case name: return #name;
+        PSAT_FSM_COMPONENTS_STATUS_LIST
+#undef X
+        default: return "psatFSM_componentStatus_invalid";
+    }
+}
+
+static inline const char* psatErr_codeToString(psatErr_code_e err)
+{
+    switch (err)
+    {
+#define X(errType)                                                   \
+    case errType: return #errType; break;
+        PSAT_ERR_CODE_LIST
+#undef X
+        default: return "psatErr_invalid";
+    }
+}

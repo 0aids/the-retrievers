@@ -11,15 +11,19 @@
 #include "state_handlers.h"
 #include "timers.h"
 
-void psatFSM_startExitHandler() {}  // do nothing
+void psatFSM_startExitHandler() {} // do nothing
 
-void psatFSM_prelaunchExitHandler() { button_disable(button_id_prelaunch); }
+void psatFSM_prelaunchExitHandler()
+{
+    button_disable(button_id_prelaunch);
+}
 
 void psatFSM_ascentExitHandler() {}
 void psatFSM_deployPendingExitHandler() {}
 
 void psatFSM_deployedExitHandler() {}
-void psatFSM_descentExitHandler() {
+void psatFSM_descentExitHandler()
+{
     timer_stop(timer_timerId_1s);
     button_disable(button_id_landing);
 }
@@ -28,3 +32,4 @@ void psatFSM_landingExitHandler() {}
 void psatFSM_recoveryExitHandler() {}
 void psatFSM_lowPowerExitHandler() {}
 void psatFSM_errorExitHandler() {}
+void psatFSM_permanentErrorExitHandler() {}

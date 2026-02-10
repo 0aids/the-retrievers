@@ -97,11 +97,18 @@ void gps_init()
         CFG_GPS_UART_NUM_d, GPS_RX_BUFFER_SIZE, 0, 0, NULL, 0));
 }
 
+void gps_deinit()
+{
+    ESP_LOGI("GPS", "GPS Deinit");
+    uart_flush(CFG_GPS_UART_NUM_d);
+    uart_driver_delete(CFG_GPS_UART_NUM_d);
+}
+
 void gps_startTask()
 {
     ESP_LOGI("GPS", "Starting GPS Task");
-    xTaskCreate(gps_task, "gps_task", GPS_TASK_STACK, NULL,
-                GPS_TASK_PRIO, &gpsTask_s);
+    xTaskCreatePinnedToCore(gps_task, "gps_task", GPS_TASK_STACK,
+                            NULL, GPS_TASK_PRIO, &gpsTask_s, 0);
 }
 
 void gps_killTask()
@@ -109,7 +116,6 @@ void gps_killTask()
     ESP_LOGI("GPS", "Killing GPS Task");
     if (gpsTask_s)
     {
-        uart_flush(CFG_GPS_UART_NUM_d);
         vTaskDelete(gpsTask_s);
         gpsTask_s = NULL;
     }

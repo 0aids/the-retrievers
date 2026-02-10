@@ -9,29 +9,32 @@
 #include "state_handlers.h"
 #include "timers.h"
 #include "loraFsm.h"
+#include "components.h"
+#include "register_components.h"
 
 void loraFSM_startAsTask()
 {
-    xTaskCreate((void*)loraFsm_start, "lora_task", 4096, NULL, 4,
-                NULL);
+    xTaskCreatePinnedToCore((void*)loraFsm_start, "lora_task", 4096,
+                            NULL, 20, NULL, 0);
 }
+
 void psatFSM_prelaunchEntryHandler()
 {
     gpio_install_isr_service(0);
-    gps_init();
-    timer_init();
-    button_init();
-    buzzer_init();
+
+    psatFSM_registerAllComponents();
+    psatFSM_initAll();
+
     loraFsm_init();
+    loraFSM_startAsTask();
 
     timer_start(timer_timerId_10s);
     button_enable(button_id_prelaunch);
-    ldr_startTask();
-    loraFSM_startAsTask();
 }
 
 void psatFSM_ascentEntryHandler()
 {
+    ldr_startTask();
     button_enable(button_id_ldr);
 }
 
@@ -58,3 +61,4 @@ void psatFSM_landingEntryHandler() {}
 void psatFSM_recoveryEntryHandler() {}
 void psatFSM_lowPowerEntryHandler() {}
 void psatFSM_errorEntryHandler() {}
+void psatFSM_permanentErrorEntryHandler() {}

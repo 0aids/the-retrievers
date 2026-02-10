@@ -42,9 +42,9 @@ typedef struct __attribute__((packed))
 typedef struct
 {
     // treat ma.buffer as a "(loraFsm_Packet_t*)ma.buffer" to access members.
-    helpers_malloced_t    packetStorage;
-    loraFsm_packet_t* packetInterpreter;
-    bool wellFormed;
+    helpers_malloced_t packetStorage;
+    loraFsm_packet_t*  packetInterpreter;
+    bool               wellFormed;
 } loraFsm_packetWrapper_t;
 
 // Create a packet.
@@ -55,7 +55,7 @@ loraFsm_packetCreate(loraFsm_packetType_e type,
 
 // The size of the parsed packet is the entire size of the received buffer.
 loraFsm_packetWrapper_t
-loraFsm_packetParse(const uint8_t payload_nma[], uint16_t size);
+     loraFsm_packetParse(const uint8_t payload_nma[], uint16_t size);
 
 void loraFsm_packetSend(loraFsm_packetWrapper_t* packet);
 
@@ -64,4 +64,3 @@ bool loraFsm_packetFree(loraFsm_packetWrapper_t* packet);
 const char* loraFsm_packetTypeToStr(loraFsm_packetType_e type);
 
 #endif // packets_h_INCLUDED
-

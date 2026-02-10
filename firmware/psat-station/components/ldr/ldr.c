@@ -6,7 +6,8 @@
 #include "esp_log.h"
 #include <driver/gpio.h>
 
-extern esp_err_t adc_cali_delete_scheme_line_fitting(adc_cali_handle_t handle);
+extern esp_err_t
+adc_cali_delete_scheme_line_fitting(adc_cali_handle_t handle);
 
 //
 // Global Variables
@@ -97,8 +98,8 @@ void ldr_setup(void)
         .unit_id  = LDR_ADC_UNIT_d,
         .ulp_mode = LDR_ULP_MODE_d,
     };
-    ESP_ERROR_CHECK(adc_oneshot_new_unit(&initConfigLDR,
-                                         &ldr_adcHandlers_g.adcOneshotHandle));
+    ESP_ERROR_CHECK(adc_oneshot_new_unit(
+        &initConfigLDR, &ldr_adcHandlers_g.adcOneshotHandle));
 
     //-------------ADC1 Config---------------//
     // Attenuation determines the range or maximum voltage that we can measure
@@ -110,8 +111,9 @@ void ldr_setup(void)
         .atten    = LDR_ADC_ATTEN_d,
         .bitwidth = LDR_ADC_BITWIDTH_d,
     };
-    ESP_ERROR_CHECK(adc_oneshot_config_channel(
-        ldr_adcHandlers_g.adcOneshotHandle, LDR_ADC_CHANNEL_d, &config));
+    ESP_ERROR_CHECK(
+        adc_oneshot_config_channel(ldr_adcHandlers_g.adcOneshotHandle,
+                                   LDR_ADC_CHANNEL_d, &config));
 
     //-------------ADC1 Calibration Init---------------//
     // sets the calibration handle to NULL.
@@ -127,19 +129,18 @@ int ldr_getVoltage(void)
     int voltage;
 
     // Reads the raw adc value and then calibrates it to get the voltage
-    ESP_ERROR_CHECK(adc_oneshot_read(ldr_adcHandlers_g.adcOneshotHandle,
-                                     LDR_ADC_CHANNEL_d, &adcRaw));
+    ESP_ERROR_CHECK(
+        adc_oneshot_read(ldr_adcHandlers_g.adcOneshotHandle,
+                         LDR_ADC_CHANNEL_d, &adcRaw));
     ESP_ERROR_CHECK(adc_cali_raw_to_voltage(
         ldr_adcHandlers_g.adcCaliChanHandle, adcRaw, &voltage));
 
     return voltage;
 }
 
+static char ldr_stateConfigBuffer[LDR_STATE_CONFIG_BUFFER_SIZE_d] = {
+    0};
 
-static char ldr_stateConfigBuffer
-    [LDR_STATE_CONFIG_BUFFER_SIZE_d] = {0};
-
-    
 ldr_state_t ldr_queryState(void)
 {
 
@@ -161,8 +162,7 @@ ldr_state_t ldr_queryState(void)
     // and updates the variables 'buffer' and 'size'
     fclose(memStream);
 
-    size_t trueSize =
-        (LDR_STATE_CONFIG_BUFFER_SIZE_d - 1 < size) ?
+    size_t trueSize = (LDR_STATE_CONFIG_BUFFER_SIZE_d - 1 < size) ?
         LDR_STATE_CONFIG_BUFFER_SIZE_d - 1 :
         size;
     // Copies the data in temp buffer to the buffer we will return, while making sure the string ends
@@ -172,15 +172,15 @@ ldr_state_t ldr_queryState(void)
     // Remember to free the dynamic variable
     free(tempBuffer);
 
-    ldr_state_t state = {.stateString =
-                             ldr_stateConfigBuffer};
+    ldr_state_t state = {.stateString = ldr_stateConfigBuffer};
     return state;
 }
 
 void ldr_deinit(void)
 {
     //Tear Down
-    ESP_ERROR_CHECK(adc_oneshot_del_unit(ldr_adcHandlers_g.adcOneshotHandle));
+    ESP_ERROR_CHECK(
+        adc_oneshot_del_unit(ldr_adcHandlers_g.adcOneshotHandle));
     ESP_LOGD(ldr_tag_c, "deregister %s calibration scheme",
              "Line Fitting");
     ESP_ERROR_CHECK(adc_cali_delete_scheme_line_fitting(

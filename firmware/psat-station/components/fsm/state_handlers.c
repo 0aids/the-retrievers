@@ -1,7 +1,7 @@
 #include "state_handlers.h"
 
 #include <stdio.h>
-
+#include "components.h"
 #include "buttons.h"
 #include "buzzer.h"
 #include "esp_log.h"
@@ -11,7 +11,9 @@
 #include "pin_config.h"
 #include "ldr_task.h"
 #include "servo.h"
+#include "errors.h"
 #include "timers.h"
+#include "esp_timer.h"
 
 static servo_data_t servo;
 
@@ -157,10 +159,37 @@ psatFSM_lowPowerStateHandler(const psatFSM_event_t* event)
 psatFSM_state_e
 psatFSM_errorStateHandler(const psatFSM_event_t* event)
 {
-    // static const char* TAG = "PSAT_FSM-Error";
+    static const char* TAG = "PSAT_FSM-Error";
 
+    int                errorId = event->arg;
+    psatErr_error_t*   err     = psatErr_getErrorById(errorId);
+
+    if (!err)
+        return psatFSM_state_permanentError; // TODO: instead should go to last prev state form state buffer
+
+    ESP_LOGI(TAG, "Recieved error with code %s",
+             psatErr_codeToString(err->code));
+
+    psatFSM_component_e comp = err->originComponent;
+    bool recovered           = psatErr_attemptRecovery(comp, *err);
+
+    if (!recovered)
+    {
+        ESP_LOGE(
+            TAG,
+            "Permanent failure in %s, going to permanent error state",
+            psatFSM_componentToString(comp));
+        return psatFSM_state_permanentError;
+    }
+
+    return err->originState;
+}
+
+psatFSM_state_e
+psatFSM_permanentErrorStateHandler(const psatFSM_event_t* event)
+{
     switch (event->type)
     {
-        default: return psatFSM_state_error;
+        default: return psatFSM_state_permanentError;
     }
 }

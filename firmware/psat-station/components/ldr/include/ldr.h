@@ -3,7 +3,6 @@
 #include "esp_adc/adc_cali.h"
 #include <stdbool.h>
 
-
 const static char* ldr_tag_c = "LDR";
 
 //Global structs
@@ -29,7 +28,7 @@ typedef struct
     ldr_state_t stateAfter;
 } ldr_preflightTest_t;
 
-void                ldr_setup(void);
+void ldr_setup(void);
 // In millivolts
 int                 ldr_getVoltage(void);
 ldr_state_t         ldr_queryState(void);
