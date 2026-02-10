@@ -26,15 +26,18 @@ void psatFSM_registerComponent(
     }
 
     psatFSM_component_t component = {
-        .init            = init,
-        .deinit          = deinit,
-        .status          = psatFSM_componentStatus_disabled,
-        .type            = type,
-        .recover         = recover,
-        .recoveryContext = {
-                            .last_recovery_timestamp = 0,
-                            .retry_count             = 0,
-                            }
+        .init    = init,
+        .deinit  = deinit,
+        .status  = psatFSM_componentStatus_disabled,
+        .type    = type,
+        .recover = recover,
+        .recoveryContext =
+            {
+                              .last_recovery_timestamp = 0,
+                              .retry_count             = 0,
+                              },
+        .start = start,
+        .stop  = stop
     };
 
     componentTable[componentId] = component;
