@@ -162,61 +162,27 @@ psatFSM_errorStateHandler(const psatFSM_event_t* event)
     static const char* TAG = "PSAT_FSM-Error";
 
     int                errorId = event->arg;
-    psatErr_error_t*   error   = psatErr_getErrorById(errorId);
+    psatErr_error_t*   err     = psatErr_getErrorById(errorId);
+
+    if (!err)
+        return psatFSM_state_permanentError; // TODO: instead should go to last prev state form state buffer
 
     ESP_LOGI(TAG, "Recieved error with code %s",
-             psatErr_codeToString(error->code));
+             psatErr_codeToString(err->code));
 
-    psatFSM_component_t* component =
-        psatFSM_getComponent(error->originComponent);
+    psatFSM_component_e comp = err->originComponent;
+    bool recovered           = psatErr_attemptRecovery(comp, *err);
 
-    if (component->recoveryContext.retry_count == 0)
+    if (!recovered)
     {
-
-        if (component->recover)
-        {
-            component->recover();
-        }
-        else
-        {
-            if (component->deinit)
-                component->deinit();
-            if (component->init)
-                component->init();
-        }
-    }
-    else if (component->recoveryContext.retry_count == 1)
-    {
-        vTaskDelay(pdMS_TO_TICKS(5000));
-        if (component->recover)
-        {
-            component->recover();
-        }
-        else
-        {
-            if (component->deinit)
-                component->deinit();
-            if (component->init)
-                component->init();
-        }
-    }
-    else if (component->recoveryContext.retry_count == 2)
-    {
-        vTaskDelay(pdMS_TO_TICKS(5000));
-        // on exit
-        vTaskDelay(pdMS_TO_TICKS(5000));
-        // on entry
-    }
-    else
-    {
+        ESP_LOGE(
+            TAG,
+            "Permanent failure in %s, going to permanent error state",
+            psatFSM_componentToString(comp));
         return psatFSM_state_permanentError;
     }
 
-    component->recoveryContext.retry_count++;
-    component->recoveryContext.last_recovery_timestamp =
-        esp_timer_get_time();
-
-    return error->originState;
+    return err->originState;
 }
 
 psatFSM_state_e
