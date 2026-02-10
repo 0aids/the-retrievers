@@ -20,12 +20,16 @@ void test()
 
 void psatFSM_registerAllComponents()
 {
-    psatFSM_registerComponent(psatFSM_component_gps, gps_init, NULL,
-                              test);
-    psatFSM_registerComponent(psatFSM_component_timers, timer_init,
-                              NULL, NULL);
-    psatFSM_registerComponent(psatFSM_component_buzzers, buzzer_init,
-                              NULL, NULL);
-    psatFSM_registerComponent(psatFSM_component_buttons, button_init,
-                              NULL, NULL);
+    psatFSM_registerComponent(
+        psatFSM_component_gps, psatFSM_componentType_task, gps_init,
+        gps_deinit, NULL, gps_startTask, gps_killTask);
+    psatFSM_registerComponent(psatFSM_component_timers,
+                              psatFSM_componentType_multiple,
+                              timer_init, NULL, NULL, NULL, NULL);
+    psatFSM_registerComponent(psatFSM_component_buzzers,
+                              psatFSM_componentType_normal,
+                              buzzer_init, NULL, NULL, NULL, NULL);
+    psatFSM_registerComponent(psatFSM_component_buttons,
+                              psatFSM_componentType_multiple,
+                              button_init, NULL, NULL, NULL, NULL);
 }
