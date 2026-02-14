@@ -25,6 +25,9 @@ static void         gps_task(void* arg)
 
     while (1)
     {
+        if (ulTaskNotifyTake(pdTRUE, 0))
+            break;
+
         uint8_t data[UART_READ_CHUNK];
         int     len =
             uart_read_bytes(CFG_GPS_UART_NUM_d, data, sizeof(data),
@@ -114,9 +117,11 @@ void gps_startTask()
 void gps_killTask()
 {
     ESP_LOGI("GPS", "Killing GPS Task");
-    if (gpsTask_s)
-    {
-        vTaskDelete(gpsTask_s);
-        gpsTask_s = NULL;
-    }
+
+    if (!gpsTask_s)
+        return;
+
+    xTaskNotifyGive(gpsTask_s);
+    vTaskDelete(gpsTask_s);
+    gpsTask_s = NULL;
 }
