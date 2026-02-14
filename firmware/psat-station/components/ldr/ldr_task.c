@@ -86,7 +86,7 @@ void ldr_startTask()
 {
     ESP_LOGI(TAG, "Starting LDR Task");
     xTaskCreatePinnedToCore(ldr_adcValidationTask, "ldr_adc_task",
-                            4096, NULL, 5, &ldrTask_s, 1);
+                            4096, NULL, 4, &ldrTask_s, 1);
 }
 
 void ldr_killTask()

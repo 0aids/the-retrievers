@@ -15,7 +15,7 @@
 void loraFSM_startAsTask()
 {
     xTaskCreatePinnedToCore((void*)loraFsm_start, "lora_task", 4096,
-                            NULL, 20, NULL, 0);
+                            NULL, 8, NULL, 0);
 }
 
 void psatFSM_prelaunchEntryHandler()
