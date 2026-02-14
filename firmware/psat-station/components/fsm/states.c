@@ -68,7 +68,7 @@ static psatFsm_state_t stateTable[] = {
                              .stateHandler =
                                  psatFSM_errorStateHandler},
     [psatFSM_state_permanentError] =
-        {.state            = psatFSM_state_error,
+        {.state            = psatFSM_state_permanentError,
                              .defaultNextState = psatFSM_state_permanentError,
                              .onStateEntry     = psatFSM_permanentErrorEntryHandler,
                              .onStateExit      = psatFSM_permanentErrorExitHandler,
