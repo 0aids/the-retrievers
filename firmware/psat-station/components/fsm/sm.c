@@ -26,7 +26,7 @@ void psatFSM_postEvent(const psatFSM_event_t* event)
          event->type == psatFSM_eventType_timer5s) &&
         (psatFSM_getCurrentState() == psatFSM_state_error))
     {
-        ESP_LOGI(TAG,
+        ESP_LOGD(TAG,
                  "Dropping timer event due to being in the error "
                  "state");
         return;
