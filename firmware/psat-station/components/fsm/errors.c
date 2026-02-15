@@ -125,7 +125,7 @@ bool psatErr_attemptRecovery(psatFSM_component_e componentId,
         return false;
     else if (currentRetry == 2)
     {
-        psatFsm_state_t* originState =
+        psatFSM_state_t* originState =
             psatFSM_getState(error.originState);
 
         if (originState)

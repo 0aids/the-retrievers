@@ -89,7 +89,7 @@ void psatFSM_mainLoop(void* arg)
         if (currentEvent.type == psatFSM_eventType_error)
         {
             ESP_LOGI("FSM", "Recieved Error Event :(");
-            psatFsm_state_t* errorState =
+            psatFSM_state_t* errorState =
                 psatFSM_getState(psatFSM_state_error);
 
             psatFSM_setCurrentState(psatFSM_state_error);
@@ -119,7 +119,7 @@ void psatFSM_mainLoop(void* arg)
                  psatFSM_eventTypeToString(currentEvent.type),
                  psatFSM_stateToString(currentState));
 
-        psatFsm_state_t* currentStateDefinition =
+        psatFSM_state_t* currentStateDefinition =
             psatFSM_getState(currentState);
         if (currentStateDefinition->stateHandler)
         {
@@ -147,7 +147,7 @@ void psatFSM_mainLoop(void* arg)
             psatFSM_setCurrentState(nextState);
 
             // call the entry function for the new state
-            psatFsm_state_t* nextStateDefinition =
+            psatFSM_state_t* nextStateDefinition =
                 psatFSM_getState(nextState);
             nextStateDefinition->onStateEntry();
         }
@@ -204,7 +204,7 @@ void psatFSM_stateOverride(psatFSM_state_e newState)
     ESP_LOGI(TAG, "Overriding current state to %i", newState);
     psatFSM_setCurrentState(newState);
 
-    psatFsm_state_t* newStateDefinition = psatFSM_getState(newState);
+    psatFSM_state_t* newStateDefinition = psatFSM_getState(newState);
     newStateDefinition->onStateEntry();
 }
 
@@ -213,7 +213,7 @@ void psatFSM_stateNext()
     ESP_LOGI(TAG, "Moving to the next state");
 
     psatFSM_state_e  currentState = psatFSM_getCurrentState();
-    psatFsm_state_t* currentStateDefinition =
+    psatFSM_state_t* currentStateDefinition =
         psatFSM_getState(currentState);
     currentStateDefinition->onStateExit();
 
@@ -221,7 +221,7 @@ void psatFSM_stateNext()
         currentStateDefinition->defaultNextState;
     psatFSM_setCurrentState(nextState);
 
-    psatFsm_state_t* nextStateDefinition =
+    psatFSM_state_t* nextStateDefinition =
         psatFSM_getState(nextState);
     nextStateDefinition->onStateEntry();
 }

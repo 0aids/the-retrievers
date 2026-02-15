@@ -7,7 +7,7 @@
 
 static const char*     TAG = "PSAT_STATE";
 
-static psatFsm_state_t stateTable[] = {
+static psatFSM_state_t stateTable[] = {
     [psatFSM_state_start] = {.state = psatFSM_state_start,
                              .defaultNextState =
                                  psatFSM_state_prelaunch, .onStateExit = psatFSM_startExitHandler,
@@ -75,7 +75,7 @@ static psatFsm_state_t stateTable[] = {
                              .stateHandler     = psatFSM_permanentErrorStateHandler},
 };
 
-psatFsm_state_t* psatFSM_getState(psatFSM_state_e state)
+psatFSM_state_t* psatFSM_getState(psatFSM_state_e state)
 {
     if (state < 0 || state >= psatFSM_state__COUNT)
     {

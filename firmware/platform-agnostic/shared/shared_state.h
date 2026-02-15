@@ -139,7 +139,7 @@ typedef struct
     void (*onStateEntry)(void);
     psatFSM_stateHandler_t stateHandler;
     void (*onStateExit)(void);
-} psatFsm_state_t;
+} psatFSM_state_t;
 
 // Component Definition
 typedef struct
