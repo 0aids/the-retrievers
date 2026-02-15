@@ -247,7 +247,7 @@ void printQueueContents(QueueHandle_t xQueue)
     UBaseType_t     uxNumberOfItems = uxQueueMessagesWaiting(xQueue);
     psatFSM_event_t receivedItem;
 
-    if (uxNumberOfItems < 0)
+    if (uxNumberOfItems == 0)
         return;
 
     printf("Queue contents (%d items):\n", uxNumberOfItems);
