@@ -8,16 +8,30 @@
 
 #define ERROR_IGNORE_THRESHOLD 45000000 // 45 seconds
 
-static int       errorCounter = 0; // used for error id
+static int               errorCounter = 0; // used for error id
+static SemaphoreHandle_t errorStateLock_s;
 
-psatErr_error_t  errorBuffer[NUMBER_ERRORS_STORED];
-circularBuffer_t errorCircularBuffer = {
-    .head  = 0,
-    .count = 0,
+psatErr_error_t          errorBuffer[NUMBER_ERRORS_STORED];
+circularBuffer_t         errorCircularBuffer = {
+            .head  = 0,
+            .count = 0,
 };
+
+static inline void lock_take()
+{
+    if (errorStateLock_s)
+        xSemaphoreTake(errorStateLock_s, portMAX_DELAY);
+}
+
+static inline void lock_give()
+{
+    if (errorStateLock_s)
+        xSemaphoreGive(errorStateLock_s);
+}
 
 void psatErr_bufferInsert(psatErr_error_t error)
 {
+    lock_take();
     errorBuffer[errorCircularBuffer.head] = error;
     errorCircularBuffer.head =
         (errorCircularBuffer.head + 1) % NUMBER_ERRORS_STORED;
@@ -26,11 +40,13 @@ void psatErr_bufferInsert(psatErr_error_t error)
     {
         errorCircularBuffer.count++;
     }
+    lock_give();
 }
 
 int psatErr_bufferCopyOrdered(
     psatErr_error_t errorOrderedBuffer[NUMBER_ERRORS_STORED])
 {
+    lock_take();
     int index =
         (errorCircularBuffer.head - 1 + NUMBER_ERRORS_STORED) %
         NUMBER_ERRORS_STORED;
@@ -41,25 +57,47 @@ int psatErr_bufferCopyOrdered(
             (index - 1 + NUMBER_ERRORS_STORED) % NUMBER_ERRORS_STORED;
     }
 
+    lock_give();
     return errorCircularBuffer.count;
 }
 
 psatErr_error_t* psatErr_getMostRecentError()
 {
+    lock_take();
+    if (errorCircularBuffer.count == 0)
+    {
+        lock_give();
+        return NULL;
+    }
     int index =
         (errorCircularBuffer.head - 1 + NUMBER_ERRORS_STORED) %
         NUMBER_ERRORS_STORED;
 
-    return &errorBuffer[index];
+    psatErr_error_t* error = &errorBuffer[index];
+    lock_give();
+
+    return error;
 }
 
 psatErr_error_t* psatErr_getErrorById(int id)
 {
+    lock_take();
+    if (id < 0)
+    {
+        lock_give();
+        return NULL;
+    }
+
     for (int i = 0; i < NUMBER_ERRORS_STORED; i++)
     {
         if (errorBuffer[i].id == id)
+        {
+            lock_give();
             return &errorBuffer[i];
+        }
     }
+
+    lock_give();
     return NULL;
 }
 
@@ -166,9 +204,9 @@ bool psatErr_attemptRecovery(psatFSM_component_e componentId,
             component->start();
     }
 
-    ESP_LOGIW(TAG,
-             "Recovery succeeded for component %s (error id: %d)",
-             psatFSM_componentToString(componentId), error.id);
+    ESP_LOGW(TAG,
+              "Recovery succeeded for component %s (error id: %d)",
+              psatFSM_componentToString(componentId), error.id);
     // TODO: call some sort of component->isHealthy() function and only then return true
     return true;
 }
