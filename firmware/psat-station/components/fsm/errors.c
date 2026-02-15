@@ -118,8 +118,9 @@ bool psatErr_attemptRecovery(psatFSM_component_e componentId,
     uint32_t backoffDelay = pow(3, currentRetry) *
         1000; // so its exponential longer each time
 
-    ESP_LOGW(TAG, "Attempting to recover %s (retry %d)",
-             psatFSM_componentToString(componentId), currentRetry);
+    ESP_LOGW(TAG, "Attempting to recover %s (error id: %i retry: %d)",
+             psatFSM_componentToString(componentId), error.id,
+             currentRetry);
 
     if (currentRetry >= 3)
         return false;
@@ -141,29 +142,34 @@ bool psatErr_attemptRecovery(psatFSM_component_e componentId,
     if (component->recover)
     {
         component->recover();
-        return true;
+    }
+    else
+    {
+        vTaskDelay(pdMS_TO_TICKS(backoffDelay));
+
+        if (component->type == psatFSM_componentType_task &&
+            component->stop)
+            component->stop();
+
+        vTaskDelay(pdMS_TO_TICKS(250));
+        if (component->deinit)
+            component->deinit();
+
+        vTaskDelay(pdMS_TO_TICKS(backoffDelay));
+
+        if (component->init)
+            component->init();
+
+        vTaskDelay(pdMS_TO_TICKS(250));
+        if (component->type == psatFSM_componentType_task &&
+            component->start)
+            component->start();
     }
 
-    vTaskDelay(pdMS_TO_TICKS(backoffDelay));
-
-    if (component->type == psatFSM_componentType_task &&
-        component->stop)
-        component->stop();
-
-    vTaskDelay(pdMS_TO_TICKS(250));
-    if (component->deinit)
-        component->deinit();
-
-    vTaskDelay(pdMS_TO_TICKS(backoffDelay));
-
-    if (component->init)
-        component->init();
-
-    vTaskDelay(pdMS_TO_TICKS(250));
-    if (component->type == psatFSM_componentType_task &&
-        component->start)
-        component->start();
-
+    ESP_LOGIW(TAG,
+             "Recovery succeeded for component %s (error id: %d)",
+             psatFSM_componentToString(componentId), error.id);
+    // TODO: call some sort of component->isHealthy() function and only then return true
     return true;
 }
 // how this works rn:
