@@ -1,10 +1,7 @@
 #include "buttons.h"
-#include "buzzer.h"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "gps_driver.h"
-#include "ldr_task.h"
 #include "servo.h"
 #include "state_handlers.h"
 #include "timers.h"
@@ -34,16 +31,15 @@ void psatFSM_prelaunchEntryHandler()
 
 void psatFSM_ascentEntryHandler()
 {
-    ldr_startTask();
-    button_enable(button_id_ldr);
+    psatFSM_getComponent(psatFSM_component_ldr)->start();
 }
 
 void psatFSM_deployPendingEntryHandler() {}
 
 void psatFSM_deployedEntryHandler()
 {
-    ldr_killTask();
-    button_disable(button_id_ldr);
+    psatFSM_getComponent(psatFSM_component_ldr)->stop();
+
     timer_stop(timer_timerId_10s);
 
     timer_start(timer_timerId_1s);
@@ -53,7 +49,7 @@ void psatFSM_deployedEntryHandler()
 
 void psatFSM_descentEntryHandler()
 {
-    gps_startTask();
+    psatFSM_getComponent(psatFSM_component_gps)->start();
     button_enable(button_id_landing);
 }
 

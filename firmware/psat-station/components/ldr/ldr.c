@@ -183,8 +183,10 @@ void ldr_deinit(void)
         adc_oneshot_del_unit(ldr_adcHandlers_g.adcOneshotHandle));
     ESP_LOGD(ldr_tag_c, "deregister %s calibration scheme",
              "Line Fitting");
+#if ADC_CALI_SCHEME_LINE_FITTING_SUPPORTED
     ESP_ERROR_CHECK(adc_cali_delete_scheme_line_fitting(
         ldr_adcHandlers_g.adcCaliChanHandle));
+#endif
 }
 
 ldr_preflightTest_t ldr_preflightTest(void)

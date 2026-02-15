@@ -1,6 +1,7 @@
 #include "ldr_task.h"
 
 #include "esp_log.h"
+#include "buttons.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "ldr.h"
@@ -19,8 +20,6 @@ void                ldr_adcValidationTask(void* arg)
     int adcValue           = 0;
     int timeAboveThreshold = 0;
     int totalTime          = 0;
-
-    ldr_setup();
 
     while (1)
     {
@@ -87,6 +86,7 @@ void ldr_startTask()
     ESP_LOGI(TAG, "Starting LDR Task");
     xTaskCreatePinnedToCore(ldr_adcValidationTask, "ldr_adc_task",
                             4096, NULL, 4, &ldrTask_s, 1);
+    button_enable(button_id_ldr);
 }
 
 void ldr_killTask()
@@ -94,6 +94,7 @@ void ldr_killTask()
     ESP_LOGI(TAG, "Killing LDR Task");
     if (ldrTask_s)
     {
+        button_delete(button_id_ldr);
         vTaskDelete(ldrTask_s);
         ldrTask_s = NULL;
     }
