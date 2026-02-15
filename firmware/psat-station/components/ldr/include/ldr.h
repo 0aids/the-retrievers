@@ -3,8 +3,6 @@
 #include "esp_adc/adc_cali.h"
 #include <stdbool.h>
 
-const static char* ldr_tag_c = "LDR";
-
 //Global structs
 
 typedef struct

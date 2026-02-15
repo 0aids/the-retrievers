@@ -6,6 +6,8 @@
 #include "esp_log.h"
 #include <driver/gpio.h>
 
+const static char* ldr_tag_c = "LDR";
+
 extern esp_err_t
 adc_cali_delete_scheme_line_fitting(adc_cali_handle_t handle);
 
