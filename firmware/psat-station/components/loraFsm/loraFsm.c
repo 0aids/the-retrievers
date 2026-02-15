@@ -161,7 +161,7 @@ static void _loraFsm_broadcast()
                              (uint8_t*)&gpsData, sizeof(gpsData));
 
     loraFsm_packetSend(&gpsStatePacket);
-    loraFsm_packetFree(&psatStatePacket);
+    loraFsm_packetFree(&gpsStatePacket);
 }
 
 static void _loraFsm_runStateIdle()
