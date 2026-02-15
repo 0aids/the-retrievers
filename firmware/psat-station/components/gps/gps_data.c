@@ -12,6 +12,8 @@
 static gps_data_t        gpsData_s;
 static SemaphoreHandle_t gpsStateMutex_s;
 
+static const char*       TAG = "GPS";
+
 void                     gps_stateInit(void)
 {
     memset(&gpsData_s, 0, sizeof(gpsData_s));
@@ -55,34 +57,53 @@ void gps_stateCompleteOverwrite(const gps_data_t* src)
     }
 }
 
+#define BOOL_TO_STRING(expr) ((expr) ? "true" : "false")
 void gps_logGpsSnapshot(gps_data_t* gps)
 {
-    ESP_LOGI("GPS", "===START OF GPS DATA===");
+    static const gps_data_t zeroStruct;
 
     if (!gps)
     {
-        ESP_LOGW("GPS", "NULL GPS snapshot");
+        ESP_LOGW(TAG, "NULL GPS snapshot");
         return;
     }
 
-    ESP_LOGI("GPS", "Position Data Valid: %d", gps->positionValid);
-    ESP_LOGI("GPS", "Coordinates: (%f, %f)", gps->latitude,
+    if (memcmp(gps, &zeroStruct, sizeof(*gps)) == 0)
+    {
+
+        ESP_LOGW(TAG,
+                 "GPS struct all zeros (no data received yet)");
+        return;
+    }
+
+    ESP_LOGI(TAG, "===START OF GPS DATA===");
+
+    ESP_LOGI(TAG, "Position Data Valid: %s",
+             BOOL_TO_STRING(gps->positionValid));
+    ESP_LOGI(TAG, "Coordinates: (%f, %f)", gps->latitude,
              gps->longitude);
-    ESP_LOGI("GPS", "Navigation Data Valid: %d", gps->navValid);
-    ESP_LOGI("GPS", "Speed: %.2f kph", gps->speedKph);
-    ESP_LOGI("GPS", "Course: %.2f", gps->courseDeg);
-    ESP_LOGI("GPS", "Date: %d-%d-%d", gps->day, gps->month,
+
+    ESP_LOGI(TAG, "Navigation Data Valid: %s",
+             BOOL_TO_STRING(gps->navValid));
+    ESP_LOGI(TAG, "Speed: %.2f kph", gps->speedKph);
+    ESP_LOGI(TAG, "Course: %.2f", gps->courseDeg);
+    ESP_LOGI(TAG, "Date: %02d-%02d-%04d", gps->day, gps->month,
              gps->year);
-    ESP_LOGI("GPS", "Time: %d:%d:%d", gps->hours, gps->minutes,
+    ESP_LOGI(TAG, "Time: %02d:%02d:%02d", gps->hours, gps->minutes,
              gps->seconds);
-    ESP_LOGI("GPS", "Fix Valid: %d", gps->fixInfoValid);
-    ESP_LOGI("GPS", "Fix Quality: %d", gps->fixQuality);
-    ESP_LOGI("GPS", "Satellites Tracked: %d", gps->satellitesTracked);
-    ESP_LOGI("GPS", "HDOP: %f", gps->hdop);
-    ESP_LOGI("GPS", "Altitude Valid: %d", gps->altitudeValid);
-    ESP_LOGI("GPS", "Altitude: %f", gps->altitude);
-    ESP_LOGI("GPS", "Satellites in View: %d", gps->satsInView);
-    ESP_LOGI("GPS", "===END OF GPS DATA===\n\n");
+
+    ESP_LOGI(TAG, "Fix Valid: %s",
+             BOOL_TO_STRING(gps->fixInfoValid));
+    ESP_LOGI(TAG, "Fix Quality: %d", gps->fixQuality);
+    ESP_LOGI(TAG, "Satellites Tracked: %d", gps->satellitesTracked);
+    ESP_LOGI(TAG, "HDOP: %f", gps->hdop);
+
+    ESP_LOGI(TAG, "Altitude Valid: %s",
+             BOOL_TO_STRING(gps->altitudeValid));
+    ESP_LOGI(TAG, "Altitude: %f", gps->altitude);
+    ESP_LOGI(TAG, "Satellites in View: %d", gps->satsInView);
+
+    ESP_LOGI(TAG, "===END OF GPS DATA===\n\n");
 }
 
 // Static functions for internal state use:
@@ -98,11 +119,11 @@ void gps_processLine(const char* gpsBuffer_c)
 {
     if (!minmea_check(gpsBuffer_c, false))
     {
-        ESP_LOGW("GPS", "Bad Checksum: %s", gpsBuffer_c);
+        ESP_LOGW(TAG, "Bad Checksum: %s", gpsBuffer_c);
         return;
     }
 
-    ESP_LOGD("GPS", "Processing Received Line");
+    ESP_LOGD(TAG, "Processing Received Line");
 
     switch (minmea_sentence_id(gpsBuffer_c, false))
     {
@@ -162,7 +183,7 @@ static inline double knotsToKph(double knots)
 static void
 gps_stateUpdateFromRMC(const struct minmea_sentence_rmc* rmc)
 {
-    ESP_LOGD("GPS", "Updating State from received RMC string");
+    ESP_LOGD(TAG, "Updating State from received RMC string");
     if (!rmc)
         return;
 
@@ -193,7 +214,7 @@ gps_stateUpdateFromRMC(const struct minmea_sentence_rmc* rmc)
 static void
 gps_stateUpdateFromGGA(const struct minmea_sentence_gga* gga)
 {
-    ESP_LOGD("GPS", "Updating State from received GGA string");
+    ESP_LOGD(TAG, "Updating State from received GGA string");
     if (!gga)
         return;
 
@@ -220,7 +241,7 @@ gps_stateUpdateFromGGA(const struct minmea_sentence_gga* gga)
 static void
 gps_stateUpdateFromGSV(const struct minmea_sentence_gsv* gsv)
 {
-    ESP_LOGD("GPS", "Updating State from received GSV string");
+    ESP_LOGD(TAG, "Updating State from received GSV string");
     if (!gsv)
         return;
 
