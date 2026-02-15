@@ -22,6 +22,16 @@ void psatFSM_postEvent(const psatFSM_event_t* event)
     if (!eventQueue_s || !event)
         return;
 
+    if ((event->type == psatFSM_eventType_timer1s ||
+         event->type == psatFSM_eventType_timer5s) &&
+        (psatFSM_getCurrentState() == psatFSM_state_error))
+    {
+        ESP_LOGI(TAG,
+                 "Dropping timer event due to being in the error "
+                 "state");
+        return;
+    }
+
     if (xQueueSend(eventQueue_s, event, 0) != pdPASS)
     {
         ESP_LOGW(TAG,
@@ -82,6 +92,8 @@ void psatFSM_mainLoop(void* arg)
             psatFsm_state_t* errorState =
                 psatFSM_getState(psatFSM_state_error);
 
+            psatFSM_setCurrentState(psatFSM_state_error);
+
             errorState->onStateEntry();
             nextState = errorState->stateHandler(&currentEvent);
             errorState->onStateExit();
@@ -101,10 +113,12 @@ void psatFSM_mainLoop(void* arg)
             globalEventHandler(&currentEvent);
         }
 
-        ESP_LOGI("FSM", "Received Event: %s",
-                 psatFSM_eventTypeToString(currentEvent.type));
+        psatFSM_state_e currentState = psatFSM_getCurrentState();
 
-        psatFSM_state_e  currentState = psatFSM_getCurrentState();
+        ESP_LOGI("FSM", "Received Event: %s in state: %s",
+                 psatFSM_eventTypeToString(currentEvent.type),
+                 psatFSM_stateToString(currentState));
+
         psatFsm_state_t* currentStateDefinition =
             psatFSM_getState(currentState);
         if (currentStateDefinition->stateHandler)
@@ -225,5 +239,28 @@ void psatFSM_stateFastForward(psatFSM_state_e target)
     {
         psatFSM_stateNext();
         currentState = psatFSM_getCurrentState();
+    }
+}
+
+void printQueueContents(QueueHandle_t xQueue)
+{
+    UBaseType_t     uxNumberOfItems = uxQueueMessagesWaiting(xQueue);
+    psatFSM_event_t receivedItem;
+
+    if (uxNumberOfItems < 0)
+        return;
+
+    printf("Queue contents (%d items):\n", uxNumberOfItems);
+    for (UBaseType_t i = 0; i < uxNumberOfItems; i++)
+    {
+        if (xQueueReceive(xQueue, &receivedItem, 0) == pdPASS)
+        {
+            printf("[%d]: %s in %s\n", i,
+                   psatFSM_eventTypeToString(receivedItem.type),
+                   psatFSM_stateToString(psatFSM_getCurrentState()));
+
+            // we removed the event to print, so gotta put it back in
+            xQueueSendToBack(xQueue, &receivedItem, 0);
+        }
     }
 }
