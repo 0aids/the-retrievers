@@ -6,7 +6,7 @@
 #include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
 
-#define ERROR_IGNORE_THRESHOLD 20000000 // 20 seconds
+#define ERROR_IGNORE_THRESHOLD 45000000 // 45 seconds
 
 static int       errorCounter = 0; // used for error id
 
@@ -150,6 +150,7 @@ bool psatErr_attemptRecovery(psatFSM_component_e componentId,
         component->stop)
         component->stop();
 
+    vTaskDelay(pdMS_TO_TICKS(250));
     if (component->deinit)
         component->deinit();
 
@@ -158,6 +159,7 @@ bool psatErr_attemptRecovery(psatFSM_component_e componentId,
     if (component->init)
         component->init();
 
+    vTaskDelay(pdMS_TO_TICKS(250));
     if (component->type == psatFSM_componentType_task &&
         component->start)
         component->start();
