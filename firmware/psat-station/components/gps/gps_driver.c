@@ -17,16 +17,20 @@
 #define GPS_RX_BUFFER_SIZE 2048
 
 static TaskHandle_t gpsTask_s = NULL;
+bool                runTask   = true;
 
 static void         gps_task(void* arg)
 {
     char gpsBuffer[GPS_LINE_MAX];
     int  gpsBufferPosition = 0;
 
-    while (1)
+    while (runTask)
     {
         if (ulTaskNotifyTake(pdTRUE, 0))
+        {
+            printf("\nTASK NOTIFICATION KILLED ME\n");
             break;
+        }
 
         uint8_t data[UART_READ_CHUNK];
         int     len =
@@ -76,6 +80,7 @@ static void         gps_task(void* arg)
             }
         }
     }
+    vTaskDelete(NULL);
 }
 
 void gps_init()
@@ -103,13 +108,13 @@ void gps_init()
 void gps_deinit()
 {
     ESP_LOGI("GPS", "GPS Deinit");
-    uart_flush(CFG_GPS_UART_NUM_d);
     uart_driver_delete(CFG_GPS_UART_NUM_d);
 }
 
 void gps_startTask()
 {
     ESP_LOGI("GPS", "Starting GPS Task");
+    runTask = true;
     xTaskCreatePinnedToCore(gps_task, "gps_task", GPS_TASK_STACK,
                             NULL, GPS_TASK_PRIO, &gpsTask_s, 0);
 }
@@ -122,6 +127,6 @@ void gps_killTask()
         return;
 
     xTaskNotifyGive(gpsTask_s);
-    vTaskDelete(gpsTask_s);
+    runTask   = false;
     gpsTask_s = NULL;
 }
