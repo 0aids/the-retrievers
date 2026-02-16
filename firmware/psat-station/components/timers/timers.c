@@ -29,6 +29,8 @@ static const timer_config_t timer_config_c[timer_timerId__COUNT] = {
                            .name      = "mechanical",
                            .global    = true },
 };
+
+static timer_status_e     timerStatus_s[timer_timerId__COUNT];
 static esp_timer_handle_t timers_s[timer_timerId__COUNT];
 
 static void               timer_callback(void* arg)
@@ -44,6 +46,7 @@ void timer_init(void)
     for (int i = 0; i < timer_timerId__COUNT; i++)
     {
         timer_ids[i]                 = (timer_id_e)i;
+        timerStatus_s[i]             = timer_status_disabled;
         esp_timer_create_args_t args = {.callback = timer_callback,
                                         .arg      = &timer_ids[i],
                                         .name =
@@ -71,7 +74,8 @@ void timer_start(timer_id_e id)
 
     esp_timer_stop(timers_s[id]);
 
-    esp_err_t err = esp_timer_start_periodic(
+    timerStatus_s[id] = timer_status_enabled;
+    esp_err_t err     = esp_timer_start_periodic(
         timers_s[id], TIMER_MS_TO_US(timer_config_c[id].period_ms));
 
     if (err != ESP_OK)
@@ -108,10 +112,40 @@ void timer_stop(timer_id_e id)
         return;
     }
 
+    if (timerStatus_s[id] ==
+        timer_status_enabled) // we dont wanna disable if its paused
+    {
+        timerStatus_s[id] = timer_status_disabled;
+    }
     esp_err_t err = esp_timer_stop(timers_s[id]);
     if (err != ESP_OK && err != ESP_ERR_INVALID_STATE)
     {
         ESP_LOGE(TAG, "Failed to stop timer %d (the error: %s)", id,
                  esp_err_to_name(err));
+    }
+}
+
+void timer_pauseAllActive()
+{
+    for (int id = 0; id < timer_timerId__COUNT; id++)
+    {
+        timer_status_e status = timerStatus_s[id];
+        if (status == timer_status_enabled)
+        {
+            timerStatus_s[id] = timer_status_paused;
+            timer_stop(id);
+        }
+    }
+}
+
+void timer_unpauseAllPaused()
+{
+    for (int id = 0; id < timer_timerId__COUNT; id++)
+    {
+        timer_status_e status = timerStatus_s[id];
+        if (status == timer_status_paused)
+        {
+            timer_start(id);
+        }
     }
 }

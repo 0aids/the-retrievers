@@ -17,20 +17,11 @@ static TaskHandle_t      xHandleSM_s  = NULL;
 static QueueHandle_t     eventQueue_s = NULL;
 static SemaphoreHandle_t stateMutex_s = NULL;
 
+void printQueueContents(QueueHandle_t xQueue);
 void psatFSM_postEvent(const psatFSM_event_t* event)
 {
     if (!eventQueue_s || !event)
         return;
-
-    if ((event->type == psatFSM_eventType_timer1s ||
-         event->type == psatFSM_eventType_timer5s) &&
-        (psatFSM_getCurrentState() == psatFSM_state_error))
-    {
-        ESP_LOGD(TAG,
-                 "Dropping timer event due to being in the error "
-                 "state");
-        return;
-    }
 
     if (xQueueSend(eventQueue_s, event, 0) != pdPASS)
     {

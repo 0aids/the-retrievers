@@ -31,5 +31,8 @@ void psatFSM_descentExitHandler()
 void psatFSM_landingExitHandler() {}
 void psatFSM_recoveryExitHandler() {}
 void psatFSM_lowPowerExitHandler() {}
-void psatFSM_errorExitHandler() {}
+void psatFSM_errorExitHandler()
+{
+    timer_unpauseAllPaused();
+}
 void psatFSM_permanentErrorExitHandler() {}
