@@ -16,59 +16,70 @@ void helpers_printHeapDetails(void)
     // Default heap (all capabilities)
     heap_caps_get_info(&info, MALLOC_CAP_DEFAULT);
     ESP_LOGI(__FUNCTION__, "DEFAULT HEAP:");
-    ESP_LOGI(__FUNCTION__, "  Total free bytes        : %u", info.total_free_bytes);
-    ESP_LOGI(__FUNCTION__, "  Minimum free bytes ever : %u", info.minimum_free_bytes);
-    ESP_LOGI(__FUNCTION__, "  Largest free block      : %u", info.largest_free_block);
-    ESP_LOGI(__FUNCTION__, "  Allocated blocks        : %u", info.allocated_blocks);
-    ESP_LOGI(__FUNCTION__, "  Free blocks             : %u", info.free_blocks);
-    ESP_LOGI(__FUNCTION__, "  Total allocated bytes   : %u", info.total_allocated_bytes);
+    ESP_LOGI(__FUNCTION__, "  Total free bytes        : %u",
+             info.total_free_bytes);
+    ESP_LOGI(__FUNCTION__, "  Minimum free bytes ever : %u",
+             info.minimum_free_bytes);
+    ESP_LOGI(__FUNCTION__, "  Largest free block      : %u",
+             info.largest_free_block);
+    ESP_LOGI(__FUNCTION__, "  Allocated blocks        : %u",
+             info.allocated_blocks);
+    ESP_LOGI(__FUNCTION__, "  Free blocks             : %u",
+             info.free_blocks);
+    ESP_LOGI(__FUNCTION__, "  Total allocated bytes   : %u",
+             info.total_allocated_bytes);
 
     // Internal RAM
     heap_caps_get_info(&info, MALLOC_CAP_INTERNAL);
     ESP_LOGI(__FUNCTION__, "INTERNAL RAM:");
-    ESP_LOGI(__FUNCTION__, "  Free bytes              : %u", info.total_free_bytes);
-    ESP_LOGI(__FUNCTION__, "  Largest free block      : %u", info.largest_free_block);
+    ESP_LOGI(__FUNCTION__, "  Free bytes              : %u",
+             info.total_free_bytes);
+    ESP_LOGI(__FUNCTION__, "  Largest free block      : %u",
+             info.largest_free_block);
 
     // SPI RAM (if enabled)
 #if CONFIG_SPIRAM
     heap_caps_get_info(&info, MALLOC_CAP_SPIRAM);
     ESP_LOGI(__FUNCTION__, "SPIRAM:");
-    ESP_LOGI(__FUNCTION__, "  Free bytes              : %u", info.total_free_bytes);
-    ESP_LOGI(__FUNCTION__, "  Largest free block      : %u", info.largest_free_block);
+    ESP_LOGI(__FUNCTION__, "  Free bytes              : %u",
+             info.total_free_bytes);
+    ESP_LOGI(__FUNCTION__, "  Largest free block      : %u",
+             info.largest_free_block);
 #endif
 
     ESP_LOGI(__FUNCTION__, "=================================");
 }
 
-bool helpers_malloc(helpers_malloced_t *data, uint32_t bufferSize)
+bool helpers_malloc(helpers_malloced_t* data, uint32_t bufferSize)
 {
     uint8_t* p_ma = malloc(bufferSize);
-    if (!p_ma) return false;
+    if (!p_ma)
+        return false;
 
-    data->buffer = p_ma;
+    data->buffer     = p_ma;
     data->bufferSize = bufferSize;
     return true;
 }
-bool helpers_realloc(helpers_malloced_t *data, uint32_t bufferSize)
+bool helpers_realloc(helpers_malloced_t* data, uint32_t bufferSize)
 {
-    uint8_t* new_ma= realloc(data->buffer, bufferSize);
+    uint8_t* new_ma = realloc(data->buffer, bufferSize);
     if (!new_ma)
     {
         return false;
     }
-    data->buffer = new_ma;
+    data->buffer     = new_ma;
     data->bufferSize = bufferSize;
     return true;
 }
-bool helpers_free(helpers_malloced_t *data)
+bool helpers_free(helpers_malloced_t* data)
 {
     if (data->buffer)
         free(data->buffer);
-    data->buffer = NULL;
+    data->buffer     = NULL;
     data->bufferSize = 0;
     return true;
 }
-bool helpers_smartAlloc(helpers_malloced_t *data, uint32_t bufferSize)
+bool helpers_smartAlloc(helpers_malloced_t* data, uint32_t bufferSize)
 {
     if (data->buffer && bufferSize <= data->bufferSize)
         return true;

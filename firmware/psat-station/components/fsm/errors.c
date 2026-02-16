@@ -1,0 +1,223 @@
+#include "errors.h"
+#include "states.h"
+#include "esp_log.h"
+#include "components.h"
+#include "math.h"
+#include "esp_timer.h"
+#include "freertos/FreeRTOS.h"
+
+#define ERROR_IGNORE_THRESHOLD 45000000 // 45 seconds
+
+static int               errorCounter = 0; // used for error id
+static SemaphoreHandle_t errorStateLock_s;
+
+psatErr_error_t          errorBuffer[NUMBER_ERRORS_STORED];
+circularBuffer_t         errorCircularBuffer = {
+            .head  = 0,
+            .count = 0,
+};
+
+static inline void lock_take()
+{
+    if (errorStateLock_s)
+        xSemaphoreTake(errorStateLock_s, portMAX_DELAY);
+}
+
+static inline void lock_give()
+{
+    if (errorStateLock_s)
+        xSemaphoreGive(errorStateLock_s);
+}
+
+void psatErr_bufferInsert(psatErr_error_t error)
+{
+    lock_take();
+    errorBuffer[errorCircularBuffer.head] = error;
+    errorCircularBuffer.head =
+        (errorCircularBuffer.head + 1) % NUMBER_ERRORS_STORED;
+
+    if (errorCircularBuffer.count < NUMBER_ERRORS_STORED)
+    {
+        errorCircularBuffer.count++;
+    }
+    lock_give();
+}
+
+int psatErr_bufferCopyOrdered(
+    psatErr_error_t errorOrderedBuffer[NUMBER_ERRORS_STORED])
+{
+    lock_take();
+    int index =
+        (errorCircularBuffer.head - 1 + NUMBER_ERRORS_STORED) %
+        NUMBER_ERRORS_STORED;
+    for (int i = 0; i < errorCircularBuffer.count; i++)
+    {
+        errorOrderedBuffer[i] = errorBuffer[index];
+        index =
+            (index - 1 + NUMBER_ERRORS_STORED) % NUMBER_ERRORS_STORED;
+    }
+
+    lock_give();
+    return errorCircularBuffer.count;
+}
+
+psatErr_error_t* psatErr_getMostRecentError()
+{
+    lock_take();
+    if (errorCircularBuffer.count == 0)
+    {
+        lock_give();
+        return NULL;
+    }
+    int index =
+        (errorCircularBuffer.head - 1 + NUMBER_ERRORS_STORED) %
+        NUMBER_ERRORS_STORED;
+
+    psatErr_error_t* error = &errorBuffer[index];
+    lock_give();
+
+    return error;
+}
+
+psatErr_error_t* psatErr_getErrorById(int id)
+{
+    lock_take();
+    if (id < 0)
+    {
+        lock_give();
+        return NULL;
+    }
+
+    for (int i = 0; i < NUMBER_ERRORS_STORED; i++)
+    {
+        if (errorBuffer[i].id == id)
+        {
+            lock_give();
+            return &errorBuffer[i];
+        }
+    }
+
+    lock_give();
+    return NULL;
+}
+
+void psatErr_postError(psatErr_code_e      errorCode,
+                       psatFSM_component_e originComponent,
+                       psatFSM_state_e     originState)
+{
+    psatErr_error_t error = {
+        .id              = errorCounter++,
+        .code            = errorCode,
+        .originComponent = originComponent,
+        .originState     = originState,
+        .timestamp       = esp_timer_get_time(),
+    };
+
+    psatErr_bufferInsert(error);
+
+    psatFSM_event_t event = {.global = true,
+                             .type   = psatFSM_eventType_error,
+                             .arg    = error.id};
+    psatFSM_postEvent(&event);
+}
+
+bool psatErr_attemptRecovery(psatFSM_component_e componentId,
+                             psatErr_error_t     error)
+{
+    static const char*   TAG = "PSAT_FSM-Error";
+
+    psatFSM_component_t* component =
+        psatFSM_getComponent(componentId);
+    if (!component)
+        return false;
+
+    int64_t lastErrTimestamp =
+        component->recoveryContext.last_recovery_timestamp;
+
+    int64_t currentTime = esp_timer_get_time();
+    component->recoveryContext.last_recovery_timestamp = currentTime;
+
+    if ((currentTime - lastErrTimestamp) >= ERROR_IGNORE_THRESHOLD)
+    {
+        component->recoveryContext.retry_count = 0;
+    }
+
+    if (error.id > 0)
+    {
+        psatErr_error_t* lastErr = psatErr_getErrorById(error.id - 1);
+        if (lastErr != NULL && error.code != lastErr->code)
+        {
+            component->recoveryContext.retry_count = 0;
+        }
+    }
+
+    int      currentRetry = component->recoveryContext.retry_count++;
+
+    uint32_t backoffDelay = pow(3, currentRetry) *
+        1000; // so its exponential longer each time
+
+    ESP_LOGW(TAG, "Attempting to recover %s (error id: %i retry: %d)",
+             psatFSM_componentToString(componentId), error.id,
+             currentRetry);
+
+    if (currentRetry >= 3)
+        return false;
+    else if (currentRetry == 2)
+    {
+        psatFSM_state_t* originState =
+            psatFSM_getState(error.originState);
+
+        if (originState)
+        {
+
+            vTaskDelay(pdMS_TO_TICKS(backoffDelay));
+            originState->onStateExit();
+            vTaskDelay(pdMS_TO_TICKS(backoffDelay));
+            originState->onStateEntry();
+        }
+    }
+
+    if (component->recover)
+    {
+        component->recover();
+    }
+    else
+    {
+        vTaskDelay(pdMS_TO_TICKS(backoffDelay));
+
+        if (component->type == psatFSM_componentType_task &&
+            component->stop)
+            component->stop();
+
+        vTaskDelay(pdMS_TO_TICKS(250));
+        if (component->deinit)
+            component->deinit();
+
+        vTaskDelay(pdMS_TO_TICKS(backoffDelay));
+
+        if (component->init)
+            component->init();
+
+        vTaskDelay(pdMS_TO_TICKS(250));
+        if (component->type == psatFSM_componentType_task &&
+            component->start)
+            component->start();
+    }
+
+    ESP_LOGW(TAG,
+              "Recovery succeeded for component %s (error id: %d)",
+              psatFSM_componentToString(componentId), error.id);
+    // TODO: call some sort of component->isHealthy() function and only then return true
+    return true;
+}
+// how this works rn:
+// if retry = 0 (default so first time)
+//  run recover, deinit and init (+ stop/start if applicable)
+// if retry = 1 (second time)
+//  run recover, deinit and init (+ stop/start if applicable)
+// if retry = 2 (third time)
+//  run state on exit, state on entry, recover, deinit and init (+ stop/start if applicable)
+// if retry = 3 (forth time)
+//  transition to permanent error state
+//  in this state we can simply disable a component
+//  and then put back into whatever state we want

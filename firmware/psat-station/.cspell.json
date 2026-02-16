@@ -16,6 +16,6 @@
         "FLOWCTRL",
         "PSAT",
         "IRAM",
-	"atten"
+        "atten"
     ]
 }

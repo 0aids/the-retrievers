@@ -23,3 +23,5 @@ psatFSM_state_e
 psatFSM_lowPowerStateHandler(const psatFSM_event_t* event);
 psatFSM_state_e
 psatFSM_errorStateHandler(const psatFSM_event_t* event);
+psatFSM_state_e
+psatFSM_permanentErrorStateHandler(const psatFSM_event_t* event);

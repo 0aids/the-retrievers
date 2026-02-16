@@ -1,46 +1,45 @@
 #include "buttons.h"
-#include "buzzer.h"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "gps_driver.h"
-#include "ldr_task.h"
 #include "servo.h"
 #include "state_handlers.h"
 #include "timers.h"
 #include "loraFsm.h"
+#include "components.h"
+#include "register_components.h"
 
 void loraFSM_startAsTask()
 {
-    xTaskCreate((void*)loraFsm_start, "lora_task", 4096, NULL, 4,
-                NULL);
+    xTaskCreatePinnedToCore((void*)loraFsm_start, "lora_task", 4096,
+                            NULL, 8, NULL, 0);
 }
+
 void psatFSM_prelaunchEntryHandler()
 {
     gpio_install_isr_service(0);
-    gps_init();
-    timer_init();
-    button_init();
-    buzzer_init();
+
+    psatFSM_registerAllComponents();
+    psatFSM_initAll();
+
     loraFsm_init();
+    loraFSM_startAsTask();
 
     timer_start(timer_timerId_10s);
     button_enable(button_id_prelaunch);
-    ldr_startTask();
-    loraFSM_startAsTask();
 }
 
 void psatFSM_ascentEntryHandler()
 {
-    button_enable(button_id_ldr);
+    psatFSM_getComponent(psatFSM_component_ldr)->start();
 }
 
 void psatFSM_deployPendingEntryHandler() {}
 
 void psatFSM_deployedEntryHandler()
 {
-    ldr_killTask();
-    button_disable(button_id_ldr);
+    psatFSM_getComponent(psatFSM_component_ldr)->stop();
+
     timer_stop(timer_timerId_10s);
 
     timer_start(timer_timerId_1s);
@@ -50,11 +49,15 @@ void psatFSM_deployedEntryHandler()
 
 void psatFSM_descentEntryHandler()
 {
-    gps_startTask();
+    psatFSM_getComponent(psatFSM_component_gps)->start();
     button_enable(button_id_landing);
 }
 
 void psatFSM_landingEntryHandler() {}
 void psatFSM_recoveryEntryHandler() {}
 void psatFSM_lowPowerEntryHandler() {}
-void psatFSM_errorEntryHandler() {}
+void psatFSM_errorEntryHandler()
+{
+    timer_pauseAllActive();
+}
+void psatFSM_permanentErrorEntryHandler() {}

@@ -14,6 +14,13 @@ typedef enum
                          // equal to number of timers we got
 } timer_id_e;
 
+typedef enum
+{
+    timer_status_disabled,
+    timer_status_paused,
+    timer_status_enabled,
+} timer_status_e;
+
 typedef struct
 {
     uint32_t            period_ms;
@@ -26,3 +33,5 @@ void timer_init(void);
 void timer_start(timer_id_e id);
 void timer_stop(timer_id_e id);
 void timer_startOnce(timer_id_e id, uint32_t delay_ms);
+void timer_pauseAllActive();
+void timer_unpauseAllPaused();

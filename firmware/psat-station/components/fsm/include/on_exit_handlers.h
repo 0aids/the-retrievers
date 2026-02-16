@@ -10,3 +10,4 @@ void psatFSM_landingExitHandler();
 void psatFSM_recoveryExitHandler();
 void psatFSM_lowPowerExitHandler();
 void psatFSM_errorExitHandler();
+void psatFSM_permanentErrorExitHandler();
