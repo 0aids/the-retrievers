@@ -1,1 +1,1 @@
-idf_component_register(SRCS "psat-station-test.c" INCLUDE_DIRS "." REQUIRES shared unity)
+idf_component_register(SRCS "psat_station_test.c" "psat-station-test.c" INCLUDE_DIRS "." REQUIRES shared unity)
