@@ -34,6 +34,22 @@ void buzzer_init(void)
     ESP_LOGI(TAG, "Buzzers initialised");
 }
 
+void buzzer_deinit(void)
+{
+    if (beepTimer_s != NULL)
+    {
+        esp_timer_stop(beepTimer_s);
+        esp_timer_delete(beepTimer_s);
+        beepTimer_s = NULL;
+    }
+
+    buzzerActive_s = false;
+    gpio_set_level(CFG_BUZZER_PIN_d, 0);
+    gpio_reset_pin(CFG_BUZZER_PIN_d);
+
+    ESP_LOGI(TAG, "Buzzers deintied");
+}
+
 void buzzer_turnOn(void)
 {
     gpio_set_level(CFG_BUZZER_PIN_d, 1);
