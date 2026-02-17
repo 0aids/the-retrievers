@@ -56,6 +56,11 @@ static uint32_t angletoDuty(uint16_t angle)
 
 void servo_init()
 {
+    if (!servoStateMutex_s)
+    {
+        servoStateMutex_s = xSemaphoreCreateMutex();
+    }
+
     lockTake();
     servoData_s.angle  = 0;
     servoData_s.target = 0;
@@ -132,6 +137,7 @@ void servo_moveTo(uint16_t target, uint16_t speedDps)
 uint16_t servo_getAngle()
 {
     lockTake();
-    return servoData_s.angle;
+    uint16_t angle = servoData_s.angle;
     lockGive();
+    return angle;
 }
