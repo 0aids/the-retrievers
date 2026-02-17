@@ -55,6 +55,14 @@ void button_init(void)
     }
 }
 
+void button_deinit(void)
+{
+    for (int i = 0; i < button_id__COUNT; i++)
+    {
+        button_delete((button_id_e)i);
+    }
+}
+
 void button_enable(button_id_e id)
 {
     gpio_isr_handler_add(buttonConfig_c[id].pin, button_isr,
@@ -72,4 +80,5 @@ void button_delete(button_id_e id)
 {
     button_disable(id);
     gpio_reset_pin(buttonConfig_c[id].pin);
+    lastPressTick_s[id] = 0;
 }

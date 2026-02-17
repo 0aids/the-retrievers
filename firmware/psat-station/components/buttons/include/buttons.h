@@ -21,6 +21,7 @@ typedef struct
 } button_config_t;
 
 void button_init(void);
+void button_deinit(void);
 void button_enable(button_id_e id);
 void button_disable(button_id_e id);
 void button_delete(button_id_e id);
