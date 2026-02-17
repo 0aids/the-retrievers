@@ -15,7 +15,7 @@
 #include "timers.h"
 #include "esp_timer.h"
 
-void                globalEventHandler(const psatFSM_event_t* event)
+void globalEventHandler(const psatFSM_event_t* event)
 {
     // static const char* TAG = "PSAT_FSM-Global-Event";
 
@@ -162,7 +162,7 @@ psatFSM_errorStateHandler(const psatFSM_event_t* event)
     psatErr_error_t*   err     = psatErr_getErrorById(errorId);
 
     if (!err)
-        return psatFSM_state_permanentError; // TODO: instead should go to last prev state form state buffer
+        return psatFSM_getPreviousState();
 
     ESP_LOGI(TAG, "Recieved error with code %s",
              psatErr_codeToString(err->code));

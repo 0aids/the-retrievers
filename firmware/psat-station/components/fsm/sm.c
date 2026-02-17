@@ -17,7 +17,7 @@ static TaskHandle_t      xHandleSM_s  = NULL;
 static QueueHandle_t     eventQueue_s = NULL;
 static SemaphoreHandle_t stateMutex_s = NULL;
 
-void printQueueContents(QueueHandle_t xQueue);
+void                     printQueueContents(QueueHandle_t xQueue);
 void psatFSM_postEvent(const psatFSM_event_t* event)
 {
     if (!eventQueue_s || !event)
@@ -47,9 +47,26 @@ void psatFSM_setCurrentState(psatFSM_state_e newState)
     if (stateMutex_s &&
         xSemaphoreTake(stateMutex_s, portMAX_DELAY) == pdTRUE)
     {
+        psat_globalState.prevFSMState =
+            psat_globalState.currentFSMState;
+
         psat_globalState.currentFSMState = newState;
         xSemaphoreGive(stateMutex_s);
     }
+}
+
+psatFSM_state_e psatFSM_getPreviousState()
+{
+    psatFSM_state_e state = psatFSM_state_error;
+
+    if (stateMutex_s &&
+        xSemaphoreTake(stateMutex_s, portMAX_DELAY) == pdTRUE)
+    {
+        state = psat_globalState.prevFSMState;
+        xSemaphoreGive(stateMutex_s);
+    }
+
+    return state;
 }
 
 psatFSM_state_e psatFSM_getCurrentState()

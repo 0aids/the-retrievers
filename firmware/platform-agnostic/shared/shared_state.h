@@ -125,6 +125,7 @@ typedef struct
 typedef struct
 {
     psatFSM_state_e currentFSMState;
+    psatFSM_state_e prevFSMState;
 } psatGlobal_state_t;
 
 extern psatGlobal_state_t psat_globalState;

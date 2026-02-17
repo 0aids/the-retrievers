@@ -3,6 +3,7 @@
 #include "shared_state.h"
 
 psatFSM_state_e psatFSM_getCurrentState();
+psatFSM_state_e psatFSM_getPreviousState();
 void            psatFSM_setCurrentState(psatFSM_state_e newState);
 void            psatFSM_postEvent(const psatFSM_event_t* event);
 void            psatFSM_postEventISR(const psatFSM_event_t* event);
