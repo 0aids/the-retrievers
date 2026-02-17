@@ -15,8 +15,6 @@
 #include "timers.h"
 #include "esp_timer.h"
 
-static servo_data_t servo;
-
 void                globalEventHandler(const psatFSM_event_t* event)
 {
     // static const char* TAG = "PSAT_FSM-Global-Event";
@@ -24,7 +22,7 @@ void                globalEventHandler(const psatFSM_event_t* event)
     switch (event->type)
     {
         case psatFSM_eventType_unfoldMechanism:
-            servo_moveTo(&servo, 120, 60);
+            servo_moveTo(120, 60);
             return;
 
         case psatFSM_eventType_audioBeep: buzzer_beep(2500); return;
@@ -37,7 +35,6 @@ void                globalEventHandler(const psatFSM_event_t* event)
 psatFSM_state_e
 psatFSM_startStateHandler(const psatFSM_event_t* event)
 {
-    servo_init(&servo, CFG_SERVO_PIN_d);
     return psatFSM_state_prelaunch;
 }
 
