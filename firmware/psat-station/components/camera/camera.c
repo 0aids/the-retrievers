@@ -43,7 +43,7 @@ static camera_config_t camera_config = {
     .grab_mode = CAMERA_GRAB_WHEN_EMPTY,
 };
 
-static esp_err_t init_camera(void)
+esp_err_t init_camera(void)
 {
     //initialize the camera
     esp_err_t err = esp_camera_init(&camera_config);
@@ -57,7 +57,7 @@ static esp_err_t init_camera(void)
 }
 
 #if defined(CONFIG_CAMERA_AF_SUPPORT) && CONFIG_CAMERA_AF_SUPPORT
-static void maybe_init_autofocus(void)
+void maybe_init_autofocus(void)
 {
     sensor_t *s = esp_camera_sensor_get();
     if (!s) {

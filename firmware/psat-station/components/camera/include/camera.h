@@ -11,6 +11,10 @@
 #include "esp_camera.h"
 #include "driver/gpio.h"
 
+#ifndef portTICK_RATE_MS
+#define portTICK_RATE_MS portTICK_PERIOD_MS
+#endif
+
 esp_err_t init_camera(void);
 #if defined(CONFIG_CAMERA_AF_SUPPORT) && CONFIG_CAMERA_AF_SUPPORT
 void maybe_init_autofocus(void);
