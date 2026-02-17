@@ -7,6 +7,7 @@
 
 void app_main(void)
 {
-    helpers_printHeapDetails();
-    psatFSM_start();
+    // helpers_printHeapDetails();
+    // psatFSM_start();
+    
 }
