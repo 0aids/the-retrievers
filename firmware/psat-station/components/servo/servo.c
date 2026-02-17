@@ -56,6 +56,8 @@ static uint32_t angletoDuty(uint16_t angle)
 
 void servo_init()
 {
+    memset(&servoData_s, 0, sizeof(servoData_s));
+
     if (!servoStateMutex_s)
     {
         servoStateMutex_s = xSemaphoreCreateMutex();
@@ -83,6 +85,21 @@ void servo_init()
     ledc_channel_config(&channel);
 
     servo_setAngle(0);
+}
+
+void servo_deinit()
+{
+    ledc_set_duty(SERVO_MODE, SERVO_CHANNEL, 0);
+    ledc_update_duty(SERVO_MODE, SERVO_CHANNEL);
+
+    ledc_stop(SERVO_MODE, SERVO_CHANNEL, 0);
+    gpio_reset_pin(CFG_SERVO_PIN_d);
+
+    if (servoStateMutex_s)
+    {
+        vSemaphoreDelete(servoStateMutex_s);
+        servoStateMutex_s = NULL;
+    }
 }
 
 void servo_setAngle(uint16_t angle)

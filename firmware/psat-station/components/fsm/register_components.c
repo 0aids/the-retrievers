@@ -1,4 +1,5 @@
 #include "buttons.h"
+#include "servo.h"
 #include "ldr_task.h"
 #include "ldr.h"
 #include "buzzer.h"
@@ -34,6 +35,9 @@ void psatFSM_registerAllComponents()
     psatFSM_registerComponent(psatFSM_component_buttons,
                               psatFSM_componentType_multiple,
                               button_init, NULL, NULL, NULL, NULL);
+    psatFSM_registerComponent(
+        psatFSM_component_servo, psatFSM_componentType_normal,
+        servo_init, servo_deinit, NULL, NULL, NULL);
     psatFSM_registerComponent(
         psatFSM_component_ldr, psatFSM_componentType_normal,
         ldr_setup, ldr_deinit, NULL, ldr_startTask, ldr_killTask);

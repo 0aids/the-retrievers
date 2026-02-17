@@ -25,8 +25,6 @@ void psatFSM_prelaunchEntryHandler()
     loraFsm_init();
     loraFSM_startAsTask();
 
-    servo_init();
-
     timer_start(timer_timerId_10s);
     button_enable(button_id_prelaunch);
 }

@@ -11,6 +11,7 @@ typedef struct
 } servo_data_t;
 
 void     servo_init();
+void     servo_deinit();
 void     servo_setAngle(uint16_t angle);
 void     servo_stateGetSnapshot(servo_data_t* out);
 void     servo_moveTo(uint16_t target, uint16_t speedDps);
