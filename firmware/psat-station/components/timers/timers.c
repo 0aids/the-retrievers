@@ -55,6 +55,17 @@ void timer_init(void)
     }
 }
 
+void timer_deinit(void)
+{
+    for (int i = 0; i < timer_timerId__COUNT; i++)
+    {
+        esp_timer_stop(timers_s[i]);
+        esp_timer_delete(timers_s[i]);
+        timers_s[i]      = NULL;
+        timerStatus_s[i] = timer_status_disabled;
+    }
+}
+
 void timer_start(timer_id_e id)
 {
     if (id < 0 || id >= timer_timerId__COUNT)

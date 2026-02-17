@@ -30,6 +30,7 @@ typedef struct
 } timer_config_t;
 
 void timer_init(void);
+void timer_deinit(void);
 void timer_start(timer_id_e id);
 void timer_stop(timer_id_e id);
 void timer_startOnce(timer_id_e id, uint32_t delay_ms);

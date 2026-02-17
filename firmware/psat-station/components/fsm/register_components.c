@@ -22,17 +22,17 @@ void psatFSM_registerAllComponents()
         psatFSM_component_gps, psatFSM_componentType_task, gps_init,
         gps_deinit, NULL, gps_startTask, gps_killTask);
 
-    psatFSM_registerComponent(psatFSM_component_timers,
-                              psatFSM_componentType_multiple,
-                              timer_init, NULL, NULL, NULL, NULL);
+    psatFSM_registerComponent(
+        psatFSM_component_timers, psatFSM_componentType_multiple,
+        timer_init, timer_deinit, NULL, NULL, NULL);
 
-    psatFSM_registerComponent(psatFSM_component_buzzers,
-                              psatFSM_componentType_normal,
-                              buzzer_init, buzzer_deinit, NULL, NULL, NULL);
+    psatFSM_registerComponent(
+        psatFSM_component_buzzers, psatFSM_componentType_normal,
+        buzzer_init, buzzer_deinit, NULL, NULL, NULL);
 
-    psatFSM_registerComponent(psatFSM_component_buttons,
-                              psatFSM_componentType_multiple,
-                              button_init, button_deinit, NULL, NULL, NULL);
+    psatFSM_registerComponent(
+        psatFSM_component_buttons, psatFSM_componentType_multiple,
+        button_init, button_deinit, NULL, NULL, NULL);
 
     psatFSM_registerComponent(
         psatFSM_component_servo, psatFSM_componentType_normal,
@@ -41,4 +41,6 @@ void psatFSM_registerAllComponents()
     psatFSM_registerComponent(
         psatFSM_component_ldr, psatFSM_componentType_normal,
         ldr_setup, ldr_deinit, NULL, ldr_startTask, ldr_killTask);
+
+    // TODO: whats left: PRESSURE, CAMERA, ACCELEROMETER, BATTERY
 }
