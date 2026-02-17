@@ -255,9 +255,9 @@ static void _loraFsm_runStateCmd()
             break;
 
         case loraFsm_packetType_fastForwardReq:
-            ESP_LOGE(__FUNCTION__,
-                     "Fast forward request received! "
-                     "noop");
+            ESP_LOGE(__FUNCTION__, "Fast forward request received!");
+            psatFSM_stateFastForward(
+                *(psatFSM_state_e*)(&packet.packetInterpreter->data));
             break;
 
         case loraFsm_packetType_stateOverrideReq:
