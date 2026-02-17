@@ -16,11 +16,6 @@
 
 #include "register_components.h"
 
-void test()
-{
-    printf("hey there my name is test and i was called\n");
-}
-
 void psatFSM_registerAllComponents()
 {
     psatFSM_registerComponent(
