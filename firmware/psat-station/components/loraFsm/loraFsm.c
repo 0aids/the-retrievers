@@ -293,6 +293,7 @@ static void _loraFsm_runStateCmd()
             psatFSM_state_e targetState =
                 *(psatFSM_state_e*)(&packet.packetInterpreter->data);
             psatFSM_stateFastForward(targetState);
+            break;
         }
         case loraFsm_packetType_stateOverrideReq:
         {
