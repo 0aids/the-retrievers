@@ -137,31 +137,45 @@ static bool _loraFsm_attemptPing()
     return false;
 }
 
-static void _loraFsm_broadcast()
+static void _loraFsm_broadcast_sendGPS()
 {
-    // Get state and then transmit it.
-    // TODO: create function that returns more than just our current PSAT state.
-    ESP_LOGI(__FUNCTION__, "Broadcasting state information!");
-    psatFSM_state_e psatState = psatFSM_getCurrentState();
-    gps_data_t      gpsData   = {0};
-    // Might not fill out the data.
+    gps_data_t gpsData = {0};
     gps_stateGetSnapshot(&gpsData);
-    // Transmit the state data
-    loraFsm_packetWrapper_t psatStatePacket =
-        loraFsm_packetCreate(loraFsm_packetType_stateData,
-                             (uint8_t*)&psatState, sizeof(psatState));
-
-    loraFsm_packetSend(&psatStatePacket);
-    loraFsm_packetFree(&psatStatePacket);
-
-    vTaskDelay(100 / portTICK_PERIOD_MS);
 
     loraFsm_packetWrapper_t gpsStatePacket =
         loraFsm_packetCreate(loraFsm_packetType_gpsData,
                              (uint8_t*)&gpsData, sizeof(gpsData));
 
     loraFsm_packetSend(&gpsStatePacket);
+    loraFsm_packetFree(&gpsStatePacket);
+}
+
+static void _loraFsm_broadcast_sendState()
+{
+    psatGlobal_state_t psatState = {
+        .currentFSMState = psatFSM_getCurrentState(),
+        .prevFSMState = psatFSM_getPreviousState()
+    };
+
+    loraFsm_packetWrapper_t psatStatePacket =
+        loraFsm_packetCreate(loraFsm_packetType_stateData,
+                             (uint8_t*)&psatState, sizeof(psatState));
+
+    loraFsm_packetSend(&psatStatePacket);
     loraFsm_packetFree(&psatStatePacket);
+}
+
+static void _loraFsm_broadcast_sendSensors() {}
+
+static void _loraFsm_broadcast()
+{
+    ESP_LOGI(__FUNCTION__, "Broadcasting state information!");
+
+    _loraFsm_broadcast_sendState();
+    vTaskDelay(100 / portTICK_PERIOD_MS);
+    _loraFsm_broadcast_sendGPS();
+    vTaskDelay(500 / portTICK_PERIOD_MS);
+    _loraFsm_broadcast_sendSensors();
 }
 
 static void _loraFsm_runStateIdle()
