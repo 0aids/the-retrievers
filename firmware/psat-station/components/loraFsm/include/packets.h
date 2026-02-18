@@ -40,7 +40,11 @@
     X(loraFsm_packetType_stateOverrideReq)                           \
                                                                      \
     X(loraFsm_packetType_enableComponentReq)                         \
-    X(loraFsm_packetType_disableComponentReq)
+    X(loraFsm_packetType_disableComponentReq)                        \
+                                                                     \
+    X(loraFsm_packetType_dataDumpReq)                                \
+                                                                     \
+    X(loraFsm_packetType__COUNT)
 
 #define X(name) name,
 typedef enum __attribute__((packed))
