@@ -8,7 +8,7 @@
                                                    //  2: 500 kHz,
                                                    //  3: Reserved]
                                                    //
-#define loraCfg_spreadingFactor_d 7                   // [SF7..SF12]
+#define loraCfg_spreadingFactor_d 8                   // [SF7..SF12]
                                                    //
 #define loraCfg_codingRate_d 1                        // [1: 4/5,
                                                    //  2: 4/6,
