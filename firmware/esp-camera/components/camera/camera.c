@@ -55,57 +55,11 @@ esp_err_t init_camera(void)
 
     return ESP_OK;
 }
+void take_pic(void){
+    ESP_LOGI(TAG, "Taking picture...");
+    camera_fb_t *pic = esp_camera_fb_get();
 
-#if defined(CONFIG_CAMERA_AF_SUPPORT) && CONFIG_CAMERA_AF_SUPPORT
-void maybe_init_autofocus(void)
-{
-    sensor_t *s = esp_camera_sensor_get();
-    if (!s) {
-        ESP_LOGW(TAG, "AF: no sensor handle");
-        return;
-    }
-
-    if (!esp_camera_af_is_supported(s)) {
-        ESP_LOGI(TAG, "AF: not supported by this sensor");
-        return;
-    }
-
-    esp_camera_af_config_t af_cfg = {
-        .mode = ESP_CAMERA_AF_MODE_AUTO,
-        .timeout_ms = CONFIG_CAMERA_AF_DEFAULT_TIMEOUT_MS,
-    };
-
-    esp_err_t ret = esp_camera_af_init(s, &af_cfg);
-    if (ret != ESP_OK) {
-        ESP_LOGW(TAG, "AF init failed: %s", esp_err_to_name(ret));
-        return;
-    }
-
-    ESP_LOGI(TAG, "AF initialized (AUTO mode)");
-}
-#endif
-
-void app_main(void)
-{
-    if(ESP_OK != init_camera()) {
-        return;
-    }
-
-#if defined(CONFIG_CAMERA_AF_SUPPORT) && CONFIG_CAMERA_AF_SUPPORT
-    // Initialize autofocus if configured and supported by the sensor.
-    // In menuconfig: Component config → Camera configuration → Enable autofocus support
-    maybe_init_autofocus();
-#endif
-
-    while (1)
-    {
-        ESP_LOGI(TAG, "Taking picture...");
-        camera_fb_t *pic = esp_camera_fb_get();
-
-        // use pic->buf to access the image
-        ESP_LOGI(TAG, "Picture taken! Its size was: %zu bytes", pic->len);
-        esp_camera_fb_return(pic);
-
-        vTaskDelay(5000 / portTICK_RATE_MS);
-    }
+    // use pic->buf to access the image
+    ESP_LOGI(TAG, "Picture taken! Its size was: %zu bytes", pic->len);
+    esp_camera_fb_return(pic);
 }

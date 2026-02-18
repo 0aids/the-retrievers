@@ -1,5 +1,4 @@
-idf_component_register(
-    SRCS "camera.c"
-    INCLUDE_DIRS "include"
-    REQUIRES esp32-camera driver config fsm
+idf_component_register(SRCS "camera_control.c" 
+    INCLUDE_DIRS "include" 
+    REQUIRES esp_driver_uart
 )
