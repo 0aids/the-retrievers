@@ -294,7 +294,6 @@ esp_err_t loraHal_init(void)
         _loraHal_spi_deinit(); // Deinit SPI on error
         return err;
     }
-
     // Initialise GPIO for rxDone itr? (probably not, we'll just poll IRQ for now)
     spiSemaphore = xSemaphoreCreateBinary();
     if (spiSemaphore == NULL)

@@ -161,7 +161,7 @@ static void _loraFsm_broadcast()
                              (uint8_t*)&gpsData, sizeof(gpsData));
 
     loraFsm_packetSend(&gpsStatePacket);
-    loraFsm_packetFree(&gpsStatePacket);
+    loraFsm_packetFree(&psatStatePacket);
 }
 
 static void _loraFsm_runStateIdle()
@@ -255,9 +255,9 @@ static void _loraFsm_runStateCmd()
             break;
 
         case loraFsm_packetType_fastForwardReq:
-            ESP_LOGE(__FUNCTION__, "Fast forward request received!");
-            psatFSM_stateFastForward(
-                *(psatFSM_state_e*)(&packet.packetInterpreter->data));
+            ESP_LOGE(__FUNCTION__,
+                     "Fast forward request received! "
+                     "noop");
             break;
 
         case loraFsm_packetType_stateOverrideReq:

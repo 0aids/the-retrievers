@@ -16,7 +16,4 @@
 // SPI Clock Speed
 #define loraHalBoardCfg_spiClockSpeedHz_d (400000)
 
-// sync word ('Private')
-#define loraHalBoardCfg_syncWord_d 0x12
-
 #endif // loraHal_board_config_h_INCLUDED
