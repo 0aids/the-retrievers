@@ -128,9 +128,29 @@ static bool _loraFsm_attemptPing()
     }
     if (_rxProcessed)
     {
-        // TODO: Check if we actually received a pong.
-        ESP_LOGI(__FUNCTION__, "Received pong, successful ping pong");
         _rxProcessed = false;
+
+        loraFsm_packetWrapper_t packet = loraFsm_packetParse(
+            rxBuffer.mp.buffer, rxBuffer.currentlyUsedSize);
+
+        if (!packet.wellFormed)
+        {
+            ESP_LOGE(__FUNCTION__, "not well formed packet");
+            return false;
+        }
+
+        if (packet.packetInterpreter->type == loraFsm_packetType_pong)
+        {
+            ESP_LOGI(__FUNCTION__, "Valid pong received");
+            loraFsm_packetFree(&packet);
+            return true;
+        }
+
+        ESP_LOGW(__FUNCTION__, "Received packet, but not pong: %s",
+                 loraFsm_packetTypeToString(
+                     packet.packetInterpreter->type));
+
+        loraFsm_packetFree(&packet);
         return true;
     }
     ESP_LOGW(__FUNCTION__, "Unsuccessful ping pong.");
@@ -154,8 +174,7 @@ static void _loraFsm_broadcast_sendState()
 {
     psatGlobal_state_t psatState = {
         .currentFSMState = psatFSM_getCurrentState(),
-        .prevFSMState = psatFSM_getPreviousState()
-    };
+        .prevFSMState    = psatFSM_getPreviousState()};
 
     loraFsm_packetWrapper_t psatStatePacket =
         loraFsm_packetCreate(loraFsm_packetType_stateData,
