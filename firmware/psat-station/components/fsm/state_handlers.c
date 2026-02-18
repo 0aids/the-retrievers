@@ -18,6 +18,9 @@
 const int SHORT_BUZZ_MS = 2500;
 const int LONG_BUZZ_MS  = 5000;
 
+#define SERVO_UNFOLD_ANGLE 120
+#define SERVO_UNFOLD_SPEED 60
+
 void      globalEventHandler(const psatFSM_event_t* event)
 {
     // static const char* TAG = "PSAT_FSM-Global-Event";
@@ -25,7 +28,7 @@ void      globalEventHandler(const psatFSM_event_t* event)
     switch (event->type)
     {
         case psatFSM_eventType_unfoldMechanism:
-            servo_moveTo(120, 60);
+            servo_moveTo(SERVO_UNFOLD_ANGLE, SERVO_UNFOLD_SPEED);
             return;
 
         case psatFSM_eventType_audioBeep:
