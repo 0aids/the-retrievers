@@ -1,5 +1,6 @@
 #include "loraFsm.h"
 #include <stdint.h>
+#include "components.h"
 #include <stdio.h>
 #include <string.h>
 #include <shared_lora.h>
@@ -304,9 +305,22 @@ static void _loraFsm_runStateCmd()
         }
 
         // component stuff
-        case loraFsm_packetType_enableComponentReq: break; // TODO:
+        case loraFsm_packetType_enableComponentReq:
+        {
+            psatFSM_component_e targetComponent =
+                *(psatFSM_component_e*)(&packet.packetInterpreter
+                                             ->data);
+            psatFSM_enableComponent(targetComponent);
+            break;
+        }
         case loraFsm_packetType_disableComponentReq:
-            break; // TODO:
+        {
+            psatFSM_component_e targetComponent =
+                *(psatFSM_component_e*)(&packet.packetInterpreter
+                                             ->data);
+            psatFSM_disableComponent(targetComponent);
+            break;
+        }
 
         // just send everything psat knows about itself
         case loraFsm_packetType_dataDumpReq: break; // TODO:
