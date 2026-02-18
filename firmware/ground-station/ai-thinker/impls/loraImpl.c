@@ -107,10 +107,6 @@ void loraImpl_init(void)
         loraCfg_symbolTimeout_d, loraCfg_fixLengthPayloadOn_d, 0,
         loraCfg_crcOn_d, loraCfg_freqHop_d, 0,
         loraCfg_iqInversionOn_d, true);
-
-    // hopefully this works :sob:
-    // https://github.com/Ai-Thinker-Open/Ai-Thinker-LoRaWAN-Ra-08/blob/main/lora/radio/radio.h#L349
-    Radio.SetPublicNetwork(false);
 }
 
 // Deinit
