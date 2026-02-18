@@ -260,6 +260,7 @@ static void _loraFsm_runStateCmd()
                 .arg    = true,
             };
             psatFSM_postEvent(&event);
+            break;
         }
         case loraFsm_packetType_buzzShortReq:
         {
@@ -269,6 +270,7 @@ static void _loraFsm_runStateCmd()
                 .arg    = false,
             };
             psatFSM_postEvent(&event);
+            break;
         }
 
         // Prelaunch Stuff
