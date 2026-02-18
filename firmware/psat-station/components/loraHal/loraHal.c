@@ -263,14 +263,6 @@ esp_err_t loraHal_deregisterRxDoneIsr()
     return ESP_OK;
 }
 
-static void loraHal_setSyncWord(void)
-{
-    // hopefully i did ts correctly
-    // https://cdn-shop.adafruit.com/product-files/3179/sx1276_77_78_79.pdf page 99
-    loraHal_writeReg(0x27, 0x01, NULL);
-    loraHal_writeReg(0x28, loraHalBoardCfg_syncWord_d, NULL);
-}
-
 esp_err_t loraHal_init(void)
 {
     esp_err_t err;
@@ -302,8 +294,6 @@ esp_err_t loraHal_init(void)
         _loraHal_spi_deinit(); // Deinit SPI on error
         return err;
     }
-
-    loraHal_setSyncWord(); // Set sync word
 
     // Initialise GPIO for rxDone itr? (probably not, we'll just poll IRQ for now)
     spiSemaphore = xSemaphoreCreateBinary();
