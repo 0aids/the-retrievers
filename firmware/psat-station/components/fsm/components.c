@@ -55,7 +55,7 @@ void psatFSM_initComponent(psatFSM_component_e componentId)
         return;
     }
 
-    psatFSM_component_t *component = &componentTable[componentId];
+    psatFSM_component_t* component = &componentTable[componentId];
 
     if (component->status == psatFSM_componentStatus_unRegistered)
     {
@@ -81,7 +81,7 @@ void psatFSM_deinitComponent(psatFSM_component_e componentId)
         return;
     }
 
-    psatFSM_component_t *component = &componentTable[componentId];
+    psatFSM_component_t* component = &componentTable[componentId];
 
     if (component->status == psatFSM_componentStatus_unRegistered)
     {
@@ -119,4 +119,32 @@ psatFSM_getComponent(psatFSM_component_e componentId)
     }
 
     return &componentTable[componentId];
+}
+
+void psatFSM_enableComponent(psatFSM_component_e id)
+{
+    psatFSM_component_t* component = psatFSM_getComponent(id);
+    if (!component ||
+        component->status == psatFSM_componentStatus_enabled)
+        return;
+
+    psatFSM_initComponent(id);
+
+    if (component->type == psatFSM_componentType_task &&
+        component->start)
+        component->start();
+}
+
+void psatFSM_disableComponent(psatFSM_component_e id)
+{
+    psatFSM_component_t* component = psatFSM_getComponent(id);
+    if (!component ||
+        component->status == psatFSM_componentStatus_disabled)
+        return;
+
+    if (component->type == psatFSM_componentType_task &&
+        component->stop)
+        component->stop();
+
+    psatFSM_deinitComponent(id);
 }
