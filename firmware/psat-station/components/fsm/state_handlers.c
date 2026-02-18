@@ -21,7 +21,7 @@ const int LONG_BUZZ_MS  = 5000;
 #define SERVO_UNFOLD_ANGLE 120
 #define SERVO_UNFOLD_SPEED 60
 
-void      globalEventHandler(const psatFSM_event_t* event)
+void globalEventHandler(const psatFSM_event_t* event)
 {
     // static const char* TAG = "PSAT_FSM-Global-Event";
 
@@ -184,8 +184,10 @@ psatFSM_errorStateHandler(const psatFSM_event_t* event)
     {
         ESP_LOGE(
             TAG,
-            "Permanent failure in %s, going to permanent error state",
+            "Permanent failure in %s, disabling and transitioning to "
+            "permanent error state",
             psatFSM_componentToString(comp));
+        psatFSM_disableComponent(comp);
         return psatFSM_state_permanentError;
     }
 
