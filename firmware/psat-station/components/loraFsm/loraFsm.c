@@ -193,7 +193,7 @@ static void _loraFsm_broadcast()
     _loraFsm_broadcast_sendState();
     vTaskDelay(100 / portTICK_PERIOD_MS);
     _loraFsm_broadcast_sendGPS();
-    vTaskDelay(500 / portTICK_PERIOD_MS);
+    vTaskDelay(100 / portTICK_PERIOD_MS);
     _loraFsm_broadcast_sendSensors();
 }
 
@@ -340,6 +340,7 @@ static void _loraFsm_runStateBeacon()
 static void _loraFsm_runStateTxRoutine()
 {
     _loraFsm_broadcast();
+    lora_setRx(0);
     _loraFsm_currentState_s = loraFsm_radioStates_idle;
     vTaskDelay(500 / portTICK_PERIOD_MS);
     // Send a ping request.
