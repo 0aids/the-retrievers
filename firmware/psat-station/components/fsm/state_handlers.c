@@ -15,7 +15,10 @@
 #include "timers.h"
 #include "esp_timer.h"
 
-void globalEventHandler(const psatFSM_event_t* event)
+const int SHORT_BUZZ_MS = 2500;
+const int LONG_BUZZ_MS  = 5000;
+
+void      globalEventHandler(const psatFSM_event_t* event)
 {
     // static const char* TAG = "PSAT_FSM-Global-Event";
 
@@ -25,7 +28,14 @@ void globalEventHandler(const psatFSM_event_t* event)
             servo_moveTo(120, 60);
             return;
 
-        case psatFSM_eventType_audioBeep: buzzer_beep(2500); return;
+        case psatFSM_eventType_audioBeep:
+        {
+            bool buzzLong = (bool)event->arg;
+            int  buzzDuration =
+                (buzzLong ? LONG_BUZZ_MS : SHORT_BUZZ_MS);
+            buzzer_beep(buzzDuration);
+            return;
+        }
 
         default: return;
     }
@@ -135,9 +145,6 @@ psatFSM_recoveryStateHandler(const psatFSM_event_t* event)
 
     switch (event->type)
     {
-        case psatFSM_eventType_audioBeep:
-            buzzer_beep(2500);
-            return psatFSM_state_recovery;
         default: return psatFSM_state_recovery;
     }
 }
