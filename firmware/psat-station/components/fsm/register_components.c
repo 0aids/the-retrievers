@@ -9,10 +9,12 @@
 #include "gps_driver.h"
 #include "ldr_task.h"
 #include "servo.h"
+#include "shared_state.h"
 #include "state_handlers.h"
 #include "timers.h"
 #include "loraFsm.h"
 #include "components.h"
+#include "bmp280.h"
 
 #include "register_components.h"
 
@@ -41,6 +43,9 @@ void psatFSM_registerAllComponents()
     psatFSM_registerComponent(
         psatFSM_component_ldr, psatFSM_componentType_normal,
         ldr_setup, ldr_deinit, NULL, ldr_startTask, ldr_killTask);
+
+    psatFSM_registerComponent(psatFSM_component_bmp280, psatFSM_componentType_normal, 
+        bmp280_init, bmp280_deinit, NULL, NULL, NULL);
 
     // TODO: whats left: PRESSURE, CAMERA, ACCELEROMETER, BATTERY
 }
