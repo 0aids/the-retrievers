@@ -3,7 +3,9 @@
 #include "esp_log.h"
 #include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
+#include "shared_state.h"
 #include "sm.h"
+#include "errors.h"
 
 #define TIMER_MS_TO_US(ms) ((uint64_t)(ms) * 1000ULL)
 
@@ -51,7 +53,10 @@ void timer_init(void)
                                         .arg      = &timer_ids[i],
                                         .name =
                                             timer_config_c[i].name};
-        ESP_ERROR_CHECK(esp_timer_create(&args, &timers_s[i]));
+        if(esp_timer_create(&args, &timers_s[i]) != ESP_OK) {
+            psatErr_postError(psatErr_timer_init_failed, psatFSM_component_timers, psatFSM_getCurrentState());
+            return;
+        }
     }
 }
 

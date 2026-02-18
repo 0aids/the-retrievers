@@ -77,7 +77,7 @@ void bmp280_init()
     if (i2c_master_bus_add_device(i2c_bus1_handle, &bmp280_Config,
                                   &bmp280_handle) != ESP_OK)
     {
-        psatErr_postError(psatErr_bmp280_i2cBusAddition_failed, psatFSM_component_bmp280, bmp280_err);
+        psatErr_postError(psatErr_bmp280_i2cBusAddition_failed, psatFSM_component_bmp280, psatFSM_getCurrentState());
         bmp280_err = psatErr_bmp280_i2cBusAddition_failed;
         bmp280_is_healthy = false;
         return;
@@ -89,7 +89,7 @@ void bmp280_init()
                             sizeof(bmp280_ctrlmeas),
                             I2c_WAIT_TIME_MS) != ESP_OK)
     {
-        psatErr_postError(psatErr_bmp280_powerConfig_failed, psatFSM_component_bmp280, bmp280_err);
+        psatErr_postError(psatErr_bmp280_powerConfig_failed, psatFSM_component_bmp280, psatFSM_getCurrentState());
         bmp280_err = psatErr_bmp280_powerConfig_failed;
         bmp280_is_healthy = false;
         return;
@@ -101,7 +101,7 @@ void bmp280_init()
                             sizeof(bmp280_configReg),
                             I2c_WAIT_TIME_MS) != ESP_OK)
     {
-        psatErr_postError(psatErr_bmp280_measurementConfig_failed, psatFSM_component_bmp280, bmp280_err);
+        psatErr_postError(psatErr_bmp280_measurementConfig_failed, psatFSM_component_bmp280, psatFSM_getCurrentState());
         bmp280_err = psatErr_bmp280_measurementConfig_failed;
         bmp280_is_healthy = false;
         return;
@@ -119,7 +119,7 @@ void bmp280_reset()
                             sizeof(bmp280_resetData),
                             I2c_WAIT_TIME_MS) != ESP_OK)
     {
-        psatErr_postError(psatErr_bmp280_reset_failed, psatFSM_component_bmp280, bmp280_err);
+        psatErr_postError(psatErr_bmp280_reset_failed, psatFSM_component_bmp280, psatFSM_getCurrentState());
         bmp280_err = psatErr_bmp280_reset_failed;
         bmp280_is_healthy = false;
         return;
@@ -133,7 +133,7 @@ void bmp280_deinit()
 
     if (i2c_master_bus_rm_device(bmp280_handle) != ESP_OK)
     {
-        psatErr_postError(psatErr_bmp280_i2cBusRemoval_failed, psatFSM_component_bmp280, bmp280_err);
+        psatErr_postError(psatErr_bmp280_i2cBusRemoval_failed, psatFSM_component_bmp280, psatFSM_getCurrentState());
         bmp280_err = psatErr_bmp280_i2cBusRemoval_failed;
         bmp280_is_healthy = false;
         return;
@@ -152,7 +152,7 @@ void bmp280_getCalibration()
             bmp280_CalibrationData, sizeof(bmp280_CalibrationData),
             I2c_WAIT_TIME_MS) != ESP_OK)
     {
-        psatErr_postError(psatErr_bmp280_calibration_failed, psatFSM_component_bmp280, bmp280_err);
+        psatErr_postError(psatErr_bmp280_calibration_failed, psatFSM_component_bmp280, psatFSM_getCurrentState());
         bmp280_err = psatErr_bmp280_calibration_failed;
         bmp280_is_healthy = false;
         return;
@@ -259,7 +259,7 @@ int32_t bmp280_getTemperature()
             sizeof(bmp280_ReadAddress), bmp280_RawData,
             sizeof(bmp280_RawData), I2c_WAIT_TIME_MS) != ESP_OK)
     {
-        psatErr_postError(psatErr_bmp280_dataRead_failed, psatFSM_component_bmp280, bmp280_err);
+        psatErr_postError(psatErr_bmp280_dataRead_failed, psatFSM_component_bmp280, psatFSM_getCurrentState());
         bmp280_err = psatErr_bmp280_dataRead_failed;
         bmp280_is_healthy = false;
         return Temperature;
@@ -290,7 +290,7 @@ double bmp280_getPressure()
             sizeof(bmp280_ReadAddress), bmp280_RawData,
             sizeof(bmp280_RawData), I2c_WAIT_TIME_MS) != ESP_OK)
     {
-        psatErr_postError(psatErr_bmp280_dataRead_failed, psatFSM_component_bmp280, bmp280_err);
+        psatErr_postError(psatErr_bmp280_dataRead_failed, psatFSM_component_bmp280, psatFSM_getCurrentState());
         bmp280_err = psatErr_bmp280_dataRead_failed;
         bmp280_is_healthy = false;
         return Pressure;

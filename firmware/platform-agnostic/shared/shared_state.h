@@ -71,18 +71,32 @@
     X(psatErr_ldr_adcConfig_failed)                                  \
     X(psatErr_ldr_readRawValue_failed)                               \
     X(psatErr_ldr_voltage_failed)                                    \
-    X(psatErr_ldr_openMemStr_failed)                                 \
-    X(psatErr_ldr_adcDelUnit_failed)                                 \
-    X(psatErr_ldr_caliDeleteScheme_failed)                           \
+    X(psatErr_ldr_openMemStr_failed)                \
+    X(psatErr_ldr_adcDelUnit_failed)                 \
+    X(psatErr_ldr_caliDeleteScheme_failed)            \
+                                                       \
+    X(psatErr_bmp280_i2cBusAddition_failed)             \
+    X(psatErr_bmp280_powerConfig_failed)                 \
+    X(psatErr_bmp280_measurementConfig_failed)            \
+    X(psatErr_bmp280_calibration_failed)                   \
+    X(psatErr_bmp280_i2cBusRemoval_failed)                  \
+    X(psatErr_bmp280_dataRead_failed)                        \
+    X(psatErr_bmp280_reset_failed)                            \
+                                                               \
+    X(psatErr_gps_uartConfig_failed)                            \
+    X(psatErr_gps_uartPinSet_failed)                             \
+    X(psatErr_gps_uartDriverInstall_failed)                       \
+    X(psatErr_gps_uartDriverUninstall_failed)                      \
+    X(psatErr_gps_startTask_failed)                                 \
                                                                      \
-    X(psatErr_bmp280_i2cBusAddition_failed)                          \
-    X(psatErr_bmp280_powerConfig_failed)                             \
-    X(psatErr_bmp280_measurementConfig_failed)                       \
-    X(psatErr_bmp280_calibration_failed)                             \
-    X(psatErr_bmp280_i2cBusRemoval_failed)                           \
-    X(psatErr_bmp280_dataRead_failed)                                \
-    X(psatErr_bmp280_reset_failed)                                   \
-                                                                     \
+    X(psatErr_buzzer_gpioConfig_failed)                               \
+    X(psatErr_buzzer_gpioInitLevel_failed)                             \
+    X(psatErr_buzzer_gpioDeinitLevel_failed)                            \
+    X(psatErr_buzzer_gpioReset_failed)                                   \
+    X(psatErr_buzzer_turnOn_failed)                                       \
+    X(psatErr_buzzer_turnOff_failed)                                       \
+    X(psatErr_timer_init_failed)\
+                                                                            \
     X(psatErr__COUNT)
 
 // DEFINE ENUMS FOR EACH LIST

@@ -1,9 +1,12 @@
 #include <pin_config.h>
 #include "ldr.h"
+#include "errors.h"
 #include "esp_adc/adc_cali_scheme.h"
 #include <esp_log.h>
 #include "esp_err.h"
 #include "esp_log.h"
+#include "shared_state.h"
+#include "sm.h"
 #include <driver/gpio.h>
 
 const static char* ldr_tag_c = "LDR";
@@ -83,6 +86,7 @@ static bool adcCalibrationInit(adc_cali_handle_t* outHandle)
     else
     {
         ESP_LOGE(ldr_tag_c, "Invalid arg or no memory");
+        psatErr_postError(psatErr_ldr_calibrationInit_failed, psatFSM_component_ldr, psatFSM_getCurrentState());
     }
 
     return calibrated;
@@ -100,8 +104,11 @@ void ldr_setup(void)
         .unit_id  = LDR_ADC_UNIT_d,
         .ulp_mode = LDR_ULP_MODE_d,
     };
-    ESP_ERROR_CHECK(adc_oneshot_new_unit(
-        &initConfigLDR, &ldr_adcHandlers_g.adcOneshotHandle));
+    if(adc_oneshot_new_unit(
+        &initConfigLDR, &ldr_adcHandlers_g.adcOneshotHandle) != ESP_OK){
+            psatErr_postError(psatErr_ldr_adcInit_failed, psatFSM_component_ldr, psatFSM_getCurrentState());
+            return;
+        }
 
     //-------------ADC1 Config---------------//
     // Attenuation determines the range or maximum voltage that we can measure
@@ -113,9 +120,12 @@ void ldr_setup(void)
         .atten    = LDR_ADC_ATTEN_d,
         .bitwidth = LDR_ADC_BITWIDTH_d,
     };
-    ESP_ERROR_CHECK(
-        adc_oneshot_config_channel(ldr_adcHandlers_g.adcOneshotHandle,
-                                   LDR_ADC_CHANNEL_d, &config));
+    
+    if(adc_oneshot_config_channel(ldr_adcHandlers_g.adcOneshotHandle,
+                                   LDR_ADC_CHANNEL_d, &config) != ESP_OK) {
+                                    psatErr_postError(psatErr_ldr_adcConfig_failed, psatFSM_component_ldr, psatFSM_getCurrentState());
+                                    return;
+                                   }
 
     //-------------ADC1 Calibration Init---------------//
     // sets the calibration handle to NULL.
@@ -131,11 +141,18 @@ int ldr_getVoltage(void)
     int voltage;
 
     // Reads the raw adc value and then calibrates it to get the voltage
-    ESP_ERROR_CHECK(
-        adc_oneshot_read(ldr_adcHandlers_g.adcOneshotHandle,
-                         LDR_ADC_CHANNEL_d, &adcRaw));
-    ESP_ERROR_CHECK(adc_cali_raw_to_voltage(
-        ldr_adcHandlers_g.adcCaliChanHandle, adcRaw, &voltage));
+    if(adc_oneshot_read(ldr_adcHandlers_g.adcOneshotHandle,
+                         LDR_ADC_CHANNEL_d, &adcRaw) != ESP_OK) {
+                            psatErr_postError(psatErr_ldr_readRawValue_failed, psatFSM_component_ldr, psatFSM_getCurrentState());
+                            return 0;
+                         }
+
+
+    if(adc_cali_raw_to_voltage(
+        ldr_adcHandlers_g.adcCaliChanHandle, adcRaw, &voltage) != ESP_OK){
+            psatErr_postError(psatErr_ldr_voltage_failed, psatFSM_component_ldr, psatFSM_getCurrentState());
+            return 0;
+        }
 
     return voltage;
 }
@@ -154,7 +171,7 @@ ldr_state_t ldr_queryState(void)
     memStream = open_memstream(&tempBuffer, &size);
     if (memStream == NULL)
     {
-        perror("open_memstream failed");
+        psatErr_postError(psatErr_ldr_openMemStr_failed, psatFSM_component_ldr, psatFSM_getCurrentState());
         return emptyState;
     }
 
@@ -181,13 +198,19 @@ ldr_state_t ldr_queryState(void)
 void ldr_deinit(void)
 {
     //Tear Down
-    ESP_ERROR_CHECK(
-        adc_oneshot_del_unit(ldr_adcHandlers_g.adcOneshotHandle));
+    
+    if(adc_oneshot_del_unit(ldr_adcHandlers_g.adcOneshotHandle) != ESP_OK) {
+        psatErr_postError(psatErr_ldr_adcDelUnit_failed, psatFSM_component_ldr, psatFSM_getCurrentState());
+        return;
+    }
     ESP_LOGD(ldr_tag_c, "deregister %s calibration scheme",
              "Line Fitting");
 #if ADC_CALI_SCHEME_LINE_FITTING_SUPPORTED
-    ESP_ERROR_CHECK(adc_cali_delete_scheme_line_fitting(
-        ldr_adcHandlers_g.adcCaliChanHandle));
+    if(adc_cali_delete_scheme_line_fitting(
+        ldr_adcHandlers_g.adcCaliChanHandle) != ESP_OK) {
+            psatErr_postError(psatErr_ldr_caliDeleteScheme_failed, psatFSM_component_ldr, psatFSM_getCurrentState());
+            return;
+        }
 #endif
 }
 
