@@ -212,36 +212,35 @@ static void _loraFsm_runStateCmd()
         return;
     }
 
+    ESP_LOGI(
+        __FUNCTION__, "Recieved Request: %s",
+        loraFsm_packetTypeToString(packet.packetInterpreter->type));
+
     switch (packet.packetInterpreter->type)
     {
-        case loraFsm_packetType_buzReq:
+        // Buzzer Requests
+        case loraFsm_packetType_buzzLongReq:
         {
-            ESP_LOGE(__FUNCTION__, "Buzzer Request Received!");
             psatFSM_event_t event = {
                 .global = true,
                 .type   = psatFSM_eventType_audioBeep,
+                .arg    = true,
             };
             psatFSM_postEvent(&event);
-            break;
         }
-
-        case loraFsm_packetType_landing:
+        case loraFsm_packetType_buzzShortReq:
         {
-            ESP_LOGE(__FUNCTION__,
-                     "Landing Complete Request Received!");
             psatFSM_event_t event = {
-                .global = false,
-                .type   = psatFSM_eventType_landingConfirmed,
+                .global = true,
+                .type   = psatFSM_eventType_audioBeep,
+                .arg    = false,
             };
             psatFSM_postEvent(&event);
-            break;
         }
 
-        case loraFsm_packetType_prelaunch:
+        // Prelaunch Stuff
+        case loraFsm_packetType_prelaunchCompleteReq:
         {
-            ESP_LOGE(__FUNCTION__,
-                     "Prelaunch Complete Request "
-                     "Received!");
             psatFSM_event_t event = {
                 .global = false,
                 .type   = psatFSM_eventType_prelaunchComplete,
@@ -249,22 +248,32 @@ static void _loraFsm_runStateCmd()
             psatFSM_postEvent(&event);
             break;
         }
+        case loraFsm_packetType_preflightReq: break; // TODO:
+        case loraFsm_packetType_preflightDataReq:
+            break; // TODO:
 
-        case loraFsm_packetType_stateDumpReq:
-            ESP_LOGE(__FUNCTION__, "Dump request received! noop");
-            break;
-
+        // state overriding and forwarding
         case loraFsm_packetType_fastForwardReq:
-            ESP_LOGE(__FUNCTION__,
-                     "Fast forward request received! "
-                     "noop");
-            break;
-
+        {
+            psatFSM_state_e targetState =
+                *(psatFSM_state_e*)(&packet.packetInterpreter->data);
+            psatFSM_stateFastForward(targetState);
+        }
         case loraFsm_packetType_stateOverrideReq:
-            ESP_LOGE(__FUNCTION__, "Overriding state!");
-            psatFSM_stateOverride(
-                *(psatFSM_state_e*)(&packet.packetInterpreter->data));
+        {
+            psatFSM_state_e targetState =
+                *(psatFSM_state_e*)(&packet.packetInterpreter->data);
+            psatFSM_stateOverride(targetState);
             break;
+        }
+
+        // component stuff
+        case loraFsm_packetType_enableComponentReq: break; // TODO:
+        case loraFsm_packetType_disableComponentReq:
+            break; // TODO:
+
+        // just send everything psat knows about itself
+        case loraFsm_packetType_dataDumpReq: break; // TODO:
 
         default: ESP_LOGE(__FUNCTION__, "Invalid request!"); break;
     }
