@@ -55,17 +55,17 @@ void psatFSM_initComponent(psatFSM_component_e componentId)
         return;
     }
 
-    psatFSM_component_t component = componentTable[componentId];
+    psatFSM_component_t *component = &componentTable[componentId];
 
-    if (component.status == psatFSM_componentStatus_unRegistered)
+    if (component->status == psatFSM_componentStatus_unRegistered)
     {
         ESP_LOGW(TAG, "Component %s is unregistered",
                  psatFSM_componentToString(componentId));
         return;
     }
 
-    component.init();
-    component.status = psatFSM_componentStatus_enabled;
+    component->init();
+    component->status = psatFSM_componentStatus_enabled;
 
     ESP_LOGI(TAG,
              "%s component has been initialised and is now enabled",
@@ -81,17 +81,17 @@ void psatFSM_deinitComponent(psatFSM_component_e componentId)
         return;
     }
 
-    psatFSM_component_t component = componentTable[componentId];
+    psatFSM_component_t *component = &componentTable[componentId];
 
-    if (component.status == psatFSM_componentStatus_unRegistered)
+    if (component->status == psatFSM_componentStatus_unRegistered)
     {
         ESP_LOGW(TAG, "Component %s is unregistered",
                  psatFSM_componentToString(componentId));
         return;
     }
 
-    component.deinit();
-    component.status = psatFSM_componentStatus_disabled;
+    component->deinit();
+    component->status = psatFSM_componentStatus_disabled;
 
     ESP_LOGI(
         TAG,
