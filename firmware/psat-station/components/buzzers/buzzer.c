@@ -8,11 +8,14 @@
 #include "shared_state.h"
 #include "sm.h"
 #include "errors.h"
+#include <stdbool.h>
 
 static const char*        TAG = "Buzzers";
 
 static esp_timer_handle_t beepTimer_s;
 static bool               buzzerActive_s = false;
+
+static bool buzzer_err = false;
 
 static void               beepTimerCb(void* arg)
 {
@@ -29,11 +32,13 @@ void buzzer_init(void)
                              .intr_type    = GPIO_INTR_DISABLE};
     if(gpio_config(&io_conf) != ESP_OK){
         psatErr_postError(psatErr_buzzer_gpioConfig_failed, psatFSM_component_buzzers, psatFSM_getCurrentState());
+        buzzer_err = true;
         return;
     };
 
     if(gpio_set_level(CFG_BUZZER_PIN_d, 0)!= ESP_OK){
         psatErr_postError(psatErr_buzzer_gpioInitLevel_failed, psatFSM_component_buzzers, psatFSM_getCurrentState());
+        buzzer_err = true;
         return;
     }
 
@@ -56,10 +61,12 @@ void buzzer_deinit(void)
     buzzerActive_s = false;
     if(gpio_set_level(CFG_BUZZER_PIN_d, 0) != ESP_OK){
         psatErr_postError(psatErr_buzzer_gpioDeinitLevel_failed, psatFSM_component_buzzers, psatFSM_getCurrentState());
+        buzzer_err = true;
         return;
     }
     if(gpio_reset_pin(CFG_BUZZER_PIN_d) != ESP_OK) {
         psatErr_postError(psatErr_buzzer_gpioReset_failed, psatFSM_component_buzzers, psatFSM_getCurrentState());
+        buzzer_err = true;
         return;
     }
 
@@ -70,6 +77,7 @@ void buzzer_turnOn(void)
 {
     if(gpio_set_level(CFG_BUZZER_PIN_d, 1) != ESP_OK) {
         psatErr_postError(psatErr_buzzer_turnOn_failed, psatFSM_component_buzzers, psatFSM_getCurrentState());
+        buzzer_err = true;
         return;
     }
     buzzerActive_s = true;
@@ -79,6 +87,7 @@ void buzzer_turnOff(void)
 {
     if(gpio_set_level(CFG_BUZZER_PIN_d, 0) != ESP_OK) {
         psatErr_postError(psatErr_buzzer_turnOff_failed, psatFSM_component_buzzers, psatFSM_getCurrentState());
+        buzzer_err = true;
         return;
     }
     buzzerActive_s = false;
@@ -98,4 +107,17 @@ void buzzer_beep(uint32_t durationMs)
 
     buzzer_turnOn();
     esp_timer_start_once(beepTimer_s, durationMs * 1000);
+}
+
+bool buzzer_preflightTest(){
+
+    buzzer_init();
+    buzzer_beep(300);
+    buzzer_deinit();
+
+    if(buzzer_err == false) {
+        return true;
+    }
+
+    return false;
 }
