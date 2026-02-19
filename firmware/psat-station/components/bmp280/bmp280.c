@@ -62,13 +62,18 @@ bmp280_status_t bmp280_queryStatus()
     return bmp280_status;
 }
 
-bmp280_preflightStatus_t bmp280_preflightTest()
+bool bmp280_preflightTest()
 {
     bmp280_init();
     bmp280_preflightStatus.temperature = bmp280_getTemperature();
     bmp280_preflightStatus.pressure    = bmp280_getPressure();
     bmp280_deinit();
-    return bmp280_preflightStatus;
+
+    if(bmp280_err == psatErr_none){
+        return true;
+    }
+    
+    return false;
 }
 
 void bmp280_init()

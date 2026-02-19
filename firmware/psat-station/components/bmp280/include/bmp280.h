@@ -14,5 +14,5 @@ bool           bmp280_isHealthy();
 double         bmp280_getPressure();    // in Pa
 int32_t        bmp280_getTemperature(); // in degrees C
 
-bmp280_preflightStatus_t bmp280_preflightTest();
+bool bmp280_preflightTest();
 bmp280_status_t          bmp280_queryStatus();
