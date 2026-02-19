@@ -111,11 +111,15 @@ void buzzer_beep(uint32_t durationMs)
 
 bool buzzer_preflightTest(){
 
+    psatErr_error_t lastErr = *psatErr_getMostRecentError();
+
     buzzer_init();
     buzzer_beep(300);
     buzzer_deinit();
 
-    if(buzzer_err == false) {
+    psatErr_error_t currentErr = *psatErr_getMostRecentError();
+
+    if(currentErr.id == lastErr.id) {
         return true;
     }
 

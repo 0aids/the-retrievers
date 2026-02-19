@@ -3,6 +3,7 @@
 #include "shared_state.h"
 #include "errors.h"
 #include "I2C.h"
+#include <string.h>
 
 static bmp280_status_t   bmp280_status = {.I2C_initalised  = false,
                                           .powerConfigured = false,
@@ -64,12 +65,19 @@ bmp280_status_t bmp280_queryStatus()
 
 bool bmp280_preflightTest()
 {
+
+    psatErr_error_t lastErr = *psatErr_getMostRecentError();
+
+    
+
     bmp280_init();
     bmp280_preflightStatus.temperature = bmp280_getTemperature();
     bmp280_preflightStatus.pressure    = bmp280_getPressure();
     bmp280_deinit();
 
-    if(bmp280_err == psatErr_none){
+    psatErr_error_t currentErr = *psatErr_getMostRecentError();
+
+    if(lastErr.id == currentErr.id){
         return true;
     }
     
