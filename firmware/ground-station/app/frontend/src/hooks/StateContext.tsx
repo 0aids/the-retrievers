@@ -21,7 +21,6 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({
     );
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function useAppState(): StateContextType {
     const ctx = useContext(StateContext);
     if (!ctx) {
