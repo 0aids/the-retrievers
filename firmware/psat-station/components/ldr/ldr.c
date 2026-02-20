@@ -14,6 +14,8 @@ const static char* ldr_tag_c = "LDR";
 extern esp_err_t
 adc_cali_delete_scheme_line_fitting(adc_cali_handle_t handle);
 
+ldr_preflightTest_t test = {0};
+
 //
 // Global Variables
 //
@@ -214,9 +216,9 @@ void ldr_deinit(void)
 #endif
 }
 
-ldr_preflightTest_t ldr_preflightTest(void)
+bool ldr_preflightTest(void)
 {
-    ldr_preflightTest_t test = {};
+    psatErr_error_t* lastErr = psatErr_getMostRecentError();
 
     test.stateBefore = ldr_queryState();
     ldr_setup();
@@ -225,5 +227,14 @@ ldr_preflightTest_t ldr_preflightTest(void)
     ldr_deinit();
     test.stateAfter = ldr_queryState();
 
-    return test;
+    psatErr_error_t* currentErr = psatErr_getMostRecentError();
+
+    if(currentErr == NULL) {
+        return true;
+    }
+    if(currentErr->id == lastErr->id) {
+        return true;
+    }
+
+    return false;
 }

@@ -31,4 +31,4 @@ void ldr_setup(void);
 int                 ldr_getVoltage(void);
 ldr_state_t         ldr_queryState(void);
 void                ldr_deinit(void);
-ldr_preflightTest_t ldr_preflightTest(void);
+bool ldr_preflightTest(void);
