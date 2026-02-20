@@ -29,6 +29,12 @@ export type FSMState = {
     prevStateName: string | null;
 };
 
+export type GeoPosition = {
+    lat: number;
+    lon: number;
+    accuracy?: number;
+};
+
 export type ApiState = {
     gps: GPSState;
     fsm: FSMState;
