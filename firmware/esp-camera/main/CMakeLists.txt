@@ -1,5 +1,5 @@
 idf_component_register(
     SRCS "main.c"
     INCLUDE_DIRS "."
-    REQUIRES esp32-camera camera uart sdmmc
+    REQUIRES esp32-camera camera uart sd_card nvs_flash
 )

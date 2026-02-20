@@ -55,7 +55,7 @@ esp_err_t init_camera(void)
 
     return ESP_OK;
 }
-void take_pic(void){
+void burst_pic(void){
     ESP_LOGI(TAG, "Taking picture...");
     camera_fb_t *pic = esp_camera_fb_get();
 

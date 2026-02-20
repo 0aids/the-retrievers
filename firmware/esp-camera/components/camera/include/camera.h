@@ -11,9 +11,8 @@
 #include "esp_camera.h"
 #include "driver/gpio.h"
 
-#ifndef portTICK_RATE_MS
 #define portTICK_RATE_MS portTICK_PERIOD_MS
-#endif
+
 
 esp_err_t init_camera(void);
-void take_pic(void);
+void burst_pic(void);

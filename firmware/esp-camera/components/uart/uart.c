@@ -1,4 +1,4 @@
-#include "header.h"
+#include "uart.h"
 
 void init_uart(void){
     QueueHandle_t uart_queue;
@@ -16,5 +16,4 @@ void init_uart(void){
     // Configure UART parameters
     ESP_ERROR_CHECK(uart_param_config(uart_num, &uart_config));
     ESP_ERROR_CHECK(uart_set_pin(uart_num, 1, 3, -1, -1));
-
 }
