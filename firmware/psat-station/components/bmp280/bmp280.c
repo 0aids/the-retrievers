@@ -20,13 +20,13 @@ static void              bmp280_compensatePressureAndTemperature(
                  uint32_t ADC_T, uint32_t ADC_P, int32_t* temperature,
                  double* pressure);
 
-i2c_device_config_t bmp280_Config = {
+static i2c_device_config_t bmp280_Config = {
     .dev_addr_length = I2C_ADDR_BIT_7,
     .device_address  = BMP280_ADDRESS,
     .scl_speed_hz    = I2C_FREQUENCY,
 };
 
-i2c_master_dev_handle_t bmp280_handle;
+static i2c_master_dev_handle_t bmp280_handle;
 
 uint8_t                 bmp280_ctrlmeas[2] = {BMP280_CTRLMEAS_ADDRESS,
                                               BMP280_CTRLMEAS_DATA};
