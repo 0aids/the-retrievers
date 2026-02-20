@@ -165,3 +165,27 @@ void timer_unpauseAllPaused()
         }
     }
 }
+
+
+bool timer_preflightTest() {
+
+    psatErr_error_t* lastErr = psatErr_getMostRecentError();
+
+    timer_init();
+
+    timer_start(timer_timerId_1s);
+    timer_stop(timer_timerId_1s);
+
+    timer_deinit();
+
+    psatErr_error_t* currentErr = psatErr_getMostRecentError();
+    if(currentErr == NULL) {
+        return true;
+    }
+
+    if(lastErr->id == currentErr->id) {
+        return true;
+    }
+
+    return false;
+}

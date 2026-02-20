@@ -66,7 +66,7 @@ bmp280_status_t bmp280_queryStatus()
 bool bmp280_preflightTest()
 {
 
-    psatErr_error_t lastErr = *psatErr_getMostRecentError();
+    psatErr_error_t* lastErr = psatErr_getMostRecentError();
 
     
 
@@ -75,9 +75,13 @@ bool bmp280_preflightTest()
     bmp280_preflightStatus.pressure    = bmp280_getPressure();
     bmp280_deinit();
 
-    psatErr_error_t currentErr = *psatErr_getMostRecentError();
+    psatErr_error_t* currentErr = psatErr_getMostRecentError();
 
-    if(lastErr.id == currentErr.id){
+    if(currentErr == NULL) {
+        return true;
+    }
+
+    if(lastErr->id == currentErr->id){
         return true;
     }
     
