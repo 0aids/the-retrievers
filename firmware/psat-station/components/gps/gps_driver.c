@@ -7,6 +7,7 @@
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "gps_data.h"
 #include "pin_config.h"
 #include "shared_state.h"
 #include "errors.h"
@@ -147,4 +148,30 @@ void gps_killTask()
     xTaskNotifyGive(gpsTask_s);
     runTask   = false;
     gpsTask_s = NULL;
+}
+
+
+bool gps_preflightTest() {
+
+    int startLines = *gps_linesRecieved;
+
+    psatErr_error_t* lastErr = psatErr_getMostRecentError();
+
+    gps_init();
+    gps_startTask();
+    vTaskDelay(1000/portTICK_PERIOD_MS);
+    gps_killTask();
+    gps_deinit();
+
+    psatErr_error_t* currentErr = psatErr_getMostRecentError();
+
+    int endLines = *gps_linesRecieved;
+
+    if(currentErr == NULL && endLines > startLines) {
+        return true;
+    } else if(currentErr->id == lastErr->id && endLines > startLines) {
+        return true;
+    }
+
+    return false;
 }

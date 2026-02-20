@@ -8,3 +8,5 @@ void gps_logGpsSnapshot(gps_data_t* gps);
 void gps_stateGetSnapshot(gps_data_t* out);
 void gps_processLine(const char* gpsBuffer_c);
 void gps_stateCompleteOverwrite(const gps_data_t* src);
+
+extern int* gps_linesRecieved;

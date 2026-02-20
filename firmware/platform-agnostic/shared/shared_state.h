@@ -235,6 +235,8 @@ typedef struct
     bool    navValid;      // knots, kph & course
     bool    fixInfoValid;  // fix quality, sats tracked
     bool    altitudeValid; // altitude, geoidal
+
+    int linesRecieved;
 } gps_data_t;
 
 // FUNCTIONS TO CONVERT ENUM TO A STRING
