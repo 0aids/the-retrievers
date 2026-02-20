@@ -23,17 +23,15 @@ export type GPSState = {
 };
 
 export type FSMState = {
-    state: number | null;
-    name: string | null;
+    currentState: number | null;
+    currentStateName: string | null;
+    prevState: number | null;
+    prevStateName: string | null;
 };
 
 export type ApiState = {
     gps: GPSState;
     fsm: FSMState;
-    radio: {
-        last_packet_time: number | null;
-    };
-    stats: {
-        packets_received: number | null;
-    };
+    radio: { lastPacketTime: number | null };
+    stats: { packetsReceived: number | null };
 };
