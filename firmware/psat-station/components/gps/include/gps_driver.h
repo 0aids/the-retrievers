@@ -7,3 +7,4 @@ void gps_init(void);
 void gps_deinit(void);
 void gps_startTask(void);
 void gps_killTask(void);
+bool gps_preflightTest();

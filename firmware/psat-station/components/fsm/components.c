@@ -5,6 +5,8 @@
 // TODO: also if recovery function is defined we just run that instead
 
 #include "esp_log.h"
+#include "shared_state.h"
+#include <stdbool.h>
 
 #include "components.h"
 
@@ -16,7 +18,7 @@ static psatFSM_component_t componentTable[psatFSM_component__COUNT] =
 void psatFSM_registerComponent(
     psatFSM_component_e componentId, psatFSM_componentType_e type,
     void (*init)(void), void (*deinit)(void), void (*recover)(void),
-    void (*start)(void), void (*stop)(void))
+    void (*start)(void), void (*stop)(void), bool (*preflight)(void))
 {
     if (componentId < 0 || componentId >= psatFSM_component__COUNT)
     {
@@ -119,4 +121,22 @@ psatFSM_getComponent(psatFSM_component_e componentId)
     }
 
     return &componentTable[componentId];
+}
+
+
+void psatFSM_preflightTest() {
+
+    bool preflightTest_output[psatFSM_component__COUNT] = {0};
+
+    psatFSM_component_t component; 
+    
+    for (int componentId = 0; componentId < psatFSM_component__COUNT;
+         componentId++)
+    {
+        component = componentTable[componentId];
+        preflightTest_output[componentId] = component.preflight();
+    }
+
+    //Transmit over LoRa???
+
 }
