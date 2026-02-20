@@ -49,6 +49,7 @@
     X(psatFSM_component_servo)         \
     X(psatFSM_component_timers)         \
     X(psatFSM_component_bmp280)          \
+    X(psatFSM_component_bmi323)           \
     X(psatFSM_component__COUNT)           
                                           
 #define PSAT_FSM_COMPONENTS_STATUS_LIST     \
@@ -95,8 +96,17 @@
     X(psatErr_buzzer_gpioReset_failed)                                   \
     X(psatErr_buzzer_turnOn_failed)                                       \
     X(psatErr_buzzer_turnOff_failed)                                       \
-    X(psatErr_timer_init_failed)\
-                                                                            \
+    X(psatErr_timer_init_failed)                                            \
+                                                                             \
+    X(psatErr_bmi323_i2cBusAddition_failed)                                   \
+    X(psatErr_bmi323_FIFOConfig_failed)                                        \
+    X(psatErr_bmi323_AccConfig_failed)                                          \
+    X(psatErr_bmi323_GyroConfig_failed)                                          \
+    X(psatErr_bmi323_ChipError)                                                   \
+    X(psatErr_bmi323_i2cBusRemoval_failed)                                         \
+    X(psatErr_bmi323_DataRead_failed)                                               \
+    X(psatErr_bmi323_reset_failed)                                                   \
+                                                                                      \
     X(psatErr__COUNT)
 
 // DEFINE ENUMS FOR EACH LIST
@@ -208,6 +218,23 @@ typedef struct
     int32_t temperature;
     double  pressure;
 } bmp280_preflightStatus_t;
+
+// BMI323 IMU (LOW-G ACCELEROMETER & GRYOSCOPE) DATA
+
+typedef struct 
+{
+    //acc in m/s/s and gyro in degree/s
+    double accX;
+    double accY;
+    double accZ;
+    double gyroX;
+    double gyroY;
+    double gyroZ;
+
+    //time is in uS since esp power on using esp_timer_get_time()
+    int64_t time;
+
+} bmi323_data_t;
 
 // GPS DATA
 typedef struct

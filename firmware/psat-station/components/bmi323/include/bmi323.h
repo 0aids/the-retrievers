@@ -2,4 +2,6 @@
 #include <string.h>
 
 void bmi323_init();
-void bmi_deinit();
+void bmi323_deinit();
+void bmi323_getData();
+void bmi323_reset();
