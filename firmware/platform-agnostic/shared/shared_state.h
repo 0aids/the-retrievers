@@ -236,6 +236,31 @@ typedef struct
 
 } bmi323_data_t;
 
+//SENSOR DATA STRUCT
+
+typedef struct {
+
+    int32_t temperature;
+    double pressure;
+
+    double accX;
+    double accY;
+    double accZ;
+
+    double velX;
+    double velY;
+    double velZ;
+
+    double gyroX;
+    double gyroY;
+    double gyroZ;
+
+    double batterVoltage;
+    double ldrVoltage;
+
+
+} sensorData_t;
+
 // GPS DATA
 typedef struct
 {

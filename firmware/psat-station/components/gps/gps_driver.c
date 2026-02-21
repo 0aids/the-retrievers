@@ -125,6 +125,7 @@ void gps_deinit()
         psatErr_postError(psatErr_gps_uartDriverUninstall_failed ,psatFSM_component_gps , psatFSM_getCurrentState());
         return;
     }
+    return;
 }
 
 void gps_startTask()
@@ -159,7 +160,7 @@ bool gps_preflightTest() {
 
     gps_init();
     gps_startTask();
-    vTaskDelay(1000/portTICK_PERIOD_MS);
+    vTaskDelay(4000/portTICK_PERIOD_MS);
     gps_killTask();
     gps_deinit();
 
@@ -167,9 +168,12 @@ bool gps_preflightTest() {
 
     int endLines = *gps_linesRecieved;
 
-    if(currentErr == NULL && endLines > startLines) {
-        return true;
-    } else if(currentErr->id == lastErr->id && endLines > startLines) {
+    if(endLines == startLines) {
+        ESP_LOGE("GPS", "No lines Recieved");
+        return false;
+    } 
+    
+    if(currentErr == NULL || currentErr->id == lastErr->id) {
         return true;
     }
 
