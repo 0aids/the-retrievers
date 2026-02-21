@@ -12,6 +12,9 @@
 static gps_data_t        gpsData_s;
 static SemaphoreHandle_t gpsStateMutex_s;
 
+
+int* gps_linesRecieved = &gpsData_s.linesRecieved;
+
 static const char*       TAG = "GPS";
 
 void                     gps_stateInit(void)
@@ -122,6 +125,9 @@ void gps_processLine(const char* gpsBuffer_c)
         ESP_LOGW(TAG, "Bad Checksum: %s", gpsBuffer_c);
         return;
     }
+
+    //increasing lines read for preflight test
+    gpsData_s.linesRecieved++;
 
     ESP_LOGD(TAG, "Processing Received Line");
 
