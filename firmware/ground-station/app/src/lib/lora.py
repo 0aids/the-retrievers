@@ -5,7 +5,9 @@ from os.path import join, dirname
 
 from rich import print
 
-from core.state import state_manager, FSMState, GPSStruct
+from core.state import state_manager
+from core.types import GPSStruct, FSMState
+
 
 LIBRARY_PATH = join(dirname(__file__), "libLoraParser.so")
 
