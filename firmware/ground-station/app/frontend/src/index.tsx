@@ -9,29 +9,41 @@ import {
 import MapView from "./components/map/MapView";
 import Commands from "./components/Commands";
 import StatusTopBar from "./components/Bar";
+import Prelaunch from "./components/Prelaunch";
 
 import { usePoll } from "./hooks/usePoll";
 import { StateProvider, useAppState } from "./hooks/StateContext";
 
 function InnerApp() {
-    const { setState } = useAppState();
+    const { state, setState } = useAppState();
     usePoll(setState, 1000);
+
+    const PRELAUNCH_STATE_ENUM = 1;
+
+    const inPrelaunch =
+        state === null ||
+        state.fsm.currentState === null ||
+        state.fsm.currentState <= PRELAUNCH_STATE_ENUM;
 
     return (
         <>
             <StatusTopBar />
 
-            <div className="p-3 space-y-2">
-                <MapView />
+            {inPrelaunch ? (
+                <Prelaunch />
+            ) : (
+                <div className="p-3 space-y-2">
+                    <MapView />
 
-                <DataPanels />
+                    <DataPanels />
 
-                <Commands />
+                    <Commands />
 
-                <SensorsDataPanel />
-                <OtherDataPanel />
-                <LogPanel />
-            </div>
+                    <SensorsDataPanel />
+                    <OtherDataPanel />
+                    <LogPanel />
+                </div>
+            )}
         </>
     );
 }

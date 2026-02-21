@@ -35,10 +35,6 @@ export type GeoPosition = {
     accuracy?: number;
 };
 
-export type PreflightResult = {
-    success: boolean | null;
-};
-
 export type ComponentStatus = {
     id: number;
     name: string;
@@ -46,7 +42,7 @@ export type ComponentStatus = {
 }[];
 
 export type ApiState = {
-    preflightResult: PreflightResult;
+    preflightSuccess: boolean | null;
     data: {
         gps: GPSState;
         ldrVoltage: number | null;
