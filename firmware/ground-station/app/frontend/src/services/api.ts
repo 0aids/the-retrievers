@@ -12,3 +12,24 @@ export async function fetchState(): Promise<ApiState | null> {
         return null;
     }
 }
+
+export async function sendCommand(cmd: number, args: number | null = null) {
+    try {
+        const res = await fetch(`${BASE}/command`, {
+            method: "POST",
+            body: JSON.stringify({
+                cmd,
+                args,
+            }),
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
+        });
+        if (!res.ok) return null;
+        return await res.json();
+    } catch (e) {
+        console.error("error while sending command :(", e);
+        return null;
+    }
+}

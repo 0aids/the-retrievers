@@ -1,5 +1,7 @@
 import { useState } from "react";
+
 import { useAppState } from "../hooks/StateContext";
+import { sendCommand } from "../services/api";
 
 const Prelaunch = () => {
     const { state } = useAppState();
@@ -41,7 +43,8 @@ const Prelaunch = () => {
                     <button
                         className="bg-gray-700 gs-btn border border-gray-700 py-3 rounded-xl text-sm w-full"
                         onClick={() => {
-                            console.log("Enabling component");
+                            const component = 0; // ldr
+                            sendCommand(18, component);
                         }}
                     >
                         Enable Component
@@ -49,7 +52,8 @@ const Prelaunch = () => {
                     <button
                         className="bg-gray-700 gs-btn border border-gray-700 py-3 rounded-xl text-sm w-full"
                         onClick={() => {
-                            console.log("Disabling component");
+                            const component = 0; // ldr
+                            sendCommand(19, component);
                         }}
                     >
                         Disable Component
@@ -73,7 +77,7 @@ const Prelaunch = () => {
                     <button
                         className="bg-gray-700 gs-btn border border-gray-700 py-3 rounded-xl text-sm w-full"
                         onClick={() => {
-                            console.log("Running all tests");
+                            sendCommand(13);
                         }}
                     >
                         {preflightResult.text === initialPreflightResult
@@ -86,7 +90,8 @@ const Prelaunch = () => {
                 <button
                     className="bg-green-800 gs-btn border border-green-700 py-3 rounded-xl text-sm w-full"
                     onClick={() => {
-                        console.log("Moving to prelaunch");
+                        sendCommand(15);
+
                         setPreflightResult({
                             text: "Success",
                             color: "#63ba80",

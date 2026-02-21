@@ -1,3 +1,5 @@
+import { sendCommand } from "../services/api";
+
 export default function Commands() {
     return (
         <section className="space-y-1">
@@ -9,7 +11,7 @@ export default function Commands() {
                 <button
                     className="bg-gray-800 gs-btn border border-gray-700 py-3 rounded-xl text-sm"
                     onClick={() => {
-                        console.log("Running Command Placeholder");
+                        sendCommand(11);
                     }}
                 >
                     Beep Short
@@ -18,7 +20,7 @@ export default function Commands() {
                 <button
                     className="bg-gray-800 gs-btn border border-gray-700 py-3 rounded-xl text-sm"
                     onClick={() => {
-                        console.log("Running Command Placeholder");
+                        sendCommand(12);
                     }}
                 >
                     Beep Long
@@ -26,7 +28,8 @@ export default function Commands() {
                 <button
                     className="bg-gray-800 gs-btn border border-gray-700 py-3 rounded-xl text-sm"
                     onClick={() => {
-                        console.log("Running Command Placeholder");
+                        const newState = 7; // recovery
+                        sendCommand(16, newState);
                     }}
                 >
                     Fast Forward State
@@ -35,7 +38,8 @@ export default function Commands() {
                 <button
                     className="bg-gray-800 gs-btn border border-gray-700 py-3 rounded-xl text-sm"
                     onClick={() => {
-                        console.log("Running Command Placeholder");
+                        const newState = 7; // recovery
+                        sendCommand(17, newState);
                     }}
                 >
                     State Override
@@ -44,7 +48,8 @@ export default function Commands() {
                 <button
                     className="bg-gray-800 gs-btn border border-gray-700 py-3 rounded-xl text-sm"
                     onClick={() => {
-                        console.log("Running Command Placeholder");
+                        const component = 0; // ldr
+                        sendCommand(18, component);
                     }}
                 >
                     Enable Component
@@ -53,7 +58,8 @@ export default function Commands() {
                 <button
                     className="bg-gray-800 gs-btn border border-gray-700 py-3 rounded-xl text-sm"
                     onClick={() => {
-                        console.log("Running Command Placeholder");
+                        const component = 0; // ldr
+                        sendCommand(19, component);
                     }}
                 >
                     Disable Component
