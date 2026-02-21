@@ -35,9 +35,30 @@ export type GeoPosition = {
     accuracy?: number;
 };
 
+export type PreflightResult = {
+    success: boolean | null;
+};
+
+export type ComponentStatus = {
+    id: number;
+    name: string;
+    status: boolean;
+}[];
+
 export type ApiState = {
-    gps: GPSState;
+    preflightResult: PreflightResult;
+    data: {
+        gps: GPSState;
+        ldrVoltage: number | null;
+        servoAngle: number | null;
+        batteryLevel: number | null;
+        temperature: number | null;
+        cameraOn: boolean | null;
+        pressure: number | null;
+        // TODO: accelerometer: {},
+        // TODO: imu: {}
+    };
     fsm: FSMState;
-    radio: { lastPacketTime: number | null };
-    stats: { packetsReceived: number | null };
+    components: ComponentStatus;
+    radio: { lastPacketTime: number | null; packetsReceived: number | null };
 };
