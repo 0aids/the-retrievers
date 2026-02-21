@@ -1,5 +1,6 @@
 import ctypes
 from queue import Queue
+from enum import IntEnum, auto
 from os.path import join, dirname
 
 from rich import print
@@ -7,6 +8,31 @@ from rich import print
 from core.state import state_manager, FSMState, GPSStruct
 
 LIBRARY_PATH = join(dirname(__file__), "libLoraParser.so")
+
+
+class PacketType(IntEnum):
+    loraFsm_packetType_empty = 0
+    loraFsm_packetType_test = auto()
+    loraFsm_packetType_ack = auto()
+    loraFsm_packetType_ping = auto()
+    loraFsm_packetType_pong = auto()
+    loraFsm_packetType_gpsData = auto()
+    loraFsm_packetType_stateData = auto()
+    loraFsm_packetType_sensorData = auto()
+    loraFsm_packetType_preflightData = auto()
+    loraFsm_packetType_preflightSuccess = auto()
+    loraFsm_packetType_preflightFail = auto()
+    loraFsm_packetType_buzzShortReq = auto()
+    loraFsm_packetType_buzzLongReq = auto()
+    loraFsm_packetType_preflightReq = auto()
+    loraFsm_packetType_preflightDataReq = auto()
+    loraFsm_packetType_prelaunchCompleteReq = auto()
+    loraFsm_packetType_fastForwardReq = auto()
+    loraFsm_packetType_stateOverrideReq = auto()
+    loraFsm_packetType_enableComponentReq = auto()
+    loraFsm_packetType_disableComponentReq = auto()
+    loraFsm_packetType_dataDumpReq = auto()
+
 
 PACKET_FSM = 6
 PACKET_GPS = 4
@@ -27,25 +53,28 @@ def lora_receive_callback(payload, size, _rss, _snr):
     if not size:
         return
 
-    data = ctypes.string_at(payload, size)
-    packet_type = data[0]
+    recieved_data = ctypes.string_at(payload, size)
+    packet_type = PacketType(recieved_data[0])
+    data = recieved_data[1:]
 
-    print(f"[bold blue]Data of size {size} recieved: {data}")
+    print(
+        f"[bold blue]Data of type: {packet_type.name} (size: {size}) recieved: {data}"
+    )
 
-    if packet_type == PACKET_FSM:
-        state = FSMState(data[1])
-        state_manager.update_state(state)
-        print(f"[green]FSM changed state to: {state.name}")
-    elif packet_type == PACKET_PING:
+    if packet_type == PacketType.loraFsm_packetType_stateData:
+        new_state = FSMState(data[0])
+        prev_state = FSMState(data[1])
+        state_manager.update_state(new_state, prev_state)
+        print(f"[green]FSM changed state to: {new_state.name}")
+
+    elif packet_type == PacketType.loraFsm_packetType_ping:
         print("[green]pong em back fr")
-        lora_send(b"\x02")
-    elif packet_type == PACKET_GPS:
+        lora_send(PacketType.loraFsm_packetType_pong.to_bytes())
+
+    elif packet_type == PacketType.loraFsm_packetType_gpsData:
         gps = GPSStruct.from_buffer_copy(data[1:])
         state_manager.update_gps(
-            {
-                "latitude": gps.latitude,
-                "longitude": gps.longitude,
-            }
+            dict((field, getattr(gps, field)) for field, *_ in gps._fields_)
         )
 
 
