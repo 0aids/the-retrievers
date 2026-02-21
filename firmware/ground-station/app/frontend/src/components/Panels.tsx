@@ -13,21 +13,23 @@ export function DataPanels() {
                     <p>
                         Pos:{" "}
                         <span>
-                            {state?.gps?.latitude && state?.gps?.longitude
-                                ? `(${state.gps.latitude}, ${state.gps.longitude})`
+                            {state?.data.gps?.latitude &&
+                            state?.data.gps?.longitude
+                                ? `(${state.data.gps.latitude}, ${state.data.gps.longitude})`
                                 : "-"}
                         </span>
                     </p>
                     <p>
-                        Altitude: <span>{state?.gps?.altitude ?? "-"}</span>
+                        Altitude:{" "}
+                        <span>{state?.data.gps?.altitude ?? "-"}</span>
                     </p>
                     <p>
-                        Speed: <span>{state?.gps?.speedKph ?? "-"}</span>
+                        Speed: <span>{state?.data.gps?.speedKph ?? "-"}</span>
                     </p>
 
                     <p>
                         Sats:{" "}
-                        <span>{`In View: ${state?.gps?.satsInView ?? "-"}, Tracked: ${state?.gps?.satellitesTracked ?? "-"}`}</span>
+                        <span>{`In View: ${state?.data.gps?.satsInView ?? "-"}, Tracked: ${state?.data.gps?.satellitesTracked ?? "-"}`}</span>
                     </p>
                 </div>
             </div>
@@ -55,7 +57,7 @@ export function DataPanels() {
                     Last: <span>{state?.radio?.lastPacketTime ?? "-"}</span>
                 </p>
                 <p className="text-sm">
-                    RX: <span>{state?.stats?.packetsReceived ?? "-"}</span>
+                    RX: <span>{state?.radio?.packetsReceived ?? "-"}</span>
                 </p>
             </div>
         </section>
@@ -80,6 +82,8 @@ export function LogPanel() {
 }
 
 export function SensorsDataPanel() {
+    const { state } = useAppState();
+
     return (
         <section>
             <div className="bg-gray-900 border border-gray-800 rounded-xl p-3">
@@ -88,10 +92,11 @@ export function SensorsDataPanel() {
                 </h3>
                 <div className="text-sm space-y-1">
                     <p>
-                        Pressure: <span>Not Implemented Yet</span>
+                        Pressure: <span>{state?.data.pressure ?? "-"}</span>
                     </p>
                     <p>
-                        Temperature: <span>Not Implemented Yet</span>
+                        Temperature:{" "}
+                        <span>{state?.data.temperature ?? "-"}</span>
                     </p>
                     <p>
                         Accelerometer: <span>Not Implemented Yet</span>
@@ -106,6 +111,8 @@ export function SensorsDataPanel() {
 }
 
 export function OtherDataPanel() {
+    const { state } = useAppState();
+
     return (
         <section>
             <div className="bg-gray-900 border border-gray-800 rounded-xl p-3">
@@ -114,16 +121,19 @@ export function OtherDataPanel() {
                 </h3>
                 <div className="text-sm space-y-1">
                     <p>
-                        Battery Level: <span>Not Implemented Yet</span>
+                        Battery Level:{" "}
+                        <span>{state?.data.batteryLevel ?? "-"}</span>
                     </p>
                     <p>
-                        Servo Angle: <span>Not Implemented Yet</span>
+                        Servo Angle:{" "}
+                        <span>{state?.data.servoAngle ?? "-"}</span>
                     </p>
                     <p>
-                        Camera Status: <span>Not Implemented Yet</span>
+                        Camera On: <span>{state?.data.cameraOn ?? "-"}</span>
                     </p>
                     <p>
-                        LDR Voltage: <span>Not Implemented Yet</span>
+                        LDR Voltage:{" "}
+                        <span>{state?.data.ldrVoltage ?? "-"}</span>
                     </p>
                 </div>
             </div>

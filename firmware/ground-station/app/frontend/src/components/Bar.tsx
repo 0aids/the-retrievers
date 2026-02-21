@@ -32,14 +32,14 @@ export default function StatusTopBar() {
                     <div className="flex items-center gap-1 justify-center">
                         <span
                             style={{
-                                backgroundColor: state?.gps?.positionValid
+                                backgroundColor: state?.data.gps?.positionValid
                                     ? "green"
                                     : "red",
                             }}
                             className="w-2 h-2 rounded-full animate-pulse"
                         />
                         <p className="text-xs font-semibold">
-                            {state?.gps?.positionValid ? "Fix" : "No Fix"}
+                            {state?.data.gps?.positionValid ? "Fix" : "No Fix"}
                         </p>
                     </div>
                 </div>

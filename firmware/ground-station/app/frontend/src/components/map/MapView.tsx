@@ -28,8 +28,8 @@ export default function MapView() {
         mapRef.current?.flyTo([p.lat, p.lon], mapRef.current?.getZoom());
     });
     const psatPosition = {
-        lat: state?.gps.latitude,
-        lon: state?.gps.longitude,
+        lat: state?.data.gps.latitude,
+        lon: state?.data.gps.longitude,
     };
 
     const [showPath, setShowPath] = useState(true);
