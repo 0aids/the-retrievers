@@ -7,11 +7,13 @@
 #include "bmp280.h"
 #include "I2C.h"
 #include "timers.h"
+#include "gps_driver.h"
 
 void app_main(void)
 {
-    helpers_printHeapDetails();
-    psatFSM_start();
+    //helpers_printHeapDetails();
+    //psatFSM_start();
+    gps_preflightTest();
 
 
 
