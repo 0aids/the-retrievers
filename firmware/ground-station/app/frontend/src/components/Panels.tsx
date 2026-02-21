@@ -54,10 +54,25 @@ export function DataPanels() {
                     LoRa
                 </h3>
                 <p className="text-sm">
-                    Last: <span>{state?.radio?.lastPacketTime ?? "-"}</span>
+                    Last Packet Timestamp:{" "}
+                    <span>
+                        {state?.radio?.lastPacketTime
+                            ? new Date(
+                                  state.radio.lastPacketTime * 1000,
+                              ).toLocaleDateString(undefined, {
+                                  year: "2-digit",
+                                  month: "2-digit",
+                                  day: "2-digit",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                  second: "2-digit",
+                              })
+                            : "-"}
+                    </span>
                 </p>
                 <p className="text-sm">
-                    RX: <span>{state?.radio?.packetsReceived ?? "-"}</span>
+                    Total Packets Recieved:{" "}
+                    <span>{state?.radio?.packetsReceived ?? "-"}</span>
                 </p>
             </div>
         </section>
