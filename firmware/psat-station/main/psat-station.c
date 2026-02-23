@@ -1,13 +1,28 @@
 #include <stdio.h>
+#include "driver/uart.h"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/idf_additions.h"
+#include "freertos/projdefs.h"
 #include "sm.h"
 #include <helpers.h>
+#include "camera_control.h"
 
 void app_main(void)
 {
-    helpers_printHeapDetails();
-    psatFSM_start();
+    // helpers_printHeapDetails();
+    // psatFSM_start();
+    camera_control_init();
+
+    camera_init();
+    camera_listen();
+
+    take_pics();
+    camera_listen();
+
+    camera_deinit();
+    camera_listen();
+
+    camera_control_deinit();
 }
 

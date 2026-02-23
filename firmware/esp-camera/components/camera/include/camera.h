@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "sdkconfig.h"
 
 #include <esp_log.h>

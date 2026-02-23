@@ -6,15 +6,9 @@
 #include "driver/uart.h"
 #include "esp_log.h"
 
-static const uart_port_t uart_num = UART_NUM_0;
-// Setup UART buffered IO with event queue
-static const int uart_buffer_size = (1024 * 2);
+#define CAM_UART_NUM        UART_NUM_0
+#define UART_TX             (1)
+#define UART_RX             (3)
+#define BUF_SIZE            (1024*2)
+#define STACK_SIZE          (3072)
 
-
-#define PORT_NUM UART_NUM_0
-#define PATTERN_CHR_NUM    (3)         /*!< Set the number of consecutive and identical characters received by receiver which defines a UART pattern*/
-
-#define BUF_SIZE (1024)
-#define RD_BUF_SIZE (BUF_SIZE)
-
-void init_uart(void);
