@@ -100,29 +100,40 @@ void gps_init()
                                  .flow_ctrl =
                                      UART_HW_FLOWCTRL_DISABLE};
 
-    
-    if(uart_param_config(CFG_GPS_UART_NUM_d, &uart_config) != ESP_OK) {
-        psatErr_postError(psatErr_gps_uartConfig_failed ,psatFSM_component_gps , psatFSM_getCurrentState());
+    if (uart_param_config(CFG_GPS_UART_NUM_d, &uart_config) != ESP_OK)
+    {
+        psatErr_postError(psatErr_gps_uartConfig_failed,
+                          psatFSM_component_gps,
+                          psatFSM_getCurrentState());
         return;
     }
-    if(uart_set_pin(CFG_GPS_UART_NUM_d, CFG_GPS_TX_PIN_d,
-                                 CFG_GPS_RX_PIN_d, UART_PIN_NO_CHANGE,
-                                 UART_PIN_NO_CHANGE) != ESP_OK) {
-                                    psatErr_postError(psatErr_gps_uartPinSet_failed ,psatFSM_component_gps , psatFSM_getCurrentState());
-                                    return;
-                                 }
-    if(uart_driver_install(
-        CFG_GPS_UART_NUM_d, GPS_RX_BUFFER_SIZE, 0, 0, NULL, 0)!=ESP_OK){
-            psatErr_postError(psatErr_gps_uartDriverInstall_failed ,psatFSM_component_gps , psatFSM_getCurrentState());
-            return;
-        }
+    if (uart_set_pin(CFG_GPS_UART_NUM_d, CFG_GPS_TX_PIN_d,
+                     CFG_GPS_RX_PIN_d, UART_PIN_NO_CHANGE,
+                     UART_PIN_NO_CHANGE) != ESP_OK)
+    {
+        psatErr_postError(psatErr_gps_uartPinSet_failed,
+                          psatFSM_component_gps,
+                          psatFSM_getCurrentState());
+        return;
+    }
+    if (uart_driver_install(CFG_GPS_UART_NUM_d, GPS_RX_BUFFER_SIZE, 0,
+                            0, NULL, 0) != ESP_OK)
+    {
+        psatErr_postError(psatErr_gps_uartDriverInstall_failed,
+                          psatFSM_component_gps,
+                          psatFSM_getCurrentState());
+        return;
+    }
 }
 
 void gps_deinit()
 {
     ESP_LOGI("GPS", "GPS Deinit");
-    if(uart_driver_delete(CFG_GPS_UART_NUM_d) != ESP_OK){
-        psatErr_postError(psatErr_gps_uartDriverUninstall_failed ,psatFSM_component_gps , psatFSM_getCurrentState());
+    if (uart_driver_delete(CFG_GPS_UART_NUM_d) != ESP_OK)
+    {
+        psatErr_postError(psatErr_gps_uartDriverUninstall_failed,
+                          psatFSM_component_gps,
+                          psatFSM_getCurrentState());
         return;
     }
     return;
@@ -132,11 +143,15 @@ void gps_startTask()
 {
     ESP_LOGI("GPS", "Starting GPS Task");
     runTask = true;
-    if(xTaskCreatePinnedToCore(gps_task, "gps_task", GPS_TASK_STACK,
-                            NULL, GPS_TASK_PRIO, &gpsTask_s, 0) != pdPASS){
-                                psatErr_postError(psatErr_gps_startTask_failed, psatFSM_component_gps , psatFSM_getCurrentState());
-                                return;
-                            }
+    if (xTaskCreatePinnedToCore(gps_task, "gps_task", GPS_TASK_STACK,
+                                NULL, GPS_TASK_PRIO, &gpsTask_s,
+                                0) != pdPASS)
+    {
+        psatErr_postError(psatErr_gps_startTask_failed,
+                          psatFSM_component_gps,
+                          psatFSM_getCurrentState());
+        return;
+    }
 }
 
 void gps_killTask()
@@ -149,31 +164,36 @@ void gps_killTask()
     xTaskNotifyGive(gpsTask_s);
     runTask   = false;
     gpsTask_s = NULL;
+
+    // as uart_read bytes has that timeout so killing task mid way will not actually kill till after timeout
+    vTaskDelay((TIMEOUT * 2) / portTICK_PERIOD_MS);
 }
 
+bool gps_preflightTest()
+{
 
-bool gps_preflightTest() {
-
-    int startLines = *gps_linesRecieved;
+    int              startLines = *gps_linesRecieved;
 
     psatErr_error_t* lastErr = psatErr_getMostRecentError();
 
     gps_init();
     gps_startTask();
-    vTaskDelay(4000/portTICK_PERIOD_MS);
+    vTaskDelay(4000 / portTICK_PERIOD_MS);
     gps_killTask();
     gps_deinit();
 
     psatErr_error_t* currentErr = psatErr_getMostRecentError();
 
-    int endLines = *gps_linesRecieved;
+    int              endLines = *gps_linesRecieved;
 
-    if(endLines == startLines) {
+    if (endLines == startLines)
+    {
         ESP_LOGE("GPS", "No lines Recieved");
         return false;
-    } 
-    
-    if(currentErr == NULL || currentErr->id == lastErr->id) {
+    }
+
+    if (currentErr == NULL || currentErr->id == lastErr->id)
+    {
         return true;
     }
 
