@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-/* --------- touch/button feedback --------- */
 .gs-btn {
     transition:
         transform 0.08s ease,
@@ -15,7 +14,6 @@
     box-shadow: inset 0 0 0 999px rgba(255, 255, 255, 0.04);
 }
 
-/* active style for toggle buttons */
 .gs-btn-active {
     border-color: rgba(56, 189, 248, 0.9);
     box-shadow:
@@ -23,19 +21,17 @@
         0 0 0 4px rgba(56, 189, 248, 0.06);
 }
 
-/* subtle flash to denote new log entry */
 .log-flash {
     background-color: rgba(34, 197, 94, 0.06);
     transition: background-color 0.25s;
 }
 
-/* --------- pulsing marker (divIcon) --------- */
 .pulse-marker {
     position: relative;
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: #ef4444; /* red base */
+    background: #ef4444;
     box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.25);
     display: block;
     transform: translate(-50%, -50%);
@@ -67,7 +63,6 @@
     }
 }
 
-/* user marker (blue) */
 .pulse-marker.user {
     background: #3b82f6;
 }
@@ -75,7 +70,6 @@
     background: rgba(59, 130, 246, 0.28);
 }
 
-/* small circle used for precise dot (optional) */
 .small-dot {
     width: 8px;
     height: 8px;
@@ -86,4 +80,28 @@
     top: 50%;
     transform: translate(-50%, -50%);
     box-shadow: 0 0 6px rgba(0, 0, 0, 0.45);
+}
+
+body {
+    font-family: "Inter", sans-serif;
+}
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.gs-btn {
+    transition:
+        transform 0.08s ease,
+        background-color 0.12s ease,
+        box-shadow 0.12s ease;
+    touch-action: manipulation;
+}
+
+.gs-btn:active {
+    transform: scale(0.96);
+    box-shadow: inset 0 0 0 999px rgba(255, 255, 255, 0.06);
 }

@@ -1,14 +1,22 @@
 import path from "path";
 import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-    plugins: [tailwindcss()],
+    plugins: [
+        react({
+            babel: {
+                plugins: [["babel-plugin-react-compiler"]],
+            },
+        }),
+        tailwindcss(),
+    ],
     root: ".",
     base: "/static/",
     build: {
         outDir: path.resolve(__dirname, "../static"),
-        emptyOutDir: true,
+        emptyOutDir: false,
         rollupOptions: {
             output: {
                 assetFileNames: (chunk) => {
