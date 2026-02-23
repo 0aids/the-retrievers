@@ -42,6 +42,10 @@ void highg_init() {
 
 void highg_deinit() {
 
+    uint8_t highg_powerOff[2] = {HIGHG_POWER_ADDRESS, 0};
+
+    i2c_master_transmit(highg_handle, highg_powerOff, sizeof(highg_powerOff), I2c_WAIT_TIME_MS);
+
     if(i2c_master_bus_rm_device(highg_handle) != ESP_OK) {
         psatErr_postError(psatErr_highg_i2cBusAddition_failed, psatFSM_component_highg, psatFSM_getCurrentState());
         return;

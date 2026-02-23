@@ -78,6 +78,13 @@ void reset() {
 
 
 void bmi323_deinit() {
+
+    uint8_t bmi323_accOff[3] = {BMI323_ACCELEROMETER_CONFIG_ADDRESS, 00000000, BMI323_ACCELEROMETER_CONFIG2};
+    uint8_t bmi323_gyroOff[3] = {BMI323_GYRO_CONFIG_ADDRESS, 00000000, BMI323_GYRO_CONFIG2};
+
+    i2c_master_transmit(bmi323_handle, bmi323_gyroOff, sizeof(bmi323_gyroOff), I2c_WAIT_TIME_MS);
+    i2c_master_transmit(bmi323_handle, bmi323_accOff, sizeof(bmi323_accOff), I2c_WAIT_TIME_MS);
+
     if(i2c_master_bus_rm_device(bmi323_handle) != ESP_OK) {
     psatErr_postError(psatErr_bmi323_i2cBusRemoval_failed, psatFSM_component_bmi323, psatFSM_getCurrentState());
     return;
