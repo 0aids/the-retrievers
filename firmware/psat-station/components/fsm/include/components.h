@@ -15,4 +15,4 @@ void psatFSM_enableComponent(psatFSM_component_e id);
 void psatFSM_disableComponent(psatFSM_component_e id);
 psatFSM_getComponent(psatFSM_component_e componentId);
 
-void psatFSM_preflightTest();
+uint16_t psatFSM_preflightTest();

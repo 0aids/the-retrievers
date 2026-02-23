@@ -7,6 +7,7 @@
 #include <shared_state.h>
 #include <helpers.h>
 
+#include "components.h"
 #include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -281,6 +282,7 @@ static void _loraFsm_runStateCmd()
                 .global = false,
                 .type   = psatFSM_eventType_prelaunchComplete,
             };
+            
             psatFSM_postEvent(&event);
             break;
         }

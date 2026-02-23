@@ -150,19 +150,20 @@ void psatFSM_disableComponent(psatFSM_component_e id)
 
     psatFSM_deinitComponent(id);
 
-void psatFSM_preflightTest() {
+uint16_t psatFSM_preflightTest() {
 
-    bool preflightTest_output[psatFSM_component__COUNT] = {0};
+
+    uint16_t preflightTest_output = 0;
 
     psatFSM_component_t component; 
     
-    for (int componentId = 0; componentId < psatFSM_component__COUNT;
-         componentId++)
-    {
+
+    for (int componentId = psatFSM_component__COUNT-1; componentId >= 0; componentId--) {
         component = componentTable[componentId];
-        preflightTest_output[componentId] = component.preflight();
+        preflightTest_output += component.preflight();
+        preflightTest_output << 1;
     }
 
-    //Transmit over LoRa???
+    return preflightTest_output;
 
 }

@@ -50,6 +50,7 @@
     X(psatFSM_component_timers)         \
     X(psatFSM_component_bmp280)          \
     X(psatFSM_component_bmi323)           \
+    X(psatFSM_component_highg)          \
     X(psatFSM_component__COUNT)           
                                           
 #define PSAT_FSM_COMPONENTS_STATUS_LIST     \
@@ -107,6 +108,12 @@
     X(psatErr_bmi323_DataRead_failed)                                               \
     X(psatErr_bmi323_reset_failed)                                                   \
                                                                                       \
+    X(psatErr_highg_i2cBusAddition_failed)                                             \
+    X(psatErr_highg_AccConfig_failed)                                                   \
+    X(psatErr_highg_i2cBusRemoval_failed)                                                \
+    X(psatErr_highg_DataRead_failed)                                                      \
+    X(psatErr_highg_reset_failed)                                                          \
+                                                                                            \
     X(psatErr__COUNT)
 
 // DEFINE ENUMS FOR EACH LIST
@@ -215,9 +222,15 @@ typedef struct
 
 typedef struct
 {
-    int32_t temperature;
-    double  pressure;
-} bmp280_preflightStatus_t;
+    float temperature;
+    int  pressure;
+
+    double altitude;
+
+    int64_t time;
+
+
+} bmp280_data_t;
 
 // BMI323 IMU (LOW-G ACCELEROMETER & GRYOSCOPE) DATA
 
@@ -235,6 +248,50 @@ typedef struct
     int64_t time;
 
 } bmi323_data_t;
+
+// HIGH G ACCELEROMETER DATA
+typedef struct 
+{
+    //acc in m/s/s
+    double accX;
+    double accY;
+    double accZ;
+ 
+    //time is in uS since esp power on using esp_timer_get_time()
+    int64_t time;
+
+} highGAcc_data_t;
+
+
+//SENSOR DATA STRUCT
+
+typedef struct {
+
+    int32_t temperature;
+    double pressure;
+
+    double barometric_altitude;
+    double altitude;
+
+    double accX;
+    double accY;
+    double accZ;
+
+    double velX;
+    double velY;
+    double velZ;
+
+    double gyroX;
+    double gyroY;
+    double gyroZ;
+
+    double batterVoltage;
+    double ldrVoltage;
+
+    //adjusted gps based accelerometer and barometer?
+
+
+} sensorData_t;
 
 // GPS DATA
 typedef struct
