@@ -26,15 +26,12 @@
     X(loraFsm_packetType_sensorData)                                 \
     X(loraFsm_packetType_preflightData)                              \
                                                                      \
-    X(loraFsm_packetType_preflightSuccess)                           \
-    X(loraFsm_packetType_preflightFail)                              \
-                                                                     \
-    X(loraFsm_packetType_buzzShortReq)                               \
-    X(loraFsm_packetType_buzzLongReq)                                \
-                                                                     \
     X(loraFsm_packetType_preflightReq)                               \
     X(loraFsm_packetType_preflightDataReq)                           \
     X(loraFsm_packetType_prelaunchCompleteReq)                       \
+                                                                     \
+    X(loraFsm_packetType_buzzShortReq)                               \
+    X(loraFsm_packetType_buzzLongReq)                                \
                                                                      \
     X(loraFsm_packetType_fastForwardReq)                             \
     X(loraFsm_packetType_stateOverrideReq)                           \

@@ -15,25 +15,32 @@ LIBRARY_PATH = join(dirname(__file__), "libLoraParser.so")
 class PacketType(IntEnum):
     loraFsm_packetType_empty = 0
     loraFsm_packetType_test = auto()
+
     loraFsm_packetType_ack = auto()
     loraFsm_packetType_ping = auto()
     loraFsm_packetType_pong = auto()
+
     loraFsm_packetType_gpsData = auto()
     loraFsm_packetType_stateData = auto()
     loraFsm_packetType_sensorData = auto()
+
     loraFsm_packetType_preflightData = auto()
-    loraFsm_packetType_preflightSuccess = auto()
-    loraFsm_packetType_preflightFail = auto()
-    loraFsm_packetType_buzzShortReq = auto()
-    loraFsm_packetType_buzzLongReq = auto()
     loraFsm_packetType_preflightReq = auto()
     loraFsm_packetType_preflightDataReq = auto()
     loraFsm_packetType_prelaunchCompleteReq = auto()
+
+    loraFsm_packetType_buzzShortReq = auto()
+    loraFsm_packetType_buzzLongReq = auto()
+
     loraFsm_packetType_fastForwardReq = auto()
     loraFsm_packetType_stateOverrideReq = auto()
+
     loraFsm_packetType_enableComponentReq = auto()
     loraFsm_packetType_disableComponentReq = auto()
+
     loraFsm_packetType_dataDumpReq = auto()
+
+    loraFsm_packetType__COUNT = auto()
 
 
 PACKET_FSM = 6
@@ -51,13 +58,15 @@ sending_queue: Queue[bytes] = Queue()
     ctypes.c_int16,
     ctypes.c_int8,
 )
-def lora_receive_callback(payload, size, _rss, _snr):
+def lora_receive_callback(payload, size, rssi, snr):
     if not size:
         return
 
     recieved_data = ctypes.string_at(payload, size)
     packet_type = PacketType(recieved_data[0])
     data = recieved_data[1:]
+
+    print(f"RSSI: {rssi}, SNR: {snr}")
 
     print(
         f"[bold blue]Data of type: {packet_type.name} (size: {size}) recieved: {data}"
@@ -89,7 +98,9 @@ def lora_receive_callback(payload, size, _rss, _snr):
         for component_id, component_result in enumerate(data_bits):
             try:
                 component = FSMComponent(component_id)
-                results.append(ComponentData(component, component.name, bool(component_result)))
+                results.append(
+                    ComponentData(component, component.name, bool(component_result))
+                )
             except Exception:
                 break
 
