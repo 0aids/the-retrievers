@@ -74,7 +74,7 @@ def lora_receive_callback(payload, size, _rss, _snr):
         lora_send(PacketType.loraFsm_packetType_pong.to_bytes())
 
     elif packet_type == PacketType.loraFsm_packetType_gpsData:
-        gps = GPSStruct.from_buffer_copy(data[1:])
+        gps = GPSStruct.from_buffer_copy(data)
         state_manager.update_gps(
             dict((field, getattr(gps, field)) for field, *_ in gps._fields_)
         )
