@@ -282,13 +282,25 @@ static void _loraFsm_runStateCmd()
                 .global = false,
                 .type   = psatFSM_eventType_prelaunchComplete,
             };
-            
+
             psatFSM_postEvent(&event);
             break;
         }
-        case loraFsm_packetType_preflightReq: 
-        uint16_t prelaunch_output = psatFSM_preflightTest();
-            lora_send((uint8_t*)prelaunch_output, sizeof(prelaunch_output));
+        case loraFsm_packetType_preflightReq:
+        {
+            uint16_t prelaunchOutput = psatFSM_preflightTest();
+            ESP_LOGI("PREFLIGHT", "PREFLIGHT TEST RESULTS: %hx",
+                     prelaunchOutput);
+
+            loraFsm_packetWrapper_t preflightStatePacket =
+                loraFsm_packetCreate(loraFsm_packetType_preflightData,
+                                     (uint8_t*)&prelaunchOutput,
+                                     sizeof(prelaunchOutput));
+
+            loraFsm_packetSend(&preflightStatePacket);
+            loraFsm_packetFree(&preflightStatePacket);
+            break;
+        }
         case loraFsm_packetType_preflightDataReq:
             break; // TODO:
 
