@@ -153,13 +153,19 @@ uint16_t psatFSM_preflightTest()
 
     psatFSM_component_t* component;
 
-    for (int componentId = psatFSM_component__COUNT - 1;
-         componentId >= 0; componentId--)
+    for (int componentId = 0;
+         componentId < psatFSM_component__COUNT; componentId++)
     {
         component = psatFSM_getComponent(componentId);
         if (component == NULL)
         {
             continue;
+        }
+
+        if (componentId != 0)
+        {
+
+            preflightTest_output <<= 1;
         }
 
         if (!(component->preflight))
@@ -176,7 +182,6 @@ uint16_t psatFSM_preflightTest()
 
         bool preflightResult = component->preflight();
         preflightTest_output += preflightResult;
-        preflightTest_output <<= 1;
 
         ESP_LOGI(TAG, "Preflight Result for %s: %i",
                  psatFSM_componentToString(componentId),
