@@ -247,8 +247,7 @@ static void _loraFsm_runStateCmd()
                 .global = false,
                 .type   = psatFSM_eventType_prelaunchComplete,
             };
-            uint16_t prelaunch_output = psatFSM_preflightTest();
-            lora_send((uint8_t*)prelaunch_output, sizeof(prelaunch_output));
+            
             psatFSM_postEvent(&event);
             break;
         }
