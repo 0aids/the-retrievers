@@ -288,7 +288,7 @@ static void _loraFsm_runStateCmd()
         }
         case loraFsm_packetType_preflightReq:
         {
-            uint16_t prelaunchOutput = psatFSM_preflightTest();
+            uint16_t prelaunchOutput = psatFSM_preflightTest(false);
             ESP_LOGI("PREFLIGHT", "PREFLIGHT TEST RESULTS: %hx",
                      prelaunchOutput);
 
@@ -302,7 +302,18 @@ static void _loraFsm_runStateCmd()
             break;
         }
         case loraFsm_packetType_preflightDataReq:
-            break; // TODO:
+        {
+            uint16_t prelaunchOutput = psatFSM_preflightTest(true);
+
+            loraFsm_packetWrapper_t preflightStatePacket =
+                loraFsm_packetCreate(loraFsm_packetType_preflightData,
+                                     (uint8_t*)&prelaunchOutput,
+                                     sizeof(prelaunchOutput));
+
+            loraFsm_packetSend(&preflightStatePacket);
+            loraFsm_packetFree(&preflightStatePacket);
+            break;
+        }
 
         // state overriding and forwarding
         case loraFsm_packetType_fastForwardReq:

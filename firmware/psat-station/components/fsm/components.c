@@ -146,15 +146,22 @@ void psatFSM_disableComponent(psatFSM_component_e id)
     psatFSM_deinitComponent(id);
 }
 
-uint16_t psatFSM_preflightTest()
+uint16_t psatFSM_preflightTest(bool useCache)
 {
+    static uint16_t lastResult      = 0;
+    static bool     hasCachedResult = false;
+
+    if (useCache && hasCachedResult)
+    {
+        ESP_LOGI(TAG, "Returning cached preflight result");
+        return lastResult;
+    }
 
     uint16_t             preflightTest_output = 0;
-
     psatFSM_component_t* component;
 
-    for (int componentId = 0;
-         componentId < psatFSM_component__COUNT; componentId++)
+    for (int componentId = 0; componentId < psatFSM_component__COUNT;
+         componentId++)
     {
         component = psatFSM_getComponent(componentId);
         if (component == NULL)
@@ -164,7 +171,6 @@ uint16_t psatFSM_preflightTest()
 
         if (componentId != 0)
         {
-
             preflightTest_output <<= 1;
         }
 
@@ -187,6 +193,9 @@ uint16_t psatFSM_preflightTest()
                  psatFSM_componentToString(componentId),
                  preflightResult);
     }
+
+    lastResult      = preflightTest_output;
+    hasCachedResult = true;
 
     return preflightTest_output;
 }

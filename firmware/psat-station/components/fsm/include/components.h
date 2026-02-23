@@ -14,4 +14,4 @@ psatFSM_component_t*
 void     psatFSM_enableComponent(psatFSM_component_e id);
 void     psatFSM_disableComponent(psatFSM_component_e id);
 
-uint16_t psatFSM_preflightTest();
+uint16_t psatFSM_preflightTest(bool useCache);
