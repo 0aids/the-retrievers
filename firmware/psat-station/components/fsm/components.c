@@ -1,9 +1,3 @@
-// TODO: each component needs init and deinit
-// TODO: Modify to account for start tasks and kill tasks
-// TODO: component will know if it is a task based on or not, and if it is, it will stoptask, deinit, init and start task
-// TODO: if its not then just deinit, init
-// TODO: also if recovery function is defined we just run that instead
-
 #include "esp_log.h"
 #include "shared_state.h"
 #include <stdbool.h>
@@ -38,8 +32,9 @@ void psatFSM_registerComponent(
                               .last_recovery_timestamp = 0,
                               .retry_count             = 0,
                               },
-        .start = start,
-        .stop  = stop
+        .start     = start,
+        .stop      = stop,
+        .preflight = preflight
     };
 
     componentTable[componentId] = component;
