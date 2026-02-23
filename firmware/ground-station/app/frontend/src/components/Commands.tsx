@@ -1,6 +1,31 @@
+import { useState } from "react";
+
+import SelectionModal from "./Modal";
 import { sendCommand } from "../services/api";
+import { useAppState } from "../hooks/StateContext";
+
+export const FSM_STATES = [
+    { id: 0, name: "Start" },
+    { id: 1, name: "Prelaunch" },
+    { id: 2, name: "Ascent" },
+    { id: 3, name: "Deploy Pending" },
+    { id: 4, name: "Deployed" },
+    { id: 5, name: "Descent" },
+    { id: 6, name: "Landing" },
+    { id: 7, name: "Recovery" },
+    { id: 8, name: "Low Power" },
+    { id: 9, name: "Error" },
+    { id: 10, name: "Permanent Error" },
+];
 
 export default function Commands() {
+    const [modalOpen, setModalOpen] = useState(false);
+    const [modalMode, setModalMode] = useState<
+        "enable" | "disable" | "override" | "fastForward" | null
+    >(null);
+
+    const { state } = useAppState();
+
     return (
         <section className="space-y-1">
             <h3 className="text-xs uppercase tracking-wider text-gray-400">
@@ -11,7 +36,7 @@ export default function Commands() {
                 <button
                     className="bg-gray-800 gs-btn border border-gray-700 py-3 rounded-xl text-sm"
                     onClick={() => {
-                        sendCommand(11);
+                        sendCommand(12);
                     }}
                 >
                     Beep Short
@@ -20,16 +45,17 @@ export default function Commands() {
                 <button
                     className="bg-gray-800 gs-btn border border-gray-700 py-3 rounded-xl text-sm"
                     onClick={() => {
-                        sendCommand(12);
+                        sendCommand(13);
                     }}
                 >
                     Beep Long
                 </button>
+
                 <button
                     className="bg-gray-800 gs-btn border border-gray-700 py-3 rounded-xl text-sm"
                     onClick={() => {
-                        const newState = 7; // recovery
-                        sendCommand(16, newState);
+                        setModalMode("fastForward");
+                        setModalOpen(true);
                     }}
                 >
                     Fast Forward State
@@ -38,8 +64,8 @@ export default function Commands() {
                 <button
                     className="bg-gray-800 gs-btn border border-gray-700 py-3 rounded-xl text-sm"
                     onClick={() => {
-                        const newState = 7; // recovery
-                        sendCommand(17, newState);
+                        setModalMode("override");
+                        setModalOpen(true);
                     }}
                 >
                     State Override
@@ -48,8 +74,8 @@ export default function Commands() {
                 <button
                     className="bg-gray-800 gs-btn border border-gray-700 py-3 rounded-xl text-sm"
                     onClick={() => {
-                        const component = 0; // ldr
-                        sendCommand(18, component);
+                        setModalMode("enable");
+                        setModalOpen(true);
                     }}
                 >
                     Enable Component
@@ -58,13 +84,46 @@ export default function Commands() {
                 <button
                     className="bg-gray-800 gs-btn border border-gray-700 py-3 rounded-xl text-sm"
                     onClick={() => {
-                        const component = 0; // ldr
-                        sendCommand(19, component);
+                        setModalMode("disable");
+                        setModalOpen(true);
                     }}
                 >
                     Disable Component
                 </button>
             </div>
+
+            <SelectionModal
+                isOpen={modalOpen}
+                title={
+                    modalMode === "override" || modalMode === "fastForward"
+                        ? "Choose State"
+                        : modalMode === "enable"
+                          ? "Choose Component to Enable"
+                          : modalMode === "disable"
+                            ? "Choose Component to Disable"
+                            : ""
+                }
+                items={
+                    modalMode === "override" || modalMode === "fastForward"
+                        ? FSM_STATES
+                        : (state?.components ?? [])
+                }
+                onClose={() => setModalOpen(false)}
+                onSelect={(item) => {
+                    if (modalMode === "override") {
+                        sendCommand(15, item.id);
+                    } else if (modalMode === "fastForward") {
+                        sendCommand(14, item.id);
+                    } else if (modalMode === "enable") {
+                        sendCommand(16, item.id);
+                    } else if (modalMode === "disable") {
+                        sendCommand(17, item.id);
+                    }
+                }}
+                getKey={(item) => item.id}
+                renderLabel={(item) => item.name}
+                renderSubLabel={(item) => `ID ${item.id}`}
+            />
         </section>
     );
 }
