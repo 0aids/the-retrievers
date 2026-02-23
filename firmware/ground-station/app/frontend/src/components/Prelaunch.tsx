@@ -23,10 +23,13 @@ const Prelaunch = () => {
                     Component Status
                 </h3>
                 <div className="text-sm space-y-1 grid grid-cols-2 gap-2 gap-x-4">
+                    {state?.components.length == 0 && "No Data Yet"}
                     {state?.components.map(({ name, status }) => {
                         return (
                             <p className="flex justify-between">
-                                <span className="font-bold">{name}:</span>
+                                <span className="font-bold">
+                                    {name.replace("psatFSM_component_", "")}:
+                                </span>
 
                                 <span
                                     style={{
