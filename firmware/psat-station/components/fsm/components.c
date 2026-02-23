@@ -149,16 +149,38 @@ void psatFSM_disableComponent(psatFSM_component_e id)
 uint16_t psatFSM_preflightTest()
 {
 
-    uint16_t            preflightTest_output = 0;
+    uint16_t             preflightTest_output = 0;
 
-    psatFSM_component_t component;
+    psatFSM_component_t* component;
 
     for (int componentId = psatFSM_component__COUNT - 1;
          componentId >= 0; componentId--)
     {
-        component = componentTable[componentId];
-        preflightTest_output += component.preflight();
+        component = psatFSM_getComponent(componentId);
+        if (component == NULL)
+        {
+            continue;
+        }
+
+        if (!(component->preflight))
+        {
+            ESP_LOGW(
+                TAG,
+                "Component %s, does not have a preflight function",
+                psatFSM_componentToString(componentId));
+            continue;
+        }
+
+        ESP_LOGI(TAG, "Running Preflight Test For: %s",
+                 psatFSM_componentToString(componentId));
+
+        bool preflightResult = component->preflight();
+        preflightTest_output += preflightResult;
         preflightTest_output <<= 1;
+
+        ESP_LOGI(TAG, "Preflight Result for %s: %i",
+                 psatFSM_componentToString(componentId),
+                 preflightResult);
     }
 
     return preflightTest_output;
