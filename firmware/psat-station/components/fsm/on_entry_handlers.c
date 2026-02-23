@@ -20,12 +20,10 @@ void psatFSM_prelaunchEntryHandler()
     gpio_install_isr_service(0);
 
     psatFSM_registerAllComponents();
-    psatFSM_initAll();
 
     loraFsm_init();
     loraFSM_startAsTask();
 
-    timer_start(timer_timerId_10s);
     button_enable(button_id_prelaunch);
 }
 

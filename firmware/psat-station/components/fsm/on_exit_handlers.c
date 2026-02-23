@@ -10,11 +10,14 @@
 #include "servo.h"
 #include "state_handlers.h"
 #include "timers.h"
+#include "components.h"
 
 void psatFSM_startExitHandler() {} // do nothing
 
 void psatFSM_prelaunchExitHandler()
 {
+    psatFSM_initAll();
+    timer_start(timer_timerId_10s);
     button_disable(button_id_prelaunch);
 }
 
