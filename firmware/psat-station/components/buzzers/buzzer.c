@@ -1,14 +1,21 @@
 #include "buzzer.h"
 
 #include "driver/gpio.h"
+#include "esp_err.h"
 #include "esp_log.h"
 #include "esp_timer.h"
 #include "pin_config.h"
+#include "shared_state.h"
+#include "sm.h"
+#include "errors.h"
+#include <stdbool.h>
 
 static const char*        TAG = "Buzzers";
 
 static esp_timer_handle_t beepTimer_s;
 static bool               buzzerActive_s = false;
+
+static bool buzzer_err = false;
 
 static void               beepTimerCb(void* arg)
 {
@@ -23,9 +30,17 @@ void buzzer_init(void)
                              .pull_up_en   = GPIO_PULLUP_DISABLE,
                              .pull_down_en = GPIO_PULLDOWN_DISABLE,
                              .intr_type    = GPIO_INTR_DISABLE};
-    gpio_config(&io_conf);
+    if(gpio_config(&io_conf) != ESP_OK){
+        psatErr_postError(psatErr_buzzer_gpioConfig_failed, psatFSM_component_buzzers, psatFSM_getCurrentState());
+        buzzer_err = true;
+        return;
+    };
 
-    gpio_set_level(CFG_BUZZER_PIN_d, 0);
+    if(gpio_set_level(CFG_BUZZER_PIN_d, 0)!= ESP_OK){
+        psatErr_postError(psatErr_buzzer_gpioInitLevel_failed, psatFSM_component_buzzers, psatFSM_getCurrentState());
+        buzzer_err = true;
+        return;
+    }
 
     esp_timer_create_args_t timer_args = {.callback = &beepTimerCb,
                                           .name     = "buzzer_timer"};
@@ -44,21 +59,37 @@ void buzzer_deinit(void)
     }
 
     buzzerActive_s = false;
-    gpio_set_level(CFG_BUZZER_PIN_d, 0);
-    gpio_reset_pin(CFG_BUZZER_PIN_d);
+    if(gpio_set_level(CFG_BUZZER_PIN_d, 0) != ESP_OK){
+        psatErr_postError(psatErr_buzzer_gpioDeinitLevel_failed, psatFSM_component_buzzers, psatFSM_getCurrentState());
+        buzzer_err = true;
+        return;
+    }
+    if(gpio_reset_pin(CFG_BUZZER_PIN_d) != ESP_OK) {
+        psatErr_postError(psatErr_buzzer_gpioReset_failed, psatFSM_component_buzzers, psatFSM_getCurrentState());
+        buzzer_err = true;
+        return;
+    }
 
     ESP_LOGI(TAG, "Buzzers deintied");
 }
 
 void buzzer_turnOn(void)
 {
-    gpio_set_level(CFG_BUZZER_PIN_d, 1);
+    if(gpio_set_level(CFG_BUZZER_PIN_d, 1) != ESP_OK) {
+        psatErr_postError(psatErr_buzzer_turnOn_failed, psatFSM_component_buzzers, psatFSM_getCurrentState());
+        buzzer_err = true;
+        return;
+    }
     buzzerActive_s = true;
 }
 
 void buzzer_turnOff(void)
 {
-    gpio_set_level(CFG_BUZZER_PIN_d, 0);
+    if(gpio_set_level(CFG_BUZZER_PIN_d, 0) != ESP_OK) {
+        psatErr_postError(psatErr_buzzer_turnOff_failed, psatFSM_component_buzzers, psatFSM_getCurrentState());
+        buzzer_err = true;
+        return;
+    }
     buzzerActive_s = false;
 }
 
@@ -76,4 +107,25 @@ void buzzer_beep(uint32_t durationMs)
 
     buzzer_turnOn();
     esp_timer_start_once(beepTimer_s, durationMs * 1000);
+}
+
+bool buzzer_preflightTest(){
+
+    psatErr_error_t* lastErr = psatErr_getMostRecentError();
+
+    buzzer_init();
+    buzzer_beep(300);
+    buzzer_deinit();
+
+    psatErr_error_t* currentErr = psatErr_getMostRecentError();
+
+    if(currentErr == NULL) {
+        return true;
+    }
+
+    if(currentErr->id == lastErr->id) {
+        return true;
+    }
+
+    return false;
 }

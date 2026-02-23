@@ -3,10 +3,14 @@
 #include <stdio.h>
 
 #include "driver/uart.h"
+#include "esp_err.h"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "gps_data.h"
 #include "pin_config.h"
+#include "shared_state.h"
+#include "errors.h"
 
 #define TIMEOUT            50
 #define GPS_TASK_PRIO      5
@@ -96,27 +100,42 @@ void gps_init()
                                  .flow_ctrl =
                                      UART_HW_FLOWCTRL_DISABLE};
 
-    ESP_ERROR_CHECK(
-        uart_param_config(CFG_GPS_UART_NUM_d, &uart_config));
-    ESP_ERROR_CHECK(uart_set_pin(CFG_GPS_UART_NUM_d, CFG_GPS_TX_PIN_d,
+    
+    if(uart_param_config(CFG_GPS_UART_NUM_d, &uart_config) != ESP_OK) {
+        psatErr_postError(psatErr_gps_uartConfig_failed ,psatFSM_component_gps , psatFSM_getCurrentState());
+        return;
+    }
+    if(uart_set_pin(CFG_GPS_UART_NUM_d, CFG_GPS_TX_PIN_d,
                                  CFG_GPS_RX_PIN_d, UART_PIN_NO_CHANGE,
-                                 UART_PIN_NO_CHANGE));
-    ESP_ERROR_CHECK(uart_driver_install(
-        CFG_GPS_UART_NUM_d, GPS_RX_BUFFER_SIZE, 0, 0, NULL, 0));
+                                 UART_PIN_NO_CHANGE) != ESP_OK) {
+                                    psatErr_postError(psatErr_gps_uartPinSet_failed ,psatFSM_component_gps , psatFSM_getCurrentState());
+                                    return;
+                                 }
+    if(uart_driver_install(
+        CFG_GPS_UART_NUM_d, GPS_RX_BUFFER_SIZE, 0, 0, NULL, 0)!=ESP_OK){
+            psatErr_postError(psatErr_gps_uartDriverInstall_failed ,psatFSM_component_gps , psatFSM_getCurrentState());
+            return;
+        }
 }
 
 void gps_deinit()
 {
     ESP_LOGI("GPS", "GPS Deinit");
-    uart_driver_delete(CFG_GPS_UART_NUM_d);
+    if(uart_driver_delete(CFG_GPS_UART_NUM_d) != ESP_OK){
+        psatErr_postError(psatErr_gps_uartDriverUninstall_failed ,psatFSM_component_gps , psatFSM_getCurrentState());
+        return;
+    }
 }
 
 void gps_startTask()
 {
     ESP_LOGI("GPS", "Starting GPS Task");
     runTask = true;
-    xTaskCreatePinnedToCore(gps_task, "gps_task", GPS_TASK_STACK,
-                            NULL, GPS_TASK_PRIO, &gpsTask_s, 0);
+    if(xTaskCreatePinnedToCore(gps_task, "gps_task", GPS_TASK_STACK,
+                            NULL, GPS_TASK_PRIO, &gpsTask_s, 0) != pdPASS){
+                                psatErr_postError(psatErr_gps_startTask_failed, psatFSM_component_gps , psatFSM_getCurrentState());
+                                return;
+                            }
 }
 
 void gps_killTask()
@@ -129,4 +148,30 @@ void gps_killTask()
     xTaskNotifyGive(gpsTask_s);
     runTask   = false;
     gpsTask_s = NULL;
+}
+
+
+bool gps_preflightTest() {
+
+    int startLines = *gps_linesRecieved;
+
+    psatErr_error_t* lastErr = psatErr_getMostRecentError();
+
+    gps_init();
+    gps_startTask();
+    vTaskDelay(1000/portTICK_PERIOD_MS);
+    gps_killTask();
+    gps_deinit();
+
+    psatErr_error_t* currentErr = psatErr_getMostRecentError();
+
+    int endLines = *gps_linesRecieved;
+
+    if(currentErr == NULL && endLines > startLines) {
+        return true;
+    } else if(currentErr->id == lastErr->id && endLines > startLines) {
+        return true;
+    }
+
+    return false;
 }

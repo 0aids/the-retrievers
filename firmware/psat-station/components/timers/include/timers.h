@@ -36,3 +36,4 @@ void timer_stop(timer_id_e id);
 void timer_startOnce(timer_id_e id, uint32_t delay_ms);
 void timer_pauseAllActive();
 void timer_unpauseAllPaused();
+bool timer_preflightTest();
