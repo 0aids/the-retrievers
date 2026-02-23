@@ -15,4 +15,3 @@
 #define UART_BAUD_RATE      (115200)
 
 void init_uart(void);
-void uart_task(void *arg);

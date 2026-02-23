@@ -32,7 +32,8 @@ void uart_task(void *pvParameters){
             // Write data back to the UART
             uart_write_bytes(CAM_UART_NUM, (const char *) data, len);
             if(strstr((const char*)data, "INIT")){
-                ini
+                init_camera();
+                init_sd_card();
             }
             else if(strstr((const char*)data, "APOGEE")){
 
