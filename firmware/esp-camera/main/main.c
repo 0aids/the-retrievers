@@ -10,6 +10,6 @@
 #include "uart.h"
 
 void app_main(void){
-    uart_init();
+    init_uart();
     xTaskCreate(uart_task, "uart_echo_task", STACK_SIZE, NULL, 10, NULL);
 }

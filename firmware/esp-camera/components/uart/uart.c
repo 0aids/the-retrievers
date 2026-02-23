@@ -1,6 +1,6 @@
 #include "uart.h"
 
-void uart_init(void){
+void init_uart(void){
     // Install UART driver using an event queue here
     
     uart_config_t uart_config = {
@@ -17,7 +17,7 @@ void uart_init(void){
     ESP_ERROR_CHECK(uart_set_pin(CAM_UART_NUM, UART_TX, UART_RX, -1, -1));
 }
 
-void uart_task(void *arg){
+void uart_task(void *pvParameters){
     // Configure a temporary buffer for the incoming data
     uint8_t *data = (uint8_t *) malloc(BUF_SIZE);
     bool listen;
@@ -31,7 +31,13 @@ void uart_task(void *arg){
             data[len] = 0;
             // Write data back to the UART
             uart_write_bytes(CAM_UART_NUM, (const char *) data, len);
-            if(strstr((const char*)data, "DEINIT")){
+            if(strstr((const char*)data, "INIT")){
+                ini
+            }
+            else if(strstr((const char*)data, "APOGEE")){
+
+            }
+            else if(strstr((const char*)data, "DEINIT")){
                 free(data);
                 listen = false;
                 vTaskDelete(NULL);
