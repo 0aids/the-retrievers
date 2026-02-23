@@ -4,7 +4,7 @@ export default function StatusTopBar() {
     const { state } = useAppState();
 
     return (
-        <nav className="sticky top-0 z-50 bg-[#050809]/90 backdrop-blur-md border-b border-gray-800 px-4 py-3 flex items-center justify-between">
+        <nav className="sticky top-0 z-9999 bg-[#050809]/90 backdrop-blur-md border-b border-gray-800 px-4 py-3 flex items-center justify-between">
             <div>
                 <h1 className="text-[0.6rem] uppercase tracking-widest text-gray-400 font-bold">
                     The Retrievers
