@@ -1,4 +1,4 @@
-#include "highg.h"
+#include "highgee.h"
 #include "esp_err.h"
 #include "esp_timer.h"
 #include "pin_config.h"
