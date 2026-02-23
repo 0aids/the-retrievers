@@ -6,8 +6,8 @@ extern i2c_master_bus_handle_t i2c_bus2_handle;
 
 void I2C_init_bus1();
 
-void I2C_dinit_bus1();
+void I2C_deinit_bus1();
 
 void I2C_init_bus2();
 
-void I2C_dinit_bus2();
+void I2C_deinit_bus2();

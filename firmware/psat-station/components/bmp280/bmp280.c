@@ -75,11 +75,13 @@ bool bmp280_preflightTest()
 
     psatErr_error_t* lastErr = psatErr_getMostRecentError();
 
-    
+    I2C_init_bus1();
 
     bmp280_init();
     bmp280_getData();
     bmp280_deinit();
+
+    I2C_deinit_bus1();
 
     psatErr_error_t* currentErr = psatErr_getMostRecentError();
 
