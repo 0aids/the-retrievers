@@ -18,6 +18,21 @@ class FSMState(IntEnum):
     psatFSM_state__COUNT = auto()
 
 
+class FSMComponent(IntEnum):
+    psatFSM_component_ldr = 0
+    psatFSM_component_gps = auto()
+    psatFSM_component_buzzers = auto()
+    psatFSM_component_buttons = auto()
+    psatFSM_component_battery = auto()
+    psatFSM_component_camera = auto()
+    psatFSM_component_servo = auto()
+    psatFSM_component_timers = auto()
+    psatFSM_component_bmp280 = auto()
+    psatFSM_component_bmi323 = auto()
+    psatFSM_component_highg = auto()
+    psatFSM_component__COUNT = auto()
+
+
 class GPSStruct(ctypes.Structure):
     _fields_ = [
         ("latitude", ctypes.c_float),
