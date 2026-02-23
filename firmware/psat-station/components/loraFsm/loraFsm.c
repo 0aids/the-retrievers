@@ -286,7 +286,9 @@ static void _loraFsm_runStateCmd()
             psatFSM_postEvent(&event);
             break;
         }
-        case loraFsm_packetType_preflightReq: break; // TODO:
+        case loraFsm_packetType_preflightReq: 
+        uint16_t prelaunch_output = psatFSM_preflightTest();
+            lora_send((uint8_t*)prelaunch_output, sizeof(prelaunch_output));
         case loraFsm_packetType_preflightDataReq:
             break; // TODO:
 

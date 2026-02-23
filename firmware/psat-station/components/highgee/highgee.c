@@ -10,13 +10,7 @@
 #include "sm.h"
 #include <stdint.h>
 
-uint16_t prelaunch_output = psatFSM_preflightTest();
-            lora_send((uint8_t*)prelaunch_output, sizeof(prelaunch_output));
 
-#define HIGHG_ADDRESS  0b0011000
-#define HIGHG_POWER_ADDRESS 0x20
-#define HIGHG_POWER_CONFIG 0b00101111
-#define HIGHG_DATA_ADDRESS 0x29
 
 static uint8_t highg_powerConfig[2] = {HIGHG_POWER_ADDRESS, HIGHG_POWER_CONFIG};
 

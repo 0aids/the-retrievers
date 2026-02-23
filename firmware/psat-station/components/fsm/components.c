@@ -163,7 +163,7 @@ uint16_t psatFSM_preflightTest()
     {
         component = componentTable[componentId];
         preflightTest_output += component.preflight();
-        preflightTest_output << 1;
+        preflightTest_output <<= 1;
     }
 
     return preflightTest_output;
