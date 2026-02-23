@@ -6,6 +6,7 @@ __all__ = (
     "lora_init",
     "lora_receive_callback",
     "lora_send_callback",
+    "PacketType",
 )
 
 from .lora import (
@@ -16,4 +17,5 @@ from .lora import (
     lora_init,
     lora_receive_callback,
     lora_send_callback,
+    PacketType,
 )

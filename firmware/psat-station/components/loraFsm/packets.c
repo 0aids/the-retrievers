@@ -80,17 +80,3 @@ bool loraFsm_packetFree(loraFsm_packetWrapper_t* packet)
     packet->packetInterpreter = NULL;
     return helpers_free(&packet->packetStorage);
 }
-
-const char* loraFsm_packetTypeToStr(loraFsm_packetType_e type)
-{
-    switch (type)
-    {
-        case loraFsm_packetType_ping: return "PING";
-        case loraFsm_packetType_pong: return "PONG";
-        case loraFsm_packetType_ack: return "ACK";
-        case loraFsm_packetType_gpsData: return "GPS_SEND";
-        case loraFsm_packetType_buzReq: return "BUZ_REQ";
-        case loraFsm_packetType_stateData: return "STATE_SEND";
-        default: return "UNKNOWN_PACKET_TYPE";
-    }
-}

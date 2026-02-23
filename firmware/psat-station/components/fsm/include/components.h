@@ -10,6 +10,9 @@ void psatFSM_initComponent(psatFSM_component_e componentId);
 void psatFSM_deinitComponent(psatFSM_component_e componentId);
 void psatFSM_initAll();
 psatFSM_component_t*
+     psatFSM_getComponent(psatFSM_component_e componentId);
+void psatFSM_enableComponent(psatFSM_component_e id);
+void psatFSM_disableComponent(psatFSM_component_e id);
 psatFSM_getComponent(psatFSM_component_e componentId);
 
 void psatFSM_preflightTest();
