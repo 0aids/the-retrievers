@@ -4,6 +4,9 @@
 #include "errors.h"
 #include "I2C.h"
 #include <string.h>
+#include <math.h>
+#include "esp_timer.h"
+
 
 static bmp280_status_t   bmp280_status = {.I2C_initalised  = false,
                                           .powerConfigured = false,
@@ -14,7 +17,7 @@ static psatErr_code_e    bmp280_err    = psatErr_none;
 
 static bool bmp280_is_healthy = true;
 
-bmp280_preflightStatus_t bmp280_preflightStatus = {0};
+bmp280_data_t bmp280_data = {0};
 
 static void              bmp280_compensatePressureAndTemperature(
                  uint32_t ADC_T, uint32_t ADC_P, int32_t* temperature,
@@ -54,6 +57,10 @@ int16_t        dig_P7 = 0;
 int16_t        dig_P8 = 0;
 int16_t        dig_P9 = 0;
 
+//in p
+//set to auckland sea level pressure on 23rd feb
+double ground_pressure = 101800;
+
 bool bmp280_isHealthy() {
     return bmp280_is_healthy;
 }
@@ -71,8 +78,7 @@ bool bmp280_preflightTest()
     
 
     bmp280_init();
-    bmp280_preflightStatus.temperature = bmp280_getTemperature();
-    bmp280_preflightStatus.pressure    = bmp280_getPressure();
+    bmp280_getData();
     bmp280_deinit();
 
     psatErr_error_t* currentErr = psatErr_getMostRecentError();
@@ -264,6 +270,8 @@ static void bmp280_compensatePressureAndTemperature(
     *pressure = ADC_P;
 }
 
+/*
+
 int32_t bmp280_getTemperature()
 {
     double  Pressure    = 0;
@@ -295,7 +303,27 @@ int32_t bmp280_getTemperature()
     return Temperature;
 }
 
-double bmp280_getPressure()
+*/
+
+void bmp280_updateData(int32_t* temperature, double* pressure) {
+    
+    //linear approximation close enough up to 800m
+
+    //bmp280_data.altitude = (1/11.8)*(-*pressure+ground_pressure);
+
+    //exponential approximation
+
+    double var1 = *pressure/ground_pressure;
+    double var2 = pow(var1, 0.190284);
+
+    bmp280_data.altitude = 145366.45*(1-var2)/3.28083989501312;
+    bmp280_data.pressure = (int)*pressure;
+    bmp280_data.temperature = (float)*temperature/100;
+
+}
+
+//basically a get data function
+double bmp280_getData()
 {
     int32_t Temperature = 0;
     double  Pressure    = 0;
@@ -313,6 +341,9 @@ double bmp280_getPressure()
         return Pressure;
     }
 
+    bmp280_data.time = esp_timer_get_time();
+
+
     uint32_t ADC_P = ((uint32_t)(bmp280_RawData[0]) << 12) |
         ((uint32_t)(bmp280_RawData[1]) << 4) |
         ((uint32_t)(bmp280_RawData[2]) >> 4);
@@ -324,5 +355,13 @@ double bmp280_getPressure()
     bmp280_compensatePressureAndTemperature(ADC_T, ADC_P,
                                             &Temperature, &Pressure);
 
+    
+    bmp280_updateData(&Temperature, &Pressure);
+
+    
+
     return Pressure;
 }
+
+
+

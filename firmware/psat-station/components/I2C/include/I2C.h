@@ -1,4 +1,5 @@
 #include "driver/i2c_master.h"
+#include "shared_state.h"
 #include <pin_config.h>
 extern i2c_master_bus_handle_t i2c_bus1_handle;
 extern i2c_master_bus_handle_t i2c_bus2_handle;

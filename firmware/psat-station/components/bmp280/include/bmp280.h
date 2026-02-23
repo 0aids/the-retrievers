@@ -11,8 +11,9 @@ void           bmp280_reset();
 void           bmp280_getCalibration();
 bool           bmp280_isHealthy();
 
-double         bmp280_getPressure();    // in Pa
-int32_t        bmp280_getTemperature(); // in degrees C
+
+double         bmp280_getData();    
+//int32_t        bmp280_getTemperature(); // in degrees C
 
 bool bmp280_preflightTest();
 bmp280_status_t          bmp280_queryStatus();

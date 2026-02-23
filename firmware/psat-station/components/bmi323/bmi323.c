@@ -7,17 +7,19 @@
 #include "I2C.h"
 #include <string.h>
 #include "driver/i2c_master.h"
+#include <stdint.h>
+
 
 //11011110 10101111 write to CMD for soft reset
 //check status register and chip is if not responsive refer to data sheet quick start guide
 
-uint8_t bmi323_accConfig[3] = {BMI323_ACCELEROMETER_CONFIG_ADDRESS, BMI323_ACCELEROMETER_CONFIG1, BMI323_ACCELEROMETER_CONFIG2};
+static uint8_t bmi323_accConfig[3] = {BMI323_ACCELEROMETER_CONFIG_ADDRESS, BMI323_ACCELEROMETER_CONFIG1, BMI323_ACCELEROMETER_CONFIG2};
 
-uint8_t bmi323_gyroConfig[3] = {BMI323_GYRO_CONFIG_ADDRESS, BMI323_GYRO_CONFIG1, BMI323_GYRO_CONFIG2};
+static uint8_t bmi323_gyroConfig[3] = {BMI323_GYRO_CONFIG_ADDRESS, BMI323_GYRO_CONFIG1, BMI323_GYRO_CONFIG2};
 
-uint8_t bmi323_fifoConfig[3] = {BMI323_FIFO_CONFIG_ADDRESS, 0, 0};
+static uint8_t bmi323_fifoConfig[3] = {BMI323_FIFO_CONFIG_ADDRESS, 0, 0};
 
-uint8_t bmi323_resetCommand[3] = {0x7E, 0b11011110, 0b10101111};
+static uint8_t bmi323_resetCommand[3] = {0x7E, 0b11011110, 0b10101111};
 
 bmi323_data_t bmi323_data = {0};
 
@@ -103,9 +105,9 @@ void bmi323_getData() {
     //gyro is set to 500 degree/s max
     //accelerometer is set to 16g max
 
-    bmi323_data.accX = ((double)rawData[0] /2048) * 9.81;
-    bmi323_data.accY = ((double)rawData[1] /2048) * 9.81;
-    bmi323_data.accZ = ((double)rawData[2] /2048) * 9.81;
+    bmi323_data.accX = ((double)rawData[0] /2048.9375) * 9.81;
+    bmi323_data.accY = ((double)rawData[1] /2048.9375) * 9.81;
+    bmi323_data.accZ = ((double)rawData[2] /2048.9375) * 9.81;
 
     bmi323_data.gyroX = ((double)rawData[3] / 32767) * 500;
     bmi323_data.gyroY = ((double)rawData[4] / 32767) * 500;

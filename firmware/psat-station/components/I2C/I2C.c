@@ -1,9 +1,11 @@
 #include "I2C.h"
 #include "driver/i2c_types.h"
 #include "pin_config.h"
+#include "shared_state.h"
 
 i2c_master_bus_handle_t i2c_bus1_handle;
 i2c_master_bus_handle_t i2c_bus2_handle;
+
 
 void I2C_init_bus1()
 {
