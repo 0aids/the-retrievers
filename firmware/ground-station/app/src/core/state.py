@@ -4,7 +4,7 @@ import threading
 from copy import deepcopy
 from functools import wraps
 
-from core.types import FullState, FSMState
+from core.types import FullState, FSMState, ComponentData
 
 
 def with_lock(writing: bool = True):
@@ -56,6 +56,10 @@ class StateManager:
             if c.id == component_id:
                 c.status = status
                 break
+
+    @with_lock()
+    def set_preflight_results(self, data: list[ComponentData]):
+        self._state.components = data
 
     @with_lock(False)
     def snapshot(self):

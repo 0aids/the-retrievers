@@ -6,7 +6,7 @@ from os.path import join, dirname
 from rich import print
 
 from core.state import state_manager
-from core.types import GPSStruct, FSMState
+from core.types import GPSStruct, FSMState, FSMComponent, ComponentData
 
 
 LIBRARY_PATH = join(dirname(__file__), "libLoraParser.so")
@@ -78,6 +78,23 @@ def lora_receive_callback(payload, size, _rss, _snr):
         state_manager.update_gps(
             dict((field, getattr(gps, field)) for field, *_ in gps._fields_)
         )
+
+    elif packet_type == PacketType.loraFsm_packetType_preflightData:
+        print("Preflight Data:", data)
+
+        data_uint16 = ctypes.c_uint16.from_buffer(bytearray(data)).value
+        data_bits = list(map(int, bin(data_uint16)[2:]))
+
+        results = []
+        for component_id, component_result in enumerate(data_bits):
+            try:
+                component = FSMComponent(component_id)
+                results.append(ComponentData(component, component.name, bool(component_result)))
+            except Exception:
+                break
+
+        print(results)
+        state_manager.set_preflight_results(results)
 
 
 @ctypes.CFUNCTYPE(None, ctypes.POINTER(ctypes.c_uint8), ctypes.c_uint16)
