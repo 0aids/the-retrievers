@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { useAppState } from "../hooks/StateContext";
 import { sendCommand } from "../services/api";
+import SelectionModal from "./Modal";
 
 const Prelaunch = () => {
     const { state } = useAppState();
@@ -11,6 +12,11 @@ const Prelaunch = () => {
         text: initialPreflightResult,
         color: "#D1D5DB",
     });
+
+    const [modalOpen, setModalOpen] = useState(false);
+    const [modalMode, setModalMode] = useState<"enable" | "disable" | null>(
+        null,
+    );
 
     return (
         <section className="p-2">
@@ -46,17 +52,18 @@ const Prelaunch = () => {
                     <button
                         className="bg-gray-700 gs-btn border border-gray-700 py-3 rounded-xl text-sm w-full"
                         onClick={() => {
-                            const component = 0; // ldr
-                            sendCommand(18, component);
+                            setModalMode("enable");
+                            setModalOpen(true);
                         }}
                     >
                         Enable Component
                     </button>
+
                     <button
                         className="bg-gray-700 gs-btn border border-gray-700 py-3 rounded-xl text-sm w-full"
                         onClick={() => {
-                            const component = 0; // ldr
-                            sendCommand(19, component);
+                            setModalMode("disable");
+                            setModalOpen(true);
                         }}
                     >
                         Disable Component
@@ -80,7 +87,7 @@ const Prelaunch = () => {
                     <button
                         className="bg-gray-700 gs-btn border border-gray-700 py-3 rounded-xl text-sm w-full"
                         onClick={() => {
-                            sendCommand(13);
+                            sendCommand(9);
                         }}
                     >
                         {preflightResult.text === initialPreflightResult
@@ -93,7 +100,7 @@ const Prelaunch = () => {
                 <button
                     className="bg-green-800 gs-btn border border-green-700 py-3 rounded-xl text-sm w-full"
                     onClick={() => {
-                        sendCommand(15);
+                        sendCommand(11);
 
                         setPreflightResult({
                             text: "Success",
@@ -104,6 +111,22 @@ const Prelaunch = () => {
                     Prelaunch Complete
                 </button>
             </div>
+
+            <SelectionModal
+                isOpen={modalOpen}
+                title={`Choose Component to ${
+                    modalMode === "enable" ? "Enable" : "Disable"
+                }`}
+                items={state?.components ?? []}
+                onClose={() => setModalOpen(false)}
+                onSelect={(c) => {
+                    const cmd = modalMode === "enable" ? 16 : 17;
+                    sendCommand(cmd, c.id);
+                }}
+                getKey={(c) => c.id}
+                renderLabel={(c) => c.name}
+                renderSubLabel={(c) => `ID ${c.id}`}
+            />
         </section>
     );
 };
