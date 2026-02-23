@@ -9,12 +9,13 @@
 #include "driver/i2c_master.h"
 #include "sm.h"
 #include <stdint.h>
+#include "math.h"
 
 
 
 static uint8_t highg_powerConfig[2] = {HIGHG_POWER_ADDRESS, HIGHG_POWER_CONFIG};
 
-highGAcc_data_t highg_data = {0};
+highg_data_t highg_data = {0};
 
 static i2c_device_config_t highg_Config = {
     .dev_addr_length = I2C_ADDR_BIT_7,
@@ -71,5 +72,8 @@ void highg_getData() {
     highg_data.accX = ((double)rawData[0] /327.67) * 9.81;
     highg_data.accY = ((double)rawData[1] /327.67) * 9.81;
     highg_data.accZ = ((double)rawData[2] /327.67) * 9.81;
+
+    highg_data.accMag = sqrt(highg_data.accX*highg_data.accX+highg_data.accY*highg_data.accY+highg_data.accZ*highg_data.accZ);
+
 
 }

@@ -240,6 +240,9 @@ typedef struct
     double accX;
     double accY;
     double accZ;
+
+    double accMag;
+
     double gyroX;
     double gyroY;
     double gyroZ;
@@ -256,19 +259,21 @@ typedef struct
     double accX;
     double accY;
     double accZ;
- 
+
+    double accMag;
+
     //time is in uS since esp power on using esp_timer_get_time()
     int64_t time;
 
-} highGAcc_data_t;
+} highg_data_t;
 
 
 //SENSOR DATA STRUCT
 
 typedef struct {
 
-    int32_t temperature;
-    double pressure;
+    float temperature;
+    int pressure;
 
     double barometric_altitude;
     double altitude;
@@ -277,16 +282,28 @@ typedef struct {
     double accY;
     double accZ;
 
+    double accOrintationX;
+    double accOrintationY;
+    double accOrintationZ;
+
     double velX;
     double velY;
     double velZ;
+
+    double OrintationX;
+    double OrintationY;
+    double OrintationZ;
 
     double gyroX;
     double gyroY;
     double gyroZ;
 
     double batterVoltage;
-    double ldrVoltage;
+    int ldrVoltage;
+
+    int64_t velTime;
+    int64_t oriTime;
+    int64_t barometerTime;
 
     //adjusted gps based accelerometer and barometer?
 

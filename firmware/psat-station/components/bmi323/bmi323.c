@@ -8,6 +8,7 @@
 #include <string.h>
 #include "driver/i2c_master.h"
 #include <stdint.h>
+#include "math.h"
 
 
 //11011110 10101111 write to CMD for soft reset
@@ -96,6 +97,10 @@ void bmi323_getData() {
 
     bmi323_data.time = esp_timer_get_time();
 
+
+    //remove time checks
+    printf("\n start time: %lld\n\n", bmi323_data.time);
+
     for(int i = 0; i < 6; i ++) {
         memcpy(readBuffer + (2 * i), rawData + i, 2);
     }
@@ -112,6 +117,14 @@ void bmi323_getData() {
     bmi323_data.gyroX = ((double)rawData[3] / 32767) * 500;
     bmi323_data.gyroY = ((double)rawData[4] / 32767) * 500;
     bmi323_data.gyroZ = ((double)rawData[5] / 32767) * 500;    
+
+    printf("\n raw done time: %lld\n\n", esp_timer_get_time());
+
+    bmi323_data.accMag = sqrt(bmi323_data.accX*bmi323_data.accX+bmi323_data.accY*bmi323_data.accY+bmi323_data.accZ*bmi323_data.accZ);
+    
+
+    printf("\n all done time: %lld\n\n", esp_timer_get_time());
+
 
 
 }
