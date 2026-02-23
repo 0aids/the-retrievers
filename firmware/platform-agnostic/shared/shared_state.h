@@ -290,9 +290,8 @@ typedef struct {
     double velY;
     double velZ;
 
-    double OrintationX;
-    double OrintationY;
-    double OrintationZ;
+    double roll;
+    double pitch;
 
     double gyroX;
     double gyroY;

@@ -7,10 +7,25 @@
 
 sensorData_t sensorData = {0};
 
+static double kalmanPitch = 0;
+static double kalmanRoll = 0;
+static double kalmanPitchUncertianty = 4;
+static double kalmanRollUncertianty = 4;
+static double kalmanOutput[2] = {0};
+
+void kalman_1d(double KalmanState, double KalmanUncertainty, double KalmanInput, double KalmanMeasurement) {
+  KalmanState=KalmanState+0.004*KalmanInput;
+  KalmanUncertainty=KalmanUncertainty + 0.004 * 0.004 * 4 * 4;
+  double KalmanGain=KalmanUncertainty * 1/(1*KalmanUncertainty + 3 * 3);
+  KalmanState=KalmanState+KalmanGain * (KalmanMeasurement-KalmanState);
+  KalmanUncertainty=(1-KalmanGain) * KalmanUncertainty;
+  kalmanOutput[0]=KalmanState; 
+  kalmanOutput[1]=KalmanUncertainty;
+}
 
 void updateAccData() {
     //relative to rocket pointing straight up and roll relative to power on position
-    //gravity is always assumed to be measured as 9.81m/s by the sensor
+    //gravity is always assumed to be measured as 9.81m/s/s by the sensor
     bmi323_getData();
     highg_getData();
 
@@ -54,7 +69,16 @@ void updateVelocity() {
 
 void updateOrientation() {
 
-//gyro time
+    double roll = sensorData.roll;
+    double pitch = sensorData.pitch;
+
+    //gyro time
+   // kalman_1d(kalmanRoll, kalmanRollUncertianty, RateRoll, roll);
+    kalmanRoll=kalmanOutput[0]; 
+    kalmanRollUncertianty=kalmanOutput[1];
+    //kalman_1d(kalmanPitch, kalmanPitchUncertianty, RatePitch, pitch);
+    kalmanPitch=kalmanOutput[0]; 
+    kalmanPitchUncertianty=kalmanOutput[1];
 
 
 }
@@ -80,3 +104,4 @@ void updateSensorData() {
     sensorData.batterVoltage = 1; //TODO once battery refac is done
 
 }
+
