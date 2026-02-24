@@ -50,14 +50,8 @@
     X(psatFSM_component_timers)         \
     X(psatFSM_component_bmp280)          \
     X(psatFSM_component_bmi323)           \
-    X(psatFSM_component_highg)          \
+    X(psatFSM_component_highg)             \
     X(psatFSM_component__COUNT)           
-                                          
-#define PSAT_FSM_COMPONENTS_STATUS_LIST     \
-    X(psatFSM_componentStatus_unRegistered)  \
-    X(psatFSM_componentStatus_disabled)       \
-    X(psatFSM_componentStatus_enabled)         \
-    X(psatFSM_componentStatus_recovery)
 
 #define PSAT_FSM_COMPONENTS_TYPES_LIST            \
     X(psatFSM_componentType_task)                  \
@@ -132,10 +126,6 @@ typedef enum
 } psatFSM_component_e;
 typedef enum
 {
-    PSAT_FSM_COMPONENTS_STATUS_LIST
-} psatFSM_componentStatus_e;
-typedef enum
-{
     PSAT_FSM_COMPONENTS_TYPES_LIST
 } psatFSM_componentType_e;
 typedef enum
@@ -194,7 +184,6 @@ typedef struct
     bool (*preflight)(void);
 
     psatFSM_componentType_e            type;
-    psatFSM_componentStatus_e          status;
     psatFSM_componentRecoveryContext_t recoveryContext;
 
 } psatFSM_component_t;
@@ -361,19 +350,6 @@ psatFSM_componentToString(psatFSM_component_e type)
         PSAT_FSM_COMPONENTS_LIST
 #undef X
         default: return "psatFSM_component_invalid";
-    }
-}
-
-static inline const char*
-psatFSM_componentStatusToString(psatFSM_componentStatus_e type)
-{
-    switch (type)
-    {
-#define X(name)                                                      \
-    case name: return #name;
-        PSAT_FSM_COMPONENTS_STATUS_LIST
-#undef X
-        default: return "psatFSM_componentStatus_invalid";
     }
 }
 

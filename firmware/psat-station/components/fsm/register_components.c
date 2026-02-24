@@ -45,11 +45,11 @@ void psatFSM_registerAllComponents()
         psatFSM_component_ldr, psatFSM_componentType_normal,
         ldr_setup, ldr_deinit, NULL, ldr_startTask, ldr_killTask, ldr_preflightTest);
 
-    psatFSM_registerComponent(psatFSM_component_bmp280, psatFSM_componentType_normal, 
-        bmp280_init, bmp280_deinit, NULL, NULL, NULL, bmp280_preflightTest);
+    // psatFSM_registerComponent(psatFSM_component_bmp280, psatFSM_componentType_normal, 
+        // bmp280_init, bmp280_deinit, NULL, NULL, NULL, bmp280_preflightTest);
 
-    psatFSM_registerComponent(psatFSM_component_highg, psatFSM_componentType_normal, 
-        highg_init, highg_deinit, NULL, NULL, NULL, NULL);
+    // psatFSM_registerComponent(psatFSM_component_highg, psatFSM_componentType_normal, 
+    //     highg_init, highg_deinit, NULL, NULL, NULL, NULL);
 
     // TODO: whats left: PRESSURE, CAMERA, ACCELEROMETER, BATTERY
 }

@@ -24,7 +24,6 @@ void psatFSM_registerComponent(
     psatFSM_component_t component = {
         .init    = init,
         .deinit  = deinit,
-        .status  = psatFSM_componentStatus_disabled,
         .type    = type,
         .recover = recover,
         .recoveryContext =
@@ -54,15 +53,7 @@ void psatFSM_initComponent(psatFSM_component_e componentId)
 
     psatFSM_component_t* component = &componentTable[componentId];
 
-    if (component->status == psatFSM_componentStatus_unRegistered)
-    {
-        ESP_LOGW(TAG, "Component %s is unregistered",
-                 psatFSM_componentToString(componentId));
-        return;
-    }
-
     component->init();
-    component->status = psatFSM_componentStatus_enabled;
 
     ESP_LOGI(TAG,
              "%s component has been initialised and is now enabled",
@@ -80,15 +71,7 @@ void psatFSM_deinitComponent(psatFSM_component_e componentId)
 
     psatFSM_component_t* component = &componentTable[componentId];
 
-    if (component->status == psatFSM_componentStatus_unRegistered)
-    {
-        ESP_LOGW(TAG, "Component %s is unregistered",
-                 psatFSM_componentToString(componentId));
-        return;
-    }
-
     component->deinit();
-    component->status = psatFSM_componentStatus_disabled;
 
     ESP_LOGI(
         TAG,
@@ -121,8 +104,7 @@ psatFSM_getComponent(psatFSM_component_e componentId)
 void psatFSM_enableComponent(psatFSM_component_e id)
 {
     psatFSM_component_t* component = psatFSM_getComponent(id);
-    if (!component ||
-        component->status == psatFSM_componentStatus_enabled)
+    if (!component)
         return;
 
     psatFSM_initComponent(id);
@@ -135,8 +117,7 @@ void psatFSM_enableComponent(psatFSM_component_e id)
 void psatFSM_disableComponent(psatFSM_component_e id)
 {
     psatFSM_component_t* component = psatFSM_getComponent(id);
-    if (!component ||
-        component->status == psatFSM_componentStatus_disabled)
+    if (!component)
         return;
 
     if (component->type == psatFSM_componentType_task &&
