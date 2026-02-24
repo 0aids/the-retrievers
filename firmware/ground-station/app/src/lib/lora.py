@@ -6,46 +6,11 @@ from os.path import join, dirname
 from rich import print
 
 from core.state import state_manager
-from core.types import GPSStruct, FSMState, FSMComponent, ComponentData
+from core.types import GPSStruct, FSMState, FSMComponent, ComponentData, PacketType
 
 
 LIBRARY_PATH = join(dirname(__file__), "libLoraParser.so")
 
-
-class PacketType(IntEnum):
-    loraFsm_packetType_empty = 0
-    loraFsm_packetType_test = auto()
-
-    loraFsm_packetType_ack = auto()
-    loraFsm_packetType_ping = auto()
-    loraFsm_packetType_pong = auto()
-
-    loraFsm_packetType_gpsData = auto()
-    loraFsm_packetType_stateData = auto()
-    loraFsm_packetType_sensorData = auto()
-
-    loraFsm_packetType_preflightData = auto()
-    loraFsm_packetType_preflightReq = auto()
-    loraFsm_packetType_preflightDataReq = auto()
-    loraFsm_packetType_prelaunchCompleteReq = auto()
-
-    loraFsm_packetType_buzzShortReq = auto()
-    loraFsm_packetType_buzzLongReq = auto()
-
-    loraFsm_packetType_fastForwardReq = auto()
-    loraFsm_packetType_stateOverrideReq = auto()
-
-    loraFsm_packetType_enableComponentReq = auto()
-    loraFsm_packetType_disableComponentReq = auto()
-
-    loraFsm_packetType_dataDumpReq = auto()
-
-    loraFsm_packetType__COUNT = auto()
-
-
-PACKET_FSM = 6
-PACKET_GPS = 4
-PACKET_PING = 1
 
 lib_lora = ctypes.CDLL(LIBRARY_PATH)
 sending_queue: Queue[bytes] = Queue()

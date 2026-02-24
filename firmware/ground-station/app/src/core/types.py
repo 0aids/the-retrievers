@@ -123,3 +123,34 @@ class FullState:
     fsm: FSMData = field(default_factory=FSMData)
     components: List[ComponentData] = field(default_factory=list)
     radio: RadioData = field(default_factory=RadioData)
+
+
+class PacketType(IntEnum):
+    loraFsm_packetType_empty = 0
+    loraFsm_packetType_test = auto()
+
+    loraFsm_packetType_ack = auto()
+    loraFsm_packetType_ping = auto()
+    loraFsm_packetType_pong = auto()
+
+    loraFsm_packetType_gpsData = auto()
+    loraFsm_packetType_stateData = auto()
+    loraFsm_packetType_sensorData = auto()
+
+    loraFsm_packetType_preflightData = auto()
+    loraFsm_packetType_preflightReq = auto()
+    loraFsm_packetType_preflightDataReq = auto()
+    loraFsm_packetType_prelaunchCompleteReq = auto()
+
+    loraFsm_packetType_buzzShortReq = auto()
+    loraFsm_packetType_buzzLongReq = auto()
+
+    loraFsm_packetType_fastForwardReq = auto()
+    loraFsm_packetType_stateOverrideReq = auto()
+
+    loraFsm_packetType_enableComponentReq = auto()
+    loraFsm_packetType_disableComponentReq = auto()
+
+    loraFsm_packetType_dataDumpReq = auto()
+
+    loraFsm_packetType__COUNT = auto()
