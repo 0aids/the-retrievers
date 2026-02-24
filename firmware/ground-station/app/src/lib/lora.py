@@ -4,6 +4,8 @@ from enum import IntEnum, auto
 from os.path import join, dirname
 
 from rich import print
+from rich.panel import Panel
+from rich.pretty import Pretty
 
 from core.state import state_manager
 from core.types import GPSStruct, FSMState, FSMComponent, ComponentData, PacketType
@@ -23,7 +25,7 @@ sending_queue: Queue[bytes] = Queue()
     ctypes.c_int16,
     ctypes.c_int8,
 )
-def lora_receive_callback(payload, size, rssi, snr):
+def lora_receive_callback(payload, size, _rssi, _snr):
     if not size:
         return
 
@@ -31,20 +33,38 @@ def lora_receive_callback(payload, size, rssi, snr):
     packet_type = PacketType(recieved_data[0])
     data = recieved_data[1:]
 
-    print(f"RSSI: {rssi}, SNR: {snr}")
-
     print(
-        f"[bold blue]Data of type: {packet_type.name} (size: {size}) recieved: {data}"
+        Panel(
+            f"[bold cyan]Received Packet from PSAT[/bold cyan]\n\n"
+            f"[bold yellow]Packet Type:[/bold yellow] [green]{packet_type.name}[/green]\n"
+            f"[bold yellow]Size:[/bold yellow] [green]{size} bytes[/green]\n\n"
+            f"[bold magenta]Data:[/bold magenta]\n{data}",
+            title="LoRa RX",
+            border_style="green",
+        )
     )
 
     if packet_type == PacketType.loraFsm_packetType_stateData:
         new_state = FSMState(data[0])
         prev_state = FSMState(data[1])
         state_manager.update_state(new_state, prev_state)
-        print(f"[green]FSM changed state to: {new_state.name}")
+        print(
+            Panel(
+                f"[bold green]{prev_state.name}[/bold green] → "
+                f"[bold cyan]{new_state.name}[/bold cyan]",
+                title="FSM State Change",
+                border_style="cyan",
+            )
+        )
 
     elif packet_type == PacketType.loraFsm_packetType_ping:
-        print("[green]pong em back fr")
+        print(
+            Panel(
+                "Received [bold yellow]PING[/bold yellow], Sending [bold yellow]PONG[/bold yellow]",
+                title="LoRa",
+                border_style="yellow",
+            )
+        )
         lora_send(PacketType.loraFsm_packetType_pong.to_bytes())
 
     elif packet_type == PacketType.loraFsm_packetType_gpsData:
@@ -54,7 +74,13 @@ def lora_receive_callback(payload, size, rssi, snr):
         )
 
     elif packet_type == PacketType.loraFsm_packetType_preflightData:
-        print("Preflight Data:", data)
+        print(
+            Panel(
+                f"[bold magenta]Raw Preflight Data:[/bold magenta]\n{data}",
+                title="Preflight RX",
+                border_style="magenta",
+            )
+        )
 
         data_uint16 = ctypes.c_uint16.from_buffer(bytearray(data)).value
         data_bits = list(map(int, bin(data_uint16)[2:]))
@@ -69,7 +95,13 @@ def lora_receive_callback(payload, size, rssi, snr):
             except Exception:
                 break
 
-        print(results)
+        print(
+            Panel(
+                Pretty(results),
+                title="Preflight Results",
+                border_style="blue",
+            )
+        )
         state_manager.set_preflight_results(results)
 
 
@@ -79,7 +111,15 @@ def lora_send_callback(payload, size):
         return
 
     data = ctypes.string_at(payload, size)
-    print(f"[bold blue]Data of size {size} recieved: {data}")
+    print(
+        Panel(
+            f"[bold cyan]Created packet and added to queue\n\n"
+            f"[bold cyan]Size:[/bold cyan] {size} bytes\n\n"
+            f"[bold magenta]Data:[/bold magenta]\n{data}",
+            title="Lora Tx",
+            border_style="blue",
+        )
+    )
 
     sending_queue.put(data)
 
