@@ -124,7 +124,7 @@ const Prelaunch = () => {
                     sendCommand(cmd, c.id);
                 }}
                 getKey={(c) => c.id}
-                renderLabel={(c) => c.name}
+                renderLabel={(c) => c.name.replace("psatFSM_component_", "")}
                 renderSubLabel={(c) => `ID ${c.id}`}
             />
         </section>
