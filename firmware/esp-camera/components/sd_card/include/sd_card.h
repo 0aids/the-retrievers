@@ -10,5 +10,8 @@
 #define PIN_CLK     (14)
 #define PIN_CMD     (15)
 #define PIN_D0      (2)
+#define PIN_D1      (4)
+#define PIN_D2      (12)
+#define PIN_D3      (13)
 
 esp_err_t init_sd_card(void);

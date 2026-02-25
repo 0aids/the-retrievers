@@ -2,41 +2,35 @@
 
 
 void camera_control_init(void) {
-    QueueHandle_t uart_queue;
-    // Install UART driver using an event queue here
-    ESP_ERROR_CHECK(uart_driver_install(CONTROL_UART_NUM, BUF_SIZE, BUF_SIZE, 10, &uart_queue, 0));
-    
-    
-    uart_config_t uart_config = {
-        .baud_rate = 9600,
+    uart_config_t control_uart_config = {
+        .baud_rate = UART_BAUD_RATE,
         .data_bits = UART_DATA_8_BITS,
         .parity = UART_PARITY_DISABLE,
         .stop_bits = UART_STOP_BITS_1,
         .flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
     };
+    int intr_alloc_flags = 0;
     // Configure UART parameters
-    ESP_ERROR_CHECK(uart_param_config(CONTROL_UART_NUM, &uart_config));
-    ESP_ERROR_CHECK(uart_set_pin(CONTROL_UART_NUM, TX_IO, RX_IO, -1, -1));
+    ESP_ERROR_CHECK(uart_driver_install(CONTROL_UART_NUM, BUF_SIZE, 0, 0, NULL, intr_alloc_flags));
+    ESP_ERROR_CHECK(uart_param_config(CONTROL_UART_NUM, &control_uart_config));
+    ESP_ERROR_CHECK(uart_set_pin(CONTROL_UART_NUM, CONTROL_TX_IO, CONTROL_RX_IO, -1, -1));
 }
 
-void camera_init(void) {
-    char* message = "INIT";
-    uart_write_bytes(CONTROL_UART_NUM, (const char*)message, strlen(message));
+void camera_console_init(void) {
+    uart_config_t console_uart_config = {
+        .baud_rate = UART_BAUD_RATE,
+        .data_bits = UART_DATA_8_BITS,
+        .parity = UART_PARITY_DISABLE,
+        .stop_bits = UART_STOP_BITS_1,
+        .flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
+    };
+    int intr_alloc_flags = 0;
+    // Configure UART parameters
+    ESP_ERROR_CHECK(uart_driver_install(CONSOLE_UART_NUM, BUF_SIZE, 0, 0, NULL, intr_alloc_flags));
+    ESP_ERROR_CHECK(uart_param_config(CONSOLE_UART_NUM, &console_uart_config));
+    ESP_ERROR_CHECK(uart_set_pin(CONSOLE_UART_NUM, CONSOLE_TX_IO, CONSOLE_RX_IO, -1, -1));
 }
 
-void take_pics(void){
-    char* message = "APOGEEE";
-    uart_write_bytes(CONTROL_UART_NUM, (const char*)message, strlen(message));
-}
-
-void camera_deinit(void) {
-    char* message = "DEINIT";
-    uart_write_bytes(CONTROL_UART_NUM, (const char*)message, strlen(message));
-}
-
-void camera_control_deinit(void){
-    uart_driver_delete(CONTROL_UART_NUM);
-}
 void camera_listen(void){
 
     uint8_t *data = (uint8_t *) malloc(BUF_SIZE);
