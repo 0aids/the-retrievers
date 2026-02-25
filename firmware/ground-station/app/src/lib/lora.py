@@ -1,6 +1,5 @@
 import ctypes
 from queue import Queue
-from enum import IntEnum, auto
 from os.path import join, dirname
 
 from rich import print
@@ -37,7 +36,7 @@ def lora_receive_callback(payload, size, _rssi, _snr):
         Panel(
             f"[bold cyan]Received Packet from PSAT[/bold cyan]\n\n"
             f"[bold yellow]Packet Type:[/bold yellow] [green]{packet_type.name}[/green]\n"
-            f"[bold yellow]Size:[/bold yellow] [green]{size} bytes[/green]\n\n"
+            f"[bold yellow]Size:[/bold yellow] [green]{size - 1} bytes[/green]\n\n"
             f"[bold magenta]Data:[/bold magenta]\n{data}",
             title="LoRa RX",
             border_style="green",

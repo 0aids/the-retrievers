@@ -12,8 +12,8 @@ void psatFSM_markComponentEnabled(psatFSM_component_e id, bool enable);
 void psatFSM_enableComponent(psatFSM_component_e id);
 void psatFSM_disableComponent(psatFSM_component_e id);
 
-void psat_startTask(psatFSM_component_e id);
-void psat_stopTask(psatFSM_component_e id);
+void psatFSM_startComponentTask(psatFSM_component_e id);
+void psatFSM_stopComponentTask(psatFSM_component_e id);
 
 void psatFSM_initAll();
 

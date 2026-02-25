@@ -86,7 +86,7 @@ void psatFSM_disableComponent(psatFSM_component_e id)
         return;
 
     if (getFlag(&psatConfig_s.task, id))
-        psat_stopTask(id);
+        psatFSM_stopComponentTask(id);
 
     if (!getFlag(&psatConfig_s.init, id))
         return; // component was never inited
@@ -100,7 +100,7 @@ void psatFSM_disableComponent(psatFSM_component_e id)
         psatFSM_componentToString(id));
 }
 
-void psat_startTask(psatFSM_component_e id)
+void psatFSM_startComponentTask(psatFSM_component_e id)
 {
     psatFSM_component_t* component = psatFSM_getComponent(id);
     if (component == NULL)
@@ -116,7 +116,7 @@ void psat_startTask(psatFSM_component_e id)
     setFlag(&psatConfig_s.task, id, true);
 }
 
-void psat_stopTask(psatFSM_component_e id)
+void psatFSM_stopComponentTask(psatFSM_component_e id)
 {
     psatFSM_component_t* component = psatFSM_getComponent(id);
     if (component == NULL)

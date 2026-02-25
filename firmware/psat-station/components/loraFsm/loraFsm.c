@@ -334,14 +334,14 @@ static void _loraFsm_runStateCmd()
         case loraFsm_packetType_fastForwardReq:
         {
             psatFSM_state_e targetState =
-                *(psatFSM_state_e*)(&packet.packetInterpreter->data);
+                (psatFSM_state_e)*packet.packetInterpreter->data;
             psatFSM_stateFastForward(targetState);
             break;
         }
         case loraFsm_packetType_stateOverrideReq:
         {
             psatFSM_state_e targetState =
-                *(psatFSM_state_e*)(&packet.packetInterpreter->data);
+                (psatFSM_state_e)*packet.packetInterpreter->data;
             psatFSM_stateOverride(targetState);
             break;
         }
@@ -350,17 +350,46 @@ static void _loraFsm_runStateCmd()
         case loraFsm_packetType_enableComponentReq:
         {
             psatFSM_component_e targetComponent =
-                *(psatFSM_component_e*)(&packet.packetInterpreter
-                                             ->data);
+                (psatFSM_component_e)*packet.packetInterpreter->data;
             psatFSM_enableComponent(targetComponent);
             break;
         }
         case loraFsm_packetType_disableComponentReq:
         {
             psatFSM_component_e targetComponent =
-                *(psatFSM_component_e*)(&packet.packetInterpreter
-                                             ->data);
+                (psatFSM_component_e)*packet.packetInterpreter->data;
             psatFSM_disableComponent(targetComponent);
+            break;
+        }
+
+        case loraFsm_packetType_startComponentTaskReq:
+        {
+            psatFSM_component_e targetComponent =
+                (psatFSM_component_e)*packet.packetInterpreter->data;
+            psatFSM_startComponentTask(targetComponent);
+            break;
+        }
+        case loraFsm_packetType_stopComponentTaskReq:
+        {
+            psatFSM_component_e targetComponent =
+                (psatFSM_component_e)*packet.packetInterpreter->data;
+            psatFSM_stopComponentTask(targetComponent);
+            break;
+        }
+
+        case loraFsm_packetType_markComponentEnabledReq:
+        {
+            psatFSM_component_e targetComponent =
+                (psatFSM_component_e)*packet.packetInterpreter->data;
+            psatFSM_markComponentEnabled(targetComponent, true);
+            break;
+        }
+
+        case loraFsm_packetType_markComponentDisabledReq:
+        {
+            psatFSM_component_e targetComponent =
+                (psatFSM_component_e)*packet.packetInterpreter->data;
+            psatFSM_markComponentEnabled(targetComponent, false);
             break;
         }
 
