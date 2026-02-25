@@ -14,4 +14,6 @@
 #define STACK_SIZE          (3072)
 #define UART_BAUD_RATE      (115200)
 
+#define UART_MESSAGE(num, message)      (uart_write_bytes(num, message, strlen(message)))
+
 void init_uart(void);

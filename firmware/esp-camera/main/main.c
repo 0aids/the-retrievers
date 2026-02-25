@@ -19,8 +19,7 @@ void take_pics(){
 
         camera_fb_t *fb = esp_camera_fb_get();
         if (!fb) {
-            message = "Camera capture failed\n";
-            uart_write_bytes(CAM_UART_NUM, message, strlen(message));
+            UART_MESSAGE(CAM_UART_NUM, "Camera capture failed\n");
             return;
         }
 
@@ -29,15 +28,13 @@ void take_pics(){
 
         FILE *file = fopen(filename, "wb");
         if (file == NULL) {
-            message = "Failed to open file for writing\n";
-            uart_write_bytes(CAM_UART_NUM, message, strlen(message));
+            UART_MESSAGE(CAM_UART_NUM, "Failed to open file for writing\n");
             return;
         }
         fwrite(fb->buf, 1, fb->len, file);
         fclose(file);
         esp_camera_fb_return(fb);
-        message = "Saved pic\n";
-        uart_write_bytes(CAM_UART_NUM, message, strlen(message));
+        UART_MESSAGE(CAM_UART_NUM, "Saved pic\n");
         vTaskDelay(pdMS_TO_TICKS(2000));
     }
 }
@@ -47,8 +44,7 @@ void uart_task(void *pvParameters){
     uint8_t *data = (uint8_t *) malloc(BUF_SIZE);
 
     if (data == NULL) {
-        char *message = "Failed to allocate memory.\n";
-        uart_write_bytes(CAM_UART_NUM, message, strlen(message));
+        UART_MESSAGE(CAM_UART_NUM, "Failed to allocate memory.\n");
         vTaskDelete(NULL);
         return;
     }
@@ -65,48 +61,34 @@ void uart_task(void *pvParameters){
         if (len) {
             data[len] = 0;
             // Write data back to the UART
-            uart_write_bytes(CAM_UART_NUM, (const char *) data, len);
             if(strstr((const char*)data, "INIT")){
-                char* message;
-
                 err = init_camera();
-                if(ESP_OK != err){
-                    message = "Cam init fails\n";
-                    uart_write_bytes(CAM_UART_NUM, message, strlen(message));
-                }
-                message = "Cam init success\n";
-                uart_write_bytes(CAM_UART_NUM, message, strlen(message));
+                if(err != ESP_OK) UART_MESSAGE(CAM_UART_NUM, "Cam init fails\n");
+                else UART_MESSAGE(CAM_UART_NUM, "Cam init success\n");
 
                 err = init_sd_card();
                 if (err != ESP_OK) {
-                    if (err == ESP_FAIL) {
-                        message = "Failed to mount filesystem.\n";
-                        uart_write_bytes(CAM_UART_NUM, message, strlen(message));
-                    } else {
-                        message = "Failed to initialize the card.\n";
-                        uart_write_bytes(CAM_UART_NUM, message, strlen(message));
-                    }
+                    if (err == ESP_FAIL) UART_MESSAGE(CAM_UART_NUM, "Failed to mount filesystem.\n");
+                    else UART_MESSAGE(CAM_UART_NUM, "Failed to initialize the card.\n");
                 }
-                else{
-                    message = "Filesystem mounted.\n";
-                    uart_write_bytes(CAM_UART_NUM, message, strlen(message));
-                }
+                else UART_MESSAGE(CAM_UART_NUM, "Filesystem mounted.\n");
             }
             
             else if(strstr((const char*)data, "APOGEE")){
                 take_pics();
+                UART_MESSAGE(CAM_UART_NUM, "Pictures taken");
             }
             else if(strstr((const char*)data, "DEIN")){
                 esp_camera_deinit();
                 sdmmc_host_deinit();
                 free(data);
-                vTaskDelete(NULL);
                 listen = false;
             }
         }
     }
-    uart_write_bytes(CAM_UART_NUM, "Deinitialised", strlen("Deinitialised"));
+    UART_MESSAGE(CAM_UART_NUM, "Deinitialised");
     uart_driver_delete(CAM_UART_NUM);
+    vTaskDelete(NULL);
 }
 
 void app_main(void){
