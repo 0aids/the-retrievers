@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import SelectionModal from "./Modal";
+import { PacketType } from "../types/enums";
 import { sendCommand } from "../services/api";
 import { useAppState } from "../hooks/StateContext";
 
@@ -36,7 +37,7 @@ export default function Commands() {
                 <button
                     className="bg-gray-800 gs-btn border border-gray-700 py-3 rounded-xl text-sm"
                     onClick={() => {
-                        sendCommand(12);
+                        sendCommand(PacketType.loraFsm_packetType_buzzShortReq);
                     }}
                 >
                     Beep Short
@@ -45,7 +46,7 @@ export default function Commands() {
                 <button
                     className="bg-gray-800 gs-btn border border-gray-700 py-3 rounded-xl text-sm"
                     onClick={() => {
-                        sendCommand(13);
+                        sendCommand(PacketType.loraFsm_packetType_buzzLongReq);
                     }}
                 >
                     Beep Long
@@ -111,13 +112,25 @@ export default function Commands() {
                 onClose={() => setModalOpen(false)}
                 onSelect={(item) => {
                     if (modalMode === "override") {
-                        sendCommand(15, item.id);
+                        sendCommand(
+                            PacketType.loraFsm_packetType_stateOverrideReq,
+                            item.id,
+                        );
                     } else if (modalMode === "fastForward") {
-                        sendCommand(14, item.id);
+                        sendCommand(
+                            PacketType.loraFsm_packetType_fastForwardReq,
+                            item.id,
+                        );
                     } else if (modalMode === "enable") {
-                        sendCommand(16, item.id);
+                        sendCommand(
+                            PacketType.loraFsm_packetType_enableComponentReq,
+                            item.id,
+                        );
                     } else if (modalMode === "disable") {
-                        sendCommand(17, item.id);
+                        sendCommand(
+                            PacketType.loraFsm_packetType_disableComponentReq,
+                            item.id,
+                        );
                     }
                 }}
                 getKey={(item) => item.id}

@@ -1,8 +1,9 @@
 import { useState } from "react";
 
-import { useAppState } from "../hooks/StateContext";
-import { sendCommand } from "../services/api";
 import SelectionModal from "./Modal";
+import { PacketType } from "../types/enums";
+import { sendCommand } from "../services/api";
+import { useAppState } from "../hooks/StateContext";
 
 const Prelaunch = () => {
     const { state } = useAppState();
@@ -120,8 +121,11 @@ const Prelaunch = () => {
                 items={state?.components ?? []}
                 onClose={() => setModalOpen(false)}
                 onSelect={(c) => {
-                    const cmd = modalMode === "enable" ? 16 : 17;
-                    sendCommand(cmd, c.id);
+                    const command =
+                        modalMode === "enable"
+                            ? PacketType.loraFsm_packetType_markComponentEnabledReq
+                            : PacketType.loraFsm_packetType_markComponentDisabledReq;
+                    sendCommand(command, c.id);
                 }}
                 getKey={(c) => c.id}
                 renderLabel={(c) => c.name.replace("psatFSM_component_", "")}
