@@ -191,9 +191,9 @@ static void _loraFsm_broadcast_sendComponents()
     psatFSM_componentConfig_t psatConfig;
     psatFSM_getComponentConfig(&psatConfig);
 
-    loraFsm_packetWrapper_t psatConfigPacket =
-        loraFsm_packetCreate(loraFsm_packetType_componentData,
-                             (uint8_t*)&psatConfig, sizeof(psatConfig));
+    loraFsm_packetWrapper_t psatConfigPacket = loraFsm_packetCreate(
+        loraFsm_packetType_componentData, (uint8_t*)&psatConfig,
+        sizeof(psatConfig));
 
     loraFsm_packetSend(&psatConfigPacket);
     loraFsm_packetFree(&psatConfigPacket);
@@ -363,9 +363,6 @@ static void _loraFsm_runStateCmd()
             psatFSM_disableComponent(targetComponent);
             break;
         }
-
-        // just send everything psat knows about itself
-        case loraFsm_packetType_dataDumpReq: break; // TODO:
 
         default: ESP_LOGE(__FUNCTION__, "Invalid request!"); break;
     }
