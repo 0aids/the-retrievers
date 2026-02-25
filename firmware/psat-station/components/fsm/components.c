@@ -52,6 +52,8 @@ void psatFSM_registerComponent(
     };
 
     componentTable[componentId] = component;
+    setFlag(&psatConfig_s.enabled, componentId,
+            true); // enabled by default
 
     ESP_LOGI(TAG, "%s Component Registered",
              psatFSM_componentToString(componentId));
@@ -60,6 +62,8 @@ void psatFSM_registerComponent(
 void psatFSM_markComponentEnabled(psatFSM_component_e id, bool enable)
 {
     setFlag(&psatConfig_s.enabled, id, enable);
+    ESP_LOGI(TAG, "%s Component Enabled: %i",
+             psatFSM_componentToString(id), enable);
 }
 
 void psatFSM_enableComponent(psatFSM_component_e id)
@@ -68,7 +72,7 @@ void psatFSM_enableComponent(psatFSM_component_e id)
     if (component == NULL)
         return;
 
-    if (getFlag(&psatConfig_s.init, id) == false)
+    if (getFlag(&psatConfig_s.init, id) == true)
         return; // component already inited
 
     componentTable[id].init();
@@ -114,6 +118,9 @@ void psatFSM_startComponentTask(psatFSM_component_e id)
 
     component->start();
     setFlag(&psatConfig_s.task, id, true);
+
+    ESP_LOGI(TAG, "%s component task has been started",
+             psatFSM_componentToString(id));
 }
 
 void psatFSM_stopComponentTask(psatFSM_component_e id)
@@ -129,6 +136,9 @@ void psatFSM_stopComponentTask(psatFSM_component_e id)
         component->stop();
 
     setFlag(&psatConfig_s.task, id, false);
+
+    ESP_LOGI(TAG, "%s component task has been stopped",
+             psatFSM_componentToString(id));
 }
 
 void psatFSM_initAll()
