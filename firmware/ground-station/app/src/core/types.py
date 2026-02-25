@@ -128,16 +128,17 @@ class FullState:
 class PacketType(IntEnum):
     loraFsm_packetType_empty = 0
     loraFsm_packetType_test = auto()
-
     loraFsm_packetType_ack = auto()
+
     loraFsm_packetType_ping = auto()
     loraFsm_packetType_pong = auto()
 
     loraFsm_packetType_gpsData = auto()
     loraFsm_packetType_stateData = auto()
     loraFsm_packetType_sensorData = auto()
-
+    loraFsm_packetType_componentData = auto()
     loraFsm_packetType_preflightData = auto()
+
     loraFsm_packetType_preflightReq = auto()
     loraFsm_packetType_preflightDataReq = auto()
     loraFsm_packetType_prelaunchCompleteReq = auto()
@@ -148,9 +149,13 @@ class PacketType(IntEnum):
     loraFsm_packetType_fastForwardReq = auto()
     loraFsm_packetType_stateOverrideReq = auto()
 
+    loraFsm_packetType_markComponentEnabledReq = auto()
+    loraFsm_packetType_markComponentDisabledReq = auto()
+
     loraFsm_packetType_enableComponentReq = auto()
     loraFsm_packetType_disableComponentReq = auto()
 
-    loraFsm_packetType_dataDumpReq = auto()
+    loraFsm_packetType_startComponentTaskReq = auto()
+    loraFsm_packetType_stopComponentTaskReq = auto()
 
     loraFsm_packetType__COUNT = auto()

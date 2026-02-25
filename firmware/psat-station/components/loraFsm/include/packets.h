@@ -37,10 +37,14 @@
     X(loraFsm_packetType_fastForwardReq)                             \
     X(loraFsm_packetType_stateOverrideReq)                           \
                                                                      \
+    X(loraFsm_packetType_markComponentEnabledReq)                    \
+    X(loraFsm_packetType_markComponentDisabledReq)                   \
+                                                                     \
     X(loraFsm_packetType_enableComponentReq)                         \
     X(loraFsm_packetType_disableComponentReq)                        \
                                                                      \
-    X(loraFsm_packetType_dataDumpReq)                                \
+    X(loraFsm_packetType_startComponentTaskReq)                      \
+    X(loraFsm_packetType_stopComponentTaskReq)                       \
                                                                      \
     X(loraFsm_packetType__COUNT)
 
