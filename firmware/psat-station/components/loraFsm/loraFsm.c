@@ -186,6 +186,19 @@ static void _loraFsm_broadcast_sendState()
     loraFsm_packetFree(&psatStatePacket);
 }
 
+static void _loraFsm_broadcast_sendComponents()
+{
+    psatFSM_componentConfig_t psatConfig;
+    psatFSM_getComponentConfig(&psatConfig);
+
+    loraFsm_packetWrapper_t psatConfigPacket =
+        loraFsm_packetCreate(loraFsm_packetType_componentData,
+                             (uint8_t*)&psatConfig, sizeof(psatConfig));
+
+    loraFsm_packetSend(&psatConfigPacket);
+    loraFsm_packetFree(&psatConfigPacket);
+}
+
 static void _loraFsm_broadcast_sendSensors() {}
 
 static void _loraFsm_broadcast()
@@ -195,6 +208,8 @@ static void _loraFsm_broadcast()
     _loraFsm_broadcast_sendState();
     vTaskDelay(100 / portTICK_PERIOD_MS);
     _loraFsm_broadcast_sendGPS();
+    vTaskDelay(100 / portTICK_PERIOD_MS);
+    _loraFsm_broadcast_sendComponents();
     vTaskDelay(100 / portTICK_PERIOD_MS);
     _loraFsm_broadcast_sendSensors();
 }
