@@ -1,13 +1,13 @@
+import struct
 import ctypes
 from queue import Queue
 from os.path import join, dirname
 
 from rich import print
 from rich.panel import Panel
-from rich.pretty import Pretty
 
 from core.state import state_manager
-from core.types import GPSStruct, FSMState, FSMComponent, ComponentData, PacketType
+from core.types import GPSStruct, FSMState, PacketType
 
 
 LIBRARY_PATH = join(dirname(__file__), "libLoraParser.so")
@@ -56,6 +56,26 @@ def lora_receive_callback(payload, size, _rssi, _snr):
             )
         )
 
+    if packet_type == PacketType.loraFsm_packetType_componentData:
+        if len(data) != 8:
+            return
+
+        enabled, init, task, error = struct.unpack("<HHHH", data)
+
+        print(
+            Panel(
+                f"[bold magenta]Decoded Component Masks[/bold magenta]\n\n"
+                f"[cyan]Enabled:[/cyan] {enabled:016b}\n"
+                f"[cyan]Init:[/cyan]    {init:016b}\n"
+                f"[cyan]Task:[/cyan]    {task:016b}\n"
+                f"[cyan]Error:[/cyan]   {error:016b}",
+                title="Component Update",
+                border_style="green",
+            )
+        )
+
+        state_manager.update_component_runtime(enabled, init, task, error)
+
     elif packet_type == PacketType.loraFsm_packetType_ping:
         print(
             Panel(
@@ -73,35 +93,21 @@ def lora_receive_callback(payload, size, _rssi, _snr):
         )
 
     elif packet_type == PacketType.loraFsm_packetType_preflightData:
+        if len(data) != 2:
+            return
+
+        (mask,) = struct.unpack("<H", data)
+        state_manager.update_preflight(mask)
+
         print(
             Panel(
-                f"[bold magenta]Raw Preflight Data:[/bold magenta]\n{data}",
+                f"[bold magenta]Decoded Preflight Mask[/bold magenta]\n\n"
+                f"[cyan]Mask:[/cyan] {mask:016b}",
                 title="Preflight RX",
                 border_style="magenta",
             )
         )
-
-        data_uint16 = ctypes.c_uint16.from_buffer(bytearray(data)).value
-        data_bits = list(map(int, bin(data_uint16)[2:]))
-
-        results = []
-        for component_id, component_result in enumerate(data_bits):
-            try:
-                component = FSMComponent(component_id)
-                results.append(
-                    ComponentData(component, component.name, bool(component_result))
-                )
-            except Exception:
-                break
-
-        print(
-            Panel(
-                Pretty(results),
-                title="Preflight Results",
-                border_style="blue",
-            )
-        )
-        state_manager.set_preflight_results(results)
+        state_manager.update_preflight(mask)
 
 
 @ctypes.CFUNCTYPE(None, ctypes.POINTER(ctypes.c_uint8), ctypes.c_uint16)
