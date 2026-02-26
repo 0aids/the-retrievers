@@ -4,6 +4,7 @@ import SelectionModal from "./Modal";
 import { PacketType } from "../types/enums";
 import { sendCommand } from "../services/api";
 import { useAppState } from "../hooks/StateContext";
+import { isTasked, capitalizeFirstLetter } from "../utils";
 
 export const FSM_STATES = [
     { id: 0, name: "Start" },
@@ -22,7 +23,13 @@ export const FSM_STATES = [
 export default function Commands() {
     const [modalOpen, setModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState<
-        "enable" | "disable" | "override" | "fastForward" | null
+        | "enable"
+        | "disable"
+        | "override"
+        | "fastForward"
+        | "startTask"
+        | "stopTask"
+        | null
     >(null);
 
     const { state } = useAppState();
@@ -91,6 +98,26 @@ export default function Commands() {
                 >
                     Disable Component
                 </button>
+
+                <button
+                    className="bg-gray-800 gs-btn border border-gray-700 py-3 rounded-xl text-sm"
+                    onClick={() => {
+                        setModalMode("startTask");
+                        setModalOpen(true);
+                    }}
+                >
+                    Start Task
+                </button>
+
+                <button
+                    className="bg-gray-800 gs-btn border border-gray-700 py-3 rounded-xl text-sm"
+                    onClick={() => {
+                        setModalMode("stopTask");
+                        setModalOpen(true);
+                    }}
+                >
+                    Stop Task
+                </button>
             </div>
 
             <SelectionModal
@@ -107,7 +134,11 @@ export default function Commands() {
                 items={
                     modalMode === "override" || modalMode === "fastForward"
                         ? FSM_STATES
-                        : (state?.components ?? [])
+                        : modalMode === "startTask" || modalMode === "stopTask"
+                          ? (state?.components ?? []).filter((c) =>
+                                isTasked(c.id),
+                            )
+                          : (state?.components ?? [])
                 }
                 onClose={() => setModalOpen(false)}
                 onSelect={(item) => {
@@ -131,10 +162,26 @@ export default function Commands() {
                             PacketType.loraFsm_packetType_disableComponentReq,
                             item.id,
                         );
+                    } else if (modalMode === "startTask") {
+                        sendCommand(
+                            PacketType.loraFsm_packetType_startComponentTaskReq,
+                            item.id,
+                        );
+                    } else if (modalMode === "stopTask") {
+                        sendCommand(
+                            PacketType.loraFsm_packetType_stopComponentTaskReq,
+                            item.id,
+                        );
                     }
                 }}
                 getKey={(item) => item.id}
-                renderLabel={(item) => item.name}
+                renderLabel={(item) =>
+                    capitalizeFirstLetter(
+                        item.name
+                            .replace("psatFSM_component_", "")
+                            .replace("psatFSM_state_", ""),
+                    )
+                }
                 renderSubLabel={(item) => `ID ${item.id}`}
             />
         </section>
