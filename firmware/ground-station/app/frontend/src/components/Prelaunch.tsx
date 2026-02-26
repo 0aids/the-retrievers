@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import SelectionModal from "./Modal";
 import { PacketType } from "../types/enums";
@@ -10,15 +10,32 @@ const Prelaunch = () => {
     const { state } = useAppState();
 
     const initialPreflightResult = "Not Run Yet";
-    const [preflightResult, setPreflightResult] = useState({
-        text: initialPreflightResult,
-        color: "#D1D5DB",
-    });
+    const [preflightResult, setPreflightResult] = useState(
+        initialPreflightResult,
+    );
 
     const [modalOpen, setModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState<"enable" | "disable" | null>(
         null,
     );
+
+    useEffect(() => {
+        const preflightNull = state?.components.filter(
+            (c) => c.preflightSuccess === null,
+        ).length;
+
+        if (preflightNull || preflightNull === undefined) {
+            return;
+        }
+
+        const passedCount =
+            state?.components.filter((c) => c.preflightSuccess === true)
+                .length ?? 0;
+
+        setPreflightResult(
+            `${passedCount}/${state?.components.length ?? 0} Passed`,
+        );
+    }, [state?.components]);
 
     return (
         <section className="p-2">
@@ -113,7 +130,11 @@ const Prelaunch = () => {
             <div className="my-2 space-y-2">
                 <div className="bg-gray-900 border border-gray-800 rounded-xl p-2">
                     <h3 className="text-xs uppercase tracking-wider text-gray-400 mb-2 flex justify-between">
-                        Preflight Tests:
+                        Preflight Result:{" "}
+                        <span className="text-gray-300">
+                            {" "}
+                            {preflightResult}{" "}
+                        </span>{" "}
                     </h3>
                     <button
                         className="bg-gray-700 gs-btn border border-gray-700 py-3 rounded-xl text-sm w-full"
@@ -123,7 +144,7 @@ const Prelaunch = () => {
                             );
                         }}
                     >
-                        {preflightResult.text === initialPreflightResult
+                        {preflightResult === initialPreflightResult
                             ? "Run"
                             : "Rerun"}{" "}
                         All Tests
@@ -136,11 +157,6 @@ const Prelaunch = () => {
                         sendCommand(
                             PacketType.loraFsm_packetType_prelaunchCompleteReq,
                         );
-
-                        setPreflightResult({
-                            text: "Success",
-                            color: "#63ba80",
-                        });
                     }}
                 >
                     Prelaunch Complete
