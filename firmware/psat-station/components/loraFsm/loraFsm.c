@@ -172,6 +172,20 @@ static void _loraFsm_broadcast_sendGPS()
     loraFsm_packetFree(&gpsStatePacket);
 }
 
+static void _loraFsm_broadcast_sendTelemetryData()
+{
+    gps_psatTelemetryPacket_t telemetryData = {0};
+    gps_telemtryPacketGetSnapshot(&telemetryData);
+
+    loraFsm_packetWrapper_t telemetryDataPacket =
+        loraFsm_packetCreate(loraFsm_packetType_telemetryData,
+                             (uint8_t*)&telemetryData,
+                             sizeof(telemetryData));
+
+    loraFsm_packetSend(&telemetryDataPacket);
+    loraFsm_packetFree(&telemetryDataPacket);
+}
+
 static void _loraFsm_broadcast_sendState()
 {
     psatGlobal_state_t psatState = {
@@ -208,6 +222,8 @@ static void _loraFsm_broadcast()
     _loraFsm_broadcast_sendState();
     vTaskDelay(100 / portTICK_PERIOD_MS);
     _loraFsm_broadcast_sendGPS();
+    vTaskDelay(100 / portTICK_PERIOD_MS);
+    _loraFsm_broadcast_sendTelemetryData();
     vTaskDelay(100 / portTICK_PERIOD_MS);
     _loraFsm_broadcast_sendComponents();
     vTaskDelay(100 / portTICK_PERIOD_MS);

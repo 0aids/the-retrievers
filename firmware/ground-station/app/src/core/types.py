@@ -141,6 +141,7 @@ class PacketType(IntEnum):
     loraFsm_packetType_stateData = auto()
     loraFsm_packetType_sensorData = auto()
     loraFsm_packetType_componentData = auto()
+    loraFsm_packetType_telemetryData = auto()
     loraFsm_packetType_preflightData = auto()
 
     loraFsm_packetType_preflightReq = auto()
