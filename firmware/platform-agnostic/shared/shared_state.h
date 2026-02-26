@@ -340,6 +340,10 @@ typedef struct
     int     linesRecieved;
 } gps_data_t;
 
+typedef struct {
+   uint8_t data[14]; 
+} gps_psatTelemetryPacket_t;
+
 // FUNCTIONS TO CONVERT ENUM TO A STRING
 static inline const char* psatFSM_stateToString(psatFSM_state_e state)
 {

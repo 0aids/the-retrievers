@@ -10,6 +10,7 @@ export enum PacketType {
     loraFsm_packetType_stateData,
     loraFsm_packetType_sensorData,
     loraFsm_packetType_componentData,
+    loraFsm_packetType_telemetryData,
     loraFsm_packetType_preflightData,
 
     loraFsm_packetType_preflightReq,

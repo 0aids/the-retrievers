@@ -25,6 +25,7 @@
     X(loraFsm_packetType_stateData)                                  \
     X(loraFsm_packetType_sensorData)                                 \
     X(loraFsm_packetType_componentData)                              \
+    X(loraFsm_packetType_telemetryData)                              \
     X(loraFsm_packetType_preflightData)                              \
                                                                      \
     X(loraFsm_packetType_preflightReq)                               \

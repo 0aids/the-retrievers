@@ -7,19 +7,21 @@
 #include "freertos/semphr.h"
 #include "shared_state.h"
 
+#define TEAM_ID 00001
 #define TIMEOUT 20 // max time for the semaphore to lock
 
-static gps_data_t        gpsData_s;
-static SemaphoreHandle_t gpsStateMutex_s;
+static gps_data_t                gpsData_s;
+static gps_psatTelemetryPacket_t psatTelemetryPacket_s;
+static SemaphoreHandle_t         gpsStateMutex_s;
 
+int*               gps_linesRecieved = &gpsData_s.linesRecieved;
 
-int* gps_linesRecieved = &gpsData_s.linesRecieved;
+static const char* TAG = "GPS";
 
-static const char*       TAG = "GPS";
-
-void                     gps_stateInit(void)
+void               gps_stateInit(void)
 {
     memset(&gpsData_s, 0, sizeof(gpsData_s));
+    memset(&psatTelemetryPacket_s, 0, sizeof(psatTelemetryPacket_s));
 
     // by default set everything being valid to false
     gpsData_s.positionValid = false;
@@ -47,15 +49,16 @@ void gps_stateGetSnapshot(gps_data_t* out)
     }
 }
 
-void gps_stateCompleteOverwrite(const gps_data_t* src)
+void gps_telemtryPacketGetSnapshot(gps_psatTelemetryPacket_t* out)
 {
-    if (!src || !gpsStateMutex_s)
+    if (!out || !gpsStateMutex_s)
         return;
 
     if (xSemaphoreTake(gpsStateMutex_s, pdMS_TO_TICKS(TIMEOUT)) ==
         pdTRUE)
     {
-        memcpy(&gpsData_s, src, sizeof(gpsData_s));
+        memcpy(out, &psatTelemetryPacket_s,
+               sizeof(psatTelemetryPacket_s));
         xSemaphoreGive(gpsStateMutex_s);
     }
 }
@@ -74,8 +77,7 @@ void gps_logGpsSnapshot(gps_data_t* gps)
     if (memcmp(gps, &zeroStruct, sizeof(*gps)) == 0)
     {
 
-        ESP_LOGW(TAG,
-                 "GPS struct all zeros (no data received yet)");
+        ESP_LOGW(TAG, "GPS struct all zeros (no data received yet)");
         return;
     }
 
@@ -95,8 +97,7 @@ void gps_logGpsSnapshot(gps_data_t* gps)
     ESP_LOGI(TAG, "Time: %02d:%02d:%02d", gps->hours, gps->minutes,
              gps->seconds);
 
-    ESP_LOGI(TAG, "Fix Valid: %s",
-             BOOL_TO_STRING(gps->fixInfoValid));
+    ESP_LOGI(TAG, "Fix Valid: %s", BOOL_TO_STRING(gps->fixInfoValid));
     ESP_LOGI(TAG, "Fix Quality: %d", gps->fixQuality);
     ESP_LOGI(TAG, "Satellites Tracked: %d", gps->satellitesTracked);
     ESP_LOGI(TAG, "HDOP: %f", gps->hdop);
@@ -199,6 +200,7 @@ gps_stateUpdateFromRMC(const struct minmea_sentence_rmc* rmc)
         return;
     }
 
+    // Main GPS Struct
     gpsData_s.latitude      = minmea_tocoord(&rmc->latitude);
     gpsData_s.longitude     = minmea_tocoord(&rmc->longitude);
     gpsData_s.positionValid = true;
@@ -215,6 +217,9 @@ gps_stateUpdateFromRMC(const struct minmea_sentence_rmc* rmc)
     gpsData_s.day   = rmc->date.day;
     gpsData_s.month = rmc->date.month;
     gpsData_s.year  = 2000 + rmc->date.year;
+
+    // GPS data to send to psat admin ground station
+    // TODO: set psatTelemetryPacket_s.data here
 }
 
 static void
