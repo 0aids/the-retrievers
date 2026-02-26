@@ -42,7 +42,7 @@ export type ComponentData = {
     inited: boolean;
     task: boolean;
     error: boolean;
-    preflightSuccess: boolean;
+    preflightSuccess: boolean | null;
 }[];
 
 export type ApiState = {

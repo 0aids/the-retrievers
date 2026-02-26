@@ -36,7 +36,7 @@ class StateManager:
                 inited=False,
                 task=False,
                 error=False,
-                preflightSuccess=False,
+                preflightSuccess=None,
             )
             for comp in FSMComponent
             if comp != FSMComponent.psatFSM_component__COUNT

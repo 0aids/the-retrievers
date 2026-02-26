@@ -106,7 +106,7 @@ class ComponentData:
     inited: bool
     task: bool
     error: bool
-    preflightSuccess: bool
+    preflightSuccess: bool | None
 
 
 @dataclass
