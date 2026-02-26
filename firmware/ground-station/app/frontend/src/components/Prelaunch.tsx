@@ -4,6 +4,7 @@ import SelectionModal from "./Modal";
 import { PacketType } from "../types/enums";
 import { sendCommand } from "../services/api";
 import { useAppState } from "../hooks/StateContext";
+import { capitalizeFirstLetter } from "../utils";
 
 const Prelaunch = () => {
     const { state } = useAppState();
@@ -31,23 +32,60 @@ const Prelaunch = () => {
                 </h3>
                 <div className="text-sm space-y-1 grid grid-cols-2 gap-2 gap-x-4">
                     {state?.components.length == 0 && "No Data Yet"}
-                    {state?.components.map(({ name, enabled }) => {
-                        return (
-                            <p className="flex justify-between">
-                                <span className="font-bold">
-                                    {name.replace("psatFSM_component_", "")}:
-                                </span>
-
-                                <span
-                                    style={{
-                                        color: enabled ? "#63ba80" : "red",
-                                    }}
+                    {state?.components.map(
+                        ({ name, enabled, preflightSuccess, id }) => {
+                            return (
+                                <div
+                                    key={id}
+                                    className="bg-gray-800 rounded-lg px-3 py-2 flex flex-col"
                                 >
-                                    {enabled ? "ENABLED" : "DISABLED"}
-                                </span>
-                            </p>
-                        );
-                    })}
+                                    <div className="flex justify-between items-center">
+                                        <span className="font-bold">
+                                            {capitalizeFirstLetter(
+                                                name.replace(
+                                                    "psatFSM_component_",
+                                                    "",
+                                                ),
+                                            )}
+                                        </span>
+
+                                        <span
+                                            className="text-xs font-semibold"
+                                            style={{
+                                                color: enabled
+                                                    ? "#63ba80"
+                                                    : "#ef4444",
+                                            }}
+                                        >
+                                            {enabled ? "ENABLED" : "DISABLED"}
+                                        </span>
+                                    </div>
+
+                                    <div className="flex justify-between mt-1 text-xs">
+                                        <span className="text-gray-400">
+                                            Preflight
+                                        </span>
+                                        <span
+                                            style={{
+                                                color:
+                                                    preflightSuccess === null
+                                                        ? "#9CA3AF"
+                                                        : preflightSuccess
+                                                          ? "#63ba80"
+                                                          : "#ef4444",
+                                            }}
+                                        >
+                                            {preflightSuccess === null
+                                                ? "NOT RUN"
+                                                : preflightSuccess
+                                                  ? "PASS"
+                                                  : "FAIL"}
+                                        </span>
+                                    </div>
+                                </div>
+                            );
+                        },
+                    )}
                 </div>
                 <div className="flex gap-2 mt-2">
                     <button
@@ -75,15 +113,7 @@ const Prelaunch = () => {
             <div className="my-2 space-y-2">
                 <div className="bg-gray-900 border border-gray-800 rounded-xl p-2">
                     <h3 className="text-xs uppercase tracking-wider text-gray-400 mb-2 flex justify-between">
-                        Preflight Result:{" "}
-                        <span
-                            style={{
-                                color: preflightResult.color,
-                            }}
-                            className="text-gray-300"
-                        >
-                            {preflightResult.text}
-                        </span>
+                        Preflight Tests:
                     </h3>
                     <button
                         className="bg-gray-700 gs-btn border border-gray-700 py-3 rounded-xl text-sm w-full"
@@ -132,7 +162,11 @@ const Prelaunch = () => {
                     sendCommand(command, c.id);
                 }}
                 getKey={(c) => c.id}
-                renderLabel={(c) => c.name.replace("psatFSM_component_", "")}
+                renderLabel={(c) =>
+                    capitalizeFirstLetter(
+                        c.name.replace("psatFSM_component_", ""),
+                    )
+                }
                 renderSubLabel={(c) => `ID ${c.id}`}
             />
         </section>
