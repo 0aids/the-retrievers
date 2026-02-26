@@ -35,10 +35,14 @@ export type GeoPosition = {
     accuracy?: number;
 };
 
-export type ComponentStatus = {
+export type ComponentData = {
     id: number;
     name: string;
-    status: boolean;
+    enabled: boolean;
+    inited: boolean;
+    task: boolean;
+    error: boolean;
+    preflightSuccess: boolean;
 }[];
 
 export type ApiState = {
@@ -55,6 +59,6 @@ export type ApiState = {
         // TODO: imu: {}
     };
     fsm: FSMState;
-    components: ComponentStatus;
+    components: ComponentData;
     radio: { lastPacketTime: number | null; packetsReceived: number | null };
 };

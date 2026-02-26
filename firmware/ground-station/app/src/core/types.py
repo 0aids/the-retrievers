@@ -102,7 +102,11 @@ class RadioData:
 class ComponentData:
     id: int
     name: str
-    status: bool
+    enabled: bool
+    inited: bool
+    task: bool
+    error: bool
+    preflightSuccess: bool
 
 
 @dataclass
