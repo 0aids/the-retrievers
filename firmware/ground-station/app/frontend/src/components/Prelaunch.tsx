@@ -88,7 +88,9 @@ const Prelaunch = () => {
                     <button
                         className="bg-gray-700 gs-btn border border-gray-700 py-3 rounded-xl text-sm w-full"
                         onClick={() => {
-                            sendCommand(9);
+                            sendCommand(
+                                PacketType.loraFsm_packetType_preflightReq,
+                            );
                         }}
                     >
                         {preflightResult.text === initialPreflightResult
@@ -101,7 +103,9 @@ const Prelaunch = () => {
                 <button
                     className="bg-green-800 gs-btn border border-green-700 py-3 rounded-xl text-sm w-full"
                     onClick={() => {
-                        sendCommand(11);
+                        sendCommand(
+                            PacketType.loraFsm_packetType_prelaunchCompleteReq,
+                        );
 
                         setPreflightResult({
                             text: "Success",
