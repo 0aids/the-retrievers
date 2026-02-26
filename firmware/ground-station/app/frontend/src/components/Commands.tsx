@@ -32,6 +32,15 @@ export default function Commands() {
         | null
     >(null);
 
+    const titleMap = {
+        override: "Choose State",
+        fastForward: "Choose State",
+        enable: "Choose Component to Enable",
+        disable: "Choose Component to Disable",
+        startTask: "Choose Task To Start",
+        stopTask: "Choose Task To Stop",
+    };
+
     const { state } = useAppState();
 
     return (
@@ -122,15 +131,7 @@ export default function Commands() {
 
             <SelectionModal
                 isOpen={modalOpen}
-                title={
-                    modalMode === "override" || modalMode === "fastForward"
-                        ? "Choose State"
-                        : modalMode === "enable"
-                          ? "Choose Component to Enable"
-                          : modalMode === "disable"
-                            ? "Choose Component to Disable"
-                            : ""
-                }
+                title={modalMode ? (titleMap[modalMode] ?? "") : ""}
                 items={
                     modalMode === "override" || modalMode === "fastForward"
                         ? FSM_STATES
