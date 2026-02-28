@@ -28,7 +28,7 @@ void deinit_sd_card(void){
     esp_vfs_fat_sdcard_unmount(MOUNT_POINT, card);
 }
 
-void log_data(char* data){
+void log_data(const char* data){
     FILE *f = fopen(MOUNT_POINT"/data.txt", "a");
     if (f == NULL) {
         UART_MESSAGE("Failed to open file for writing");

@@ -21,4 +21,4 @@
 
 esp_err_t init_sd_card(void);
 void deinit_sd_card(void);
-void log_data(char* data);
+void log_data(const char* data);

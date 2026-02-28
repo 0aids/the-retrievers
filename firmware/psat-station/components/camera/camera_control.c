@@ -1,6 +1,5 @@
 #include "camera_control.h"
 
-
 void camera_control_init(void) {
     uart_config_t control_uart_config = {
         .baud_rate = UART_BAUD_RATE,
@@ -11,9 +10,10 @@ void camera_control_init(void) {
     };
     int intr_alloc_flags = 0;
     // Configure UART parameters
-    ESP_ERROR_CHECK(uart_driver_install(CONTROL_UART_NUM, BUF_SIZE, 0, 0, NULL, intr_alloc_flags));
-    ESP_ERROR_CHECK(uart_param_config(CONTROL_UART_NUM, &control_uart_config));
-    ESP_ERROR_CHECK(uart_set_pin(CONTROL_UART_NUM, CONTROL_TX_IO, CONTROL_RX_IO, -1, -1));
+    ESP_ERROR_CHECK(uart_driver_install(CAMERA_UART_NUM, BUF_SIZE, 0, 0, NULL, intr_alloc_flags));
+    ESP_ERROR_CHECK(uart_param_config(CAMERA_UART_NUM, &control_uart_config));
+    ESP_ERROR_CHECK(uart_set_pin(CAMERA_UART_NUM, CAMERA_TX_IO, CAMERA_RX_IO, -1, -1));
+    xTaskCreate(uart_read, "uart_read", STACK_SIZE, NULL, 10, NULL);
 }
 
 void uart_read(void *pvParameters){
@@ -35,7 +35,7 @@ void uart_read(void *pvParameters){
 
     while (listen) {
         // Read data from the UART
-        int len = uart_read_bytes(CONTROL_UART_NUM, data, (BUF_SIZE - 1), 100 / portTICK_PERIOD_MS);
+        int len = uart_read_bytes(CAMERA_UART_NUM, data, (BUF_SIZE - 1), 100 / portTICK_PERIOD_MS);
         
         if (len) {
             data[len] = 0;
@@ -47,6 +47,25 @@ void uart_read(void *pvParameters){
             }
         }
     }
-    uart_driver_delete(CONTROL_UART_NUM);
+    uart_driver_delete(CAMERA_UART_NUM);
+    vTaskDelete(NULL);
+}
+
+void test(void *pvParameters){
+    vTaskDelay(pdMS_TO_TICKS(5000));
+    ESP_LOGI("Control", "Initialising");
+    UART_MESSAGE("++INIT++");
+    vTaskDelay(pdMS_TO_TICKS(2000));
+
+    ESP_LOGI("Control", "Apogee reached");
+    UART_MESSAGE("++APOGEE++");
+    vTaskDelay(pdMS_TO_TICKS(12000));
+
+    ESP_LOGI("Control", "Logging data");
+    UART_MESSAGE("++LOG++\nBrainrot: Tung tung tung sahur\n\n");
+
+    ESP_LOGI("Control", "Attempting to deinitialise");
+    UART_MESSAGE("++DEINIT++");
+    
     vTaskDelete(NULL);
 }

@@ -34,7 +34,7 @@ void uart_task(void *pvParameters){
         if (len) {
             data[len] = 0;
             // Write data back to the UART
-            if (strstr((const char*)data, "INIT")){
+            if (strstr((const char*)data, "++INIT++")){
                 err = init_camera();
                 if(err != ESP_OK) UART_MESSAGE("Cam init fails");
                 else UART_MESSAGE("Cam init success");
@@ -46,15 +46,14 @@ void uart_task(void *pvParameters){
                 }
                 else UART_MESSAGE("Filesystem mounted.");
             }
-            else if (strstr((const char*)data, "APOGEE")){
+            else if (strstr((const char*)data, "++APOGEE++")){
                 take_pics();
                 UART_MESSAGE("Pictures taken");
             }
-            else if (strstr((const char*)data, "LOG")){
-                char *logs = "what";
-                log_data(logs);
+            else if (strstr((const char*)data, "++LOG++")){
+                log_data((const char*)data);
             }
-            else if (strstr((const char*)data, "DEIN")){
+            else if (strstr((const char*)data, "++DEINIT++")){
                 deinit_sd_card();
                 esp_camera_deinit();
                 sdmmc_host_deinit();
