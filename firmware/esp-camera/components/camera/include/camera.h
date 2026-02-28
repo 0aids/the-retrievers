@@ -19,7 +19,7 @@
 
 #include "driver/uart.h"
 
-#define CAM_UART_NUM            UART_NUM_0 //pin def
+#define CAM_UART_NUM            UART_NUM_1 //pin def
 #define UART_MESSAGE(message)   (uart_write_bytes(CAM_UART_NUM, message, strlen(message))) //helper
 
 

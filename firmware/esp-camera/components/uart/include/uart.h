@@ -7,9 +7,9 @@
 #include "esp_log.h"
 
 
-#define CAM_UART_NUM        UART_NUM_0
-#define UART_TX             (1)
-#define UART_RX             (3)
+#define CAM_UART_NUM        UART_NUM_1
+#define UART_TX             (13)
+#define UART_RX             (12)
 #define BUF_SIZE            (1024*2)
 #define STACK_SIZE          (3072)
 #define UART_BAUD_RATE      (115200)
