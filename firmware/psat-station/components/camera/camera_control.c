@@ -62,9 +62,10 @@ void test(void *pvParameters){
     vTaskDelay(pdMS_TO_TICKS(12000));
 
     ESP_LOGI("Control", "Logging data");
-    UART_MESSAGE("++LOG++\nBrainrot: Tung tung tung sahur\n\n");
+    UART_MESSAGE("++LOG++\nPressure: 50 pascal\n\n");
+    vTaskDelay(pdMS_TO_TICKS(500));
 
-    ESP_LOGI("Control", "Attempting to deinitialise");
+    ESP_LOGI("Control", "Deinitialise");
     UART_MESSAGE("++DEINIT++");
     
     vTaskDelete(NULL);
