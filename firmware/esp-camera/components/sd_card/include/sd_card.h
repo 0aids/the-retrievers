@@ -14,5 +14,11 @@
 #define PIN_D2      (12)
 #define PIN_D3      (13)
 
+#include "driver/uart.h"
+
+#define CAM_UART_NUM            UART_NUM_0 //pin def
+#define UART_MESSAGE(message)   (uart_write_bytes(CAM_UART_NUM, message, strlen(message))) //helper
+
 esp_err_t init_sd_card(void);
 void deinit_sd_card(void);
+void log_data(char* data);

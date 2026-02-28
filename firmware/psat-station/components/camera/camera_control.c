@@ -20,7 +20,7 @@ void uart_read(void *pvParameters){
     // Configure a temporary buffer for the incoming data
     uint8_t *data = (uint8_t *) malloc(BUF_SIZE);
 
-    char* tag = "UART Control";
+    char* tag = "Camera";
 
     if (data == NULL) {
         ESP_LOGE(tag, "Failed to allocate memory!");
@@ -39,7 +39,7 @@ void uart_read(void *pvParameters){
         
         if (len) {
             data[len] = 0;
-            ESP_LOGI(tag, "Read bytes: '%s'", data);
+            ESP_LOGI(tag, "%s", data);
             // Write data back to the UART
             if(strstr((const char*)data, "Successfully deinitialised")){
                 free(data);

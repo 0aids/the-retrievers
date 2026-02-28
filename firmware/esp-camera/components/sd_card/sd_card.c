@@ -22,9 +22,20 @@ esp_err_t init_sd_card(void){
     slot_config.flags |= SDMMC_SLOT_FLAG_INTERNAL_PULLUP;
     
     return esp_vfs_fat_sdmmc_mount(MOUNT_POINT, &host, &slot_config, &mount_config, &card);
-    
 }
 
 void deinit_sd_card(void){
     esp_vfs_fat_sdcard_unmount(MOUNT_POINT, card);
+}
+
+void log_data(char* data){
+    FILE *f = fopen(MOUNT_POINT"/data.txt", "a");
+    if (f == NULL) {
+        UART_MESSAGE("Failed to open file for writing");
+        return;
+    }
+    fprintf(f, data);
+    fclose(f);
+    UART_MESSAGE("Logged data");
+
 }

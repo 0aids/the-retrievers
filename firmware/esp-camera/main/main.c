@@ -17,7 +17,7 @@ void uart_task(void *pvParameters){
     uint8_t *data = (uint8_t *) malloc(BUF_SIZE);
 
     if (data == NULL) {
-        UART_MESSAGE("Failed to allocate memory.\n");
+        UART_MESSAGE("Failed to allocate memory.");
         vTaskDelete(NULL);
         return;
     }
@@ -29,36 +29,37 @@ void uart_task(void *pvParameters){
 
     while (listen) {
         // Read data from the UART
-        int len = uart_read_bytes(CAM_UART_NUM, data, (BUF_SIZE - 1), 400 / portTICK_PERIOD_MS);
+        int len = uart_read_bytes(CAM_UART_NUM, data, (BUF_SIZE - 1), 100 / portTICK_PERIOD_MS);
         
         if (len) {
             data[len] = 0;
             // Write data back to the UART
             if (strstr((const char*)data, "INIT")){
                 err = init_camera();
-                if(err != ESP_OK) UART_MESSAGE("Cam init fails\n");
-                else UART_MESSAGE("Cam init success\n");
+                if(err != ESP_OK) UART_MESSAGE("Cam init fails");
+                else UART_MESSAGE("Cam init success");
 
                 err = init_sd_card();
                 if (err != ESP_OK) {
-                    if (err == ESP_FAIL) UART_MESSAGE("Failed to mount filesystem.\n");
-                    else UART_MESSAGE("Failed to initialize the card.\n");
+                    if (err == ESP_FAIL) UART_MESSAGE("Failed to mount filesystem.");
+                    else UART_MESSAGE("Failed to initialize the card.");
                 }
-                else UART_MESSAGE("Filesystem mounted.\n");
+                else UART_MESSAGE("Filesystem mounted.");
             }
             else if (strstr((const char*)data, "APOGEE")){
                 take_pics();
-                UART_MESSAGE("Pictures taken\n");
+                UART_MESSAGE("Pictures taken");
             }
             else if (strstr((const char*)data, "LOG")){
-                UART_MESSAGE("Logged data\n");
+                char *logs = "what";
+                log_data(logs);
             }
             else if (strstr((const char*)data, "DEIN")){
                 deinit_sd_card();
                 esp_camera_deinit();
                 sdmmc_host_deinit();
                 free(data);
-                UART_MESSAGE("Deinitialised\n");
+                UART_MESSAGE("Successfully deinitialised");
                 vTaskDelay(pdMS_TO_TICKS(500));
                 listen = false;
             }
