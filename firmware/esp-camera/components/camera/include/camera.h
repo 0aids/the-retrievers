@@ -12,8 +12,16 @@
 #include "esp_camera.h"
 #include "driver/gpio.h"
 
-#define portTICK_RATE_MS portTICK_PERIOD_MS
+
+
+#define portTICK_RATE_MS        portTICK_PERIOD_MS
+#define MOUNT_POINT             "/sdcard"
+
+#include "driver/uart.h"
+
+#define CAM_UART_NUM            UART_NUM_0 //pin def
+#define UART_MESSAGE(message)   (uart_write_bytes(CAM_UART_NUM, message, strlen(message))) //helper
 
 
 esp_err_t init_camera(void);
-void burst_pic(void);
+void take_pics(void);

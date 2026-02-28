@@ -52,37 +52,28 @@ esp_err_t init_camera(void)
 
     return ESP_OK;
 }
-void burst_pic(void){
-    for (int i = 1; i <= 5; i++) {
-        ESP_LOGI(TAG, "Taking photo %d/5...", i);
 
-        // A. Capture Frame
+
+void take_pics(void){
+    for (int i = 1; i <= 5; i++) {
         camera_fb_t *fb = esp_camera_fb_get();
         if (!fb) {
-            ESP_LOGE(TAG, "Camera capture failed");
-            continue;
+            UART_MESSAGE("Camera capture failed\n");
+            return;
         }
 
-        // B. Generate Filename
         char filename[32];
-        sprintf(filename, "/sdcard/img_%d.jpg", i);
+        sprintf(filename, MOUNT_POINT"/img_%d.jpg", i);
 
-        // C. Save to SD Card
         FILE *file = fopen(filename, "wb");
-        if (file != NULL) {
-            fwrite(fb->buf, 1, fb->len, file);
-            fclose(file);
-            ESP_LOGI(TAG, "Saved %s", filename);
-        } else {
-            ESP_LOGE(TAG, "Failed to open file for writing");
+        if (file == NULL) {
+            UART_MESSAGE("Failed to open file for writing\n");
+            return;
         }
-
-        // D. Return buffer to be reused
+        fwrite(fb->buf, 1, fb->len, file);
+        fclose(file);
         esp_camera_fb_return(fb);
-
-        // E. Interval Delay (2 seconds)
-        if (i < 5) {
-            vTaskDelay(pdMS_TO_TICKS(2000));
-        }
+        UART_MESSAGE("Saved pic\n");
+        vTaskDelay(pdMS_TO_TICKS(2000));
     }
 }

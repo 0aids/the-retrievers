@@ -15,3 +15,4 @@
 #define PIN_D3      (13)
 
 esp_err_t init_sd_card(void);
+void deinit_sd_card(void);

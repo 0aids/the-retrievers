@@ -7,18 +7,14 @@
 
 
 #define CONTROL_UART_NUM        (2)
-#define CONTROL_TX_IO                   (17)
-#define CONTROL_RX_IO                   (16)
-
-#define CONSOLE_UART_NUM        (0)
-#define CONSOLE_TX_IO                   (1)
-#define CONSOLE_RX_IO                   (3)
+#define CONTROL_TX_IO           (17)
+#define CONTROL_RX_IO           (16)
 
 #define UART_BAUD_RATE          (115200)
-
-// Setup UART buffered IO with event queue
 #define BUF_SIZE                (1024*2)
 
+#define UART_MESSAGE(message)      (uart_write_bytes(CONTROL_UART_NUM, message, strlen(message)))
+
+
 void camera_control_init(void);
-void camera_console_init(void);
-void camera_listen(void);
+void uart_read(void *pvParameters);
