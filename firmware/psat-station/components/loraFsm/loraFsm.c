@@ -191,6 +191,19 @@ static void _loraFsm_broadcast_sendGPS()
 
     loraFsm_packetSend(&gpsStatePacket);
     loraFsm_packetFree(&gpsStatePacket);
+
+    vTaskDelay(100 / portTICK_PERIOD_MS);
+
+    // maybe we only send this one in the actual launch day
+    gps_psatTelemetryPacket_t gpsData2;
+    gps_telemtryPacketGetSnapshot(&gpsData2);
+
+    loraFsm_packetWrapper_t gpsStatePacket2 =
+        loraFsm_packetCreate(loraFsm_packetType_telemetryData,
+                             (uint8_t*)&gpsData2, sizeof(gpsData2));
+
+    loraFsm_packetSend(&gpsStatePacket2);
+    loraFsm_packetFree(&gpsStatePacket2);
 }
 
 static void _loraFsm_broadcast_sendTelemetryData()
