@@ -22,6 +22,7 @@
     X(loraFsm_packetType_pong)                                       \
                                                                      \
     X(loraFsm_packetType_gpsData)                                    \
+    X(loraFsm_packetType_psatTelemetry)                              \
     X(loraFsm_packetType_stateData)                                  \
     X(loraFsm_packetType_sensorData)                                 \
     X(loraFsm_packetType_componentData)                              \
