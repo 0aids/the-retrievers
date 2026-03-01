@@ -7,7 +7,7 @@
 #include "freertos/semphr.h"
 #include "shared_state.h"
 
-#define TEAM_ID 00001
+#define TEAM_ID 1
 #define TIMEOUT 20 // max time for the semaphore to lock
 
 static gps_data_t                gpsData_s;
@@ -110,14 +110,16 @@ void gps_logGpsSnapshot(gps_data_t* gps)
     ESP_LOGI(TAG, "===END OF GPS DATA===\n\n");
 }
 
-// Static functions for internal state use:
-
+// Forward declarations of static functions for internal state use:
 static void
 gps_stateUpdateFromRMC(const struct minmea_sentence_rmc* rmc);
 static void
 gps_stateUpdateFromGGA(const struct minmea_sentence_gga* gga);
 static void
-     gps_stateUpdateFromGSV(const struct minmea_sentence_gsv* gsv);
+gps_stateUpdateFromGSV(const struct minmea_sentence_gsv* gsv);
+static void
+     gps_encodeBinaryFromGGA(uint8_t                           out[14],
+                             const struct minmea_sentence_gga* gga);
 
 void gps_processLine(const char* gpsBuffer_c)
 {
@@ -217,9 +219,6 @@ gps_stateUpdateFromRMC(const struct minmea_sentence_rmc* rmc)
     gpsData_s.day   = rmc->date.day;
     gpsData_s.month = rmc->date.month;
     gpsData_s.year  = 2000 + rmc->date.year;
-
-    // GPS data to send to psat admin ground station
-    // TODO: set psatTelemetryPacket_s.data here
 }
 
 static void
@@ -247,6 +246,8 @@ gps_stateUpdateFromGGA(const struct minmea_sentence_gga* gga)
     gpsData_s.altitude      = minmea_tofloat(&gga->altitude);
     gpsData_s.geoidalSep    = minmea_tofloat(&gga->height);
     gpsData_s.altitudeValid = true;
+
+    gps_encodeBinaryFromGGA(psatTelemetryPacket_s.data, gga);
 }
 
 static void
@@ -260,4 +261,49 @@ gps_stateUpdateFromGSV(const struct minmea_sentence_gsv* gsv)
     { // only update on first message and ignore rest
         gpsData_s.satsInView = gsv->total_sats;
     }
+}
+
+static void
+gps_encodeBinaryFromGGA(uint8_t                           out[14],
+                        const struct minmea_sentence_gga* gga)
+{
+    memset(out, 0, 14);
+
+    uint8_t teamId = TEAM_ID & 0x1F;
+
+    uint8_t hours   = gga->time.hours & 0x1F;
+    uint8_t minutes = gga->time.minutes & 0x3F;
+    uint8_t seconds = gga->time.seconds & 0x3F;
+
+    out[0] = (teamId << 3) | (hours >> 2);
+
+    out[1] = ((hours & 0x3) << 6) | minutes;
+
+    uint8_t fixOk  = (gga->fix_quality > 0) ? 1 : 0;
+    uint8_t difFix = (gga->fix_quality == 2) ? 1 : 0;
+    out[2]         = (seconds << 2) | (fixOk << 1) | difFix;
+
+    uint8_t numSats = gga->satellites_tracked & 0x0F;
+    int32_t altitudeDm =
+        (int32_t)(minmea_tofloat(&gga->altitude) * 10.0f);
+    out[3] = (numSats << 4) | ((altitudeDm >> 16) & 0x0F);
+
+    out[4] = (altitudeDm >> 8) & 0xFF;
+    out[5] = altitudeDm & 0xFF;
+
+    int32_t lat1e7 =
+        (int32_t)(minmea_tocoord(&gga->latitude) * 10000000.0);
+
+    int32_t lon1e7 =
+        (int32_t)(minmea_tocoord(&gga->longitude) * 10000000.0);
+
+    out[6] = (lat1e7 >> 24) & 0xFF;
+    out[7] = (lat1e7 >> 16) & 0xFF;
+    out[8] = (lat1e7 >> 8) & 0xFF;
+    out[9] = lat1e7 & 0xFF;
+
+    out[10] = (lon1e7 >> 24) & 0xFF;
+    out[11] = (lon1e7 >> 16) & 0xFF;
+    out[12] = (lon1e7 >> 8) & 0xFF;
+    out[13] = lon1e7 & 0xFF;
 }
