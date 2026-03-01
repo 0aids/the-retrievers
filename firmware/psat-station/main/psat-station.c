@@ -10,9 +10,7 @@
 
 void app_main(void)
 {
-    // helpers_printHeapDetails();
-    // psatFSM_start();
-    camera_control_init();
-    xTaskCreate(test, "uart_command", STACK_SIZE, NULL, 10, NULL);
+    helpers_printHeapDetails();
+    psatFSM_start();
 }
 

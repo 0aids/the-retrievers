@@ -13,10 +13,10 @@ void camera_control_init(void) {
     ESP_ERROR_CHECK(uart_driver_install(CAMERA_UART_NUM, BUF_SIZE, 0, 0, NULL, intr_alloc_flags));
     ESP_ERROR_CHECK(uart_param_config(CAMERA_UART_NUM, &control_uart_config));
     ESP_ERROR_CHECK(uart_set_pin(CAMERA_UART_NUM, CAMERA_TX_IO, CAMERA_RX_IO, -1, -1));
-    xTaskCreate(uart_read, "uart_read", STACK_SIZE, NULL, 10, NULL);
+    xTaskCreate(camera_read, "uart_read", STACK_SIZE, NULL, 10, NULL);
 }
 
-void uart_read(void *pvParameters){
+void camera_read(void *pvParameters){
     // Configure a temporary buffer for the incoming data
     uint8_t *data = (uint8_t *) malloc(BUF_SIZE);
 
@@ -54,19 +54,19 @@ void uart_read(void *pvParameters){
 void test(void *pvParameters){
     vTaskDelay(pdMS_TO_TICKS(5000));
     ESP_LOGI("Control", "Initialising");
-    UART_MESSAGE("++INIT++");
+    CAMERA_MESSAGE("++INIT++");
     vTaskDelay(pdMS_TO_TICKS(2000));
 
     ESP_LOGI("Control", "Apogee reached");
-    UART_MESSAGE("++APOGEE++");
+    CAMERA_MESSAGE("++APOGEE++");
     vTaskDelay(pdMS_TO_TICKS(12000));
 
     ESP_LOGI("Control", "Logging data");
-    UART_MESSAGE("++LOG++\nPressure: 50 pascal\n\n");
+    CAMERA_MESSAGE("++LOG++\nPressure: 50 pascal\n\n");
     vTaskDelay(pdMS_TO_TICKS(500));
 
     ESP_LOGI("Control", "Deinitialise");
-    UART_MESSAGE("++DEINIT++");
+    CAMERA_MESSAGE("++DEINIT++");
     
     vTaskDelete(NULL);
 }
