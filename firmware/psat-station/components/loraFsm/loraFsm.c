@@ -99,7 +99,7 @@ static bool     seenSeq(uint16_t seq)
     return false;
 }
 
-static void recordReq(uint16_t seq)
+static void recordSeq(uint16_t seq)
 {
     lastSeqCache_s[lastSeqIdx_s++] = seq;
     if (lastSeqIdx_s >= LAST_SEQ_CACHE_SIZE)
