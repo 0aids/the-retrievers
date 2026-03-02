@@ -1,4 +1,11 @@
 #include "camera_control.h"
+#include "driver/uart.h"
+#include "freertos/idf_additions.h"
+#include "freertos/projdefs.h"
+#include "pin_config.h"
+#include <stdio.h>
+
+static TaskHandle_t      xHandleCamera_s  = NULL;
 
 void camera_control_init(void) {
     uart_config_t control_uart_config = {
@@ -13,10 +20,9 @@ void camera_control_init(void) {
     ESP_ERROR_CHECK(uart_driver_install(CAMERA_UART_NUM, BUF_SIZE, 0, 0, NULL, intr_alloc_flags));
     ESP_ERROR_CHECK(uart_param_config(CAMERA_UART_NUM, &control_uart_config));
     ESP_ERROR_CHECK(uart_set_pin(CAMERA_UART_NUM, CAMERA_TX_IO, CAMERA_RX_IO, -1, -1));
-    xTaskCreate(camera_read, "uart_read", STACK_SIZE, NULL, 10, NULL);
 }
 
-void camera_read(void *pvParameters){
+void camera_task(void *pvParameters){
     // Configure a temporary buffer for the incoming data
     uint8_t *data = (uint8_t *) malloc(BUF_SIZE);
 
@@ -28,45 +34,72 @@ void camera_read(void *pvParameters){
         return;
     }
 
-    bool listen;
-    listen = true;
+    ESP_LOGI(tag, "UART started.");
 
-    ESP_LOGI(tag, "LISTENING");
-
-    while (listen) {
+    while (1) {
         // Read data from the UART
-        int len = uart_read_bytes(CAMERA_UART_NUM, data, (BUF_SIZE - 1), 100 / portTICK_PERIOD_MS);
+        int len = uart_read_bytes(CAMERA_UART_NUM, data, (BUF_SIZE - 1), pdMS_TO_TICKS(100));
         
         if (len) {
             data[len] = 0;
             ESP_LOGI(tag, "%s", data);
-            // Write data back to the UART
-            if(strstr((const char*)data, "Successfully deinitialised")){
-                free(data);
-                listen = false;
-            }
+            // Write data back to the console.
         }
     }
-    uart_driver_delete(CAMERA_UART_NUM);
-    vTaskDelete(NULL);
 }
 
-void test(void *pvParameters){
-    vTaskDelay(pdMS_TO_TICKS(5000));
+void camera_init(void){
     ESP_LOGI("Control", "Initialising");
     CAMERA_MESSAGE("++INIT++");
-    vTaskDelay(pdMS_TO_TICKS(2000));
+}
 
+void camera_take_pics(void){
     ESP_LOGI("Control", "Apogee reached");
     CAMERA_MESSAGE("++APOGEE++");
-    vTaskDelay(pdMS_TO_TICKS(12000));
+}
+
+void log_data(const char* data){
+    int len = strlen(data);
+    char message[len + 15];
+
+    len = snprintf(message, sizeof(message), "++LOG++\n%s\n\n", data);
 
     ESP_LOGI("Control", "Logging data");
-    CAMERA_MESSAGE("++LOG++\nPressure: 50 pascal\n\n");
-    vTaskDelay(pdMS_TO_TICKS(500));
+    uart_write_bytes(CAMERA_UART_NUM, message, len);
+}
 
+void camera_deinit(void){
     ESP_LOGI("Control", "Deinitialise");
     CAMERA_MESSAGE("++DEINIT++");
-    
-    vTaskDelete(NULL);
+}
+
+void camera_startTask(void){
+    xTaskCreate(camera_task, "camera_task", STACK_SIZE,
+                NULL, 10, &xHandleCamera_s);
+}
+
+void camera_stopTask(void){
+    vTaskDelete(xHandleCamera_s);
+}
+
+void camera_control_deinit(void){
+    uart_driver_delete(CAMERA_UART_NUM);
+}
+
+// preflight -> called during prelaunch
+void camera_preflightTest(void){
+    camera_control_init();
+    camera_startTask();
+    vTaskDelay(pdMS_TO_TICKS(6000));
+    camera_init();
+    vTaskDelay(pdMS_TO_TICKS(2000));
+    camera_take_pics();
+    vTaskDelay(pdMS_TO_TICKS(14000));
+    const char* data = "Test: Lorem ipsum dolor sit amet";
+    log_data(data);
+    vTaskDelay(pdMS_TO_TICKS(2000));
+    camera_deinit();
+    vTaskDelay(pdMS_TO_TICKS(2000));
+    camera_stopTask();
+    camera_control_deinit();
 }

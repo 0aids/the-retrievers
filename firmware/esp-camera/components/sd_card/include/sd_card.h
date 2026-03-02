@@ -4,6 +4,9 @@
 #include "driver/sdmmc_host.h"
 #include "esp_err.h"
 
+#include "uart.h"
+
+
 #define EXAMPLE_MAX_CHAR_SIZE   (64)
 #define MOUNT_POINT             "/sdcard"
 
@@ -14,10 +17,6 @@
 #define PIN_D2      (12)
 #define PIN_D3      (13)
 
-#include "driver/uart.h"
-
-#define CAM_UART_NUM            UART_NUM_1 //pin def
-#define UART_MESSAGE(message)   (uart_write_bytes(CAM_UART_NUM, message, sizeof(message))) //helper
 
 esp_err_t init_sd_card(void);
 void deinit_sd_card(void);

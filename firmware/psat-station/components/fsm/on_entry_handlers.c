@@ -44,6 +44,8 @@ void psatFSM_deployedEntryHandler()
 
     timer_start(timer_timerId_1s);
     timer_start(timer_timerId_5s);
+
+     psatFSM_getComponent(psatFSM_component_camera)->start();
     timer_startOnce(timer_timerId_mechanical, 10000);
 }
 

@@ -12,6 +12,7 @@
 #include "state_handlers.h"
 #include "timers.h"
 #include "loraFsm.h"
+#include "camera_control.h"
 #include "components.h"
 
 #include "register_components.h"
@@ -41,6 +42,11 @@ void psatFSM_registerAllComponents()
     psatFSM_registerComponent(
         psatFSM_component_ldr, psatFSM_componentType_normal,
         ldr_setup, ldr_deinit, NULL, ldr_startTask, ldr_killTask);
+
+    psatFSM_registerComponent(
+        psatFSM_component_camera, psatFSM_componentType_task,
+        camera_control_init, camera_control_deinit, NULL, camera_startTask, camera_stopTask);
+
 
     // TODO: whats left: PRESSURE, CAMERA, ACCELEROMETER, BATTERY
 }
