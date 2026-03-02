@@ -7,12 +7,10 @@
 #include "ldr.h"
 #include "sm.h"
 #include <helpers.h>
-#include "camera_control.h"
 
 void app_main(void)
 {
-    // helpers_printHeapDetails();
-    // psatFSM_start();
-    camera_preflightTest();
+    helpers_printHeapDetails();
+    psatFSM_start();
 }
 

@@ -90,16 +90,11 @@ void camera_control_deinit(void){
 void camera_preflightTest(void){
     camera_control_init();
     camera_startTask();
-    vTaskDelay(pdMS_TO_TICKS(6000));
+    vTaskDelay(pdMS_TO_TICKS(5000));
     camera_init();
-    vTaskDelay(pdMS_TO_TICKS(2000));
-    camera_take_pics();
-    vTaskDelay(pdMS_TO_TICKS(14000));
-    const char* data = "Test: Lorem ipsum dolor sit amet";
-    log_data(data);
-    vTaskDelay(pdMS_TO_TICKS(2000));
+    vTaskDelay(pdMS_TO_TICKS(1000));
     camera_deinit();
-    vTaskDelay(pdMS_TO_TICKS(2000));
+    vTaskDelay(pdMS_TO_TICKS(200));
     camera_stopTask();
     camera_control_deinit();
 }
