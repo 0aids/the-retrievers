@@ -1,4 +1,5 @@
 import time
+import math
 
 import threading
 from copy import deepcopy
@@ -46,6 +47,9 @@ class StateManager:
     def update_gps(self, gps: dict):
         for key, value in gps.items():
             if hasattr(self._state.data.gps, key):
+                if math.isnan(value):
+                    setattr(self._state.data.gps, key, None)
+                    return
                 setattr(self._state.data.gps, key, value)
 
     @with_lock()
