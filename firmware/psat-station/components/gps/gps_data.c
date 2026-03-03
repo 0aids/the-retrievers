@@ -130,7 +130,13 @@ void gps_processLine(const char* gpsBuffer_c)
     }
 
     //increasing lines read for preflight test
-    gpsData_s.linesRecieved++;
+    if (xSemaphoreTake(gpsStateMutex_s, pdMS_TO_TICKS(TIMEOUT)) ==
+        pdTRUE)
+    {
+
+        gpsData_s.linesRecieved++;
+        xSemaphoreGive(gpsStateMutex_s);
+    }
 
     ESP_LOGD(TAG, "Processing Received Line");
 
