@@ -191,6 +191,47 @@ static void _loraFsm_broadcast_sendGPS()
 
     loraFsm_packetSend(&gpsStatePacket);
     loraFsm_packetFree(&gpsStatePacket);
+
+    vTaskDelay(100 / portTICK_PERIOD_MS);
+
+    // maybe we only send this one in the actual launch day
+    gps_psatTelemetryPacket_t gpsData2;
+    gps_telemtryPacketGetSnapshot(&gpsData2);
+
+    loraFsm_packetWrapper_t gpsStatePacket2 =
+        loraFsm_packetCreate(loraFsm_packetType_telemetryData,
+                             (uint8_t*)&gpsData2, sizeof(gpsData2));
+
+    loraFsm_packetSend(&gpsStatePacket2);
+    loraFsm_packetFree(&gpsStatePacket2);
+}
+
+static void _loraFsm_broadcast_sendTelemetryData()
+{
+    gps_psatTelemetryPacket_t telemetryData = {0};
+    gps_telemtryPacketGetSnapshot(&telemetryData);
+
+    loraFsm_packetWrapper_t telemetryDataPacket =
+        loraFsm_packetCreate(loraFsm_packetType_telemetryData,
+                             (uint8_t*)&telemetryData,
+                             sizeof(telemetryData));
+
+    loraFsm_packetSend(&telemetryDataPacket);
+    loraFsm_packetFree(&telemetryDataPacket);
+}
+
+static void _loraFsm_broadcast_sendTelemetryData()
+{
+    gps_psatTelemetryPacket_t telemetryData = {0};
+    gps_telemtryPacketGetSnapshot(&telemetryData);
+
+    loraFsm_packetWrapper_t telemetryDataPacket =
+        loraFsm_packetCreate(loraFsm_packetType_telemetryData,
+                             (uint8_t*)&telemetryData,
+                             sizeof(telemetryData));
+
+    loraFsm_packetSend(&telemetryDataPacket);
+    loraFsm_packetFree(&telemetryDataPacket);
 }
 
 static void _loraFsm_broadcast_sendTelemetryData()
@@ -246,6 +287,8 @@ static void _loraFsm_broadcast()
     vTaskDelay(100 / portTICK_PERIOD_MS);
     _loraFsm_broadcast_sendTelemetryData();
     vTaskDelay(100 / portTICK_PERIOD_MS);
+    _loraFsm_broadcast_sendTelemetryData();
+    vTaskDelay(100 / portTICK_PERIOD_MS);
     _loraFsm_broadcast_sendComponents();
     vTaskDelay(100 / portTICK_PERIOD_MS);
     _loraFsm_broadcast_sendSensors();
@@ -298,6 +341,15 @@ static void _loraFsm_runStateCmd()
         _loraFsm_currentState_s = loraFsm_radioStates_idle;
         return;
     }
+
+    if (rxBuffer.currentlyUsedSize < 3)
+    {
+        ESP_LOGE(__FUNCTION__, "Packet missing sequence number");
+        return;
+    }
+
+    uint16_t seq = (uint16_t)(packet.packetInterpreter->data)[0] |
+        ((uint16_t)(packet.packetInterpreter->data)[1] << 8);
 
     if (rxBuffer.currentlyUsedSize < 3)
     {
@@ -465,6 +517,7 @@ static void _loraFsm_runStateCmd()
         default: ESP_LOGE(__FUNCTION__, "Invalid request!"); break;
     }
 
+    loraFsm_packetFree(&packet);
     loraFsm_packetFree(&packet);
     _loraFsm_currentState_s = loraFsm_radioStates_idle;
 }
