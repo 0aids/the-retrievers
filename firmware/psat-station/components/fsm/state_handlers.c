@@ -188,7 +188,7 @@ psatFSM_errorStateHandler(const psatFSM_event_t* event)
             "permanent error state",
             psatFSM_componentToString(comp));
         psatFSM_disableComponent(comp);
-        return psatFSM_state_permanentError;
+        // return psatFSM_state_permanentError;
     }
 
     return err->originState;

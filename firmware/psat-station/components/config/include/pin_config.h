@@ -3,8 +3,8 @@
 #include "driver/uart.h"
 
 #define CFG_GPS_UART_NUM_d         UART_NUM_1
-#define CFG_GPS_TX_PIN_d           6 // 37 // CANNOT USE! Part of heap.
-#define CFG_GPS_RX_PIN_d           7
+#define CFG_GPS_TX_PIN_d           7 // 37 // CANNOT USE! Part of heap.
+#define CFG_GPS_RX_PIN_d           6
 #define CFG_LANDING_BUTTON_PIN_d   47
 #define CFG_PRELAUNCH_BUTTON_PIN_d 45
 #define CFG_LIGHT1_PIN_d           42

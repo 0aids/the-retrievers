@@ -85,6 +85,27 @@ static void _loraFsm_onTxTimeout()
     ESP_LOGI(__FUNCTION__, "onTxTimeout");
 }
 
+#define LAST_SEQ_CACHE_SIZE 16
+static uint16_t lastSeqCache_s[LAST_SEQ_CACHE_SIZE];
+static int      lastSeqIdx_s = 0;
+
+static bool     seenSeq(uint16_t seq)
+{
+    for (int i = 0; i < LAST_SEQ_CACHE_SIZE; i++)
+    {
+        if (lastSeqCache_s[i] == seq)
+            return true;
+    }
+    return false;
+}
+
+static void recordSeq(uint16_t seq)
+{
+    lastSeqCache_s[lastSeqIdx_s++] = seq;
+    if (lastSeqIdx_s >= LAST_SEQ_CACHE_SIZE)
+        lastSeqIdx_s = 0;
+}
+
 // The payload will be freed after this is run, so memcpy everything.
 static void _loraFsm_onRxDone(uint8_t* payload, uint16_t payloadSize,
                               int16_t rssi, int8_t snr)
@@ -172,6 +193,20 @@ static void _loraFsm_broadcast_sendGPS()
     loraFsm_packetFree(&gpsStatePacket);
 }
 
+static void _loraFsm_broadcast_sendTelemetryData()
+{
+    gps_psatTelemetryPacket_t telemetryData = {0};
+    gps_telemtryPacketGetSnapshot(&telemetryData);
+
+    loraFsm_packetWrapper_t telemetryDataPacket =
+        loraFsm_packetCreate(loraFsm_packetType_telemetryData,
+                             (uint8_t*)&telemetryData,
+                             sizeof(telemetryData));
+
+    loraFsm_packetSend(&telemetryDataPacket);
+    loraFsm_packetFree(&telemetryDataPacket);
+}
+
 static void _loraFsm_broadcast_sendState()
 {
     psatGlobal_state_t psatState = {
@@ -208,6 +243,8 @@ static void _loraFsm_broadcast()
     _loraFsm_broadcast_sendState();
     vTaskDelay(100 / portTICK_PERIOD_MS);
     _loraFsm_broadcast_sendGPS();
+    vTaskDelay(100 / portTICK_PERIOD_MS);
+    _loraFsm_broadcast_sendTelemetryData();
     vTaskDelay(100 / portTICK_PERIOD_MS);
     _loraFsm_broadcast_sendComponents();
     vTaskDelay(100 / portTICK_PERIOD_MS);
@@ -262,9 +299,35 @@ static void _loraFsm_runStateCmd()
         return;
     }
 
+    if (rxBuffer.currentlyUsedSize < 3)
+    {
+        ESP_LOGE(__FUNCTION__, "Packet missing sequence number");
+        return;
+    }
+
+    uint16_t seq = (uint16_t)(packet.packetInterpreter->data)[0] |
+        ((uint16_t)(packet.packetInterpreter->data)[1] << 8);
+
     ESP_LOGI(
-        __FUNCTION__, "Recieved Request: %s",
-        loraFsm_packetTypeToString(packet.packetInterpreter->type));
+        __FUNCTION__,
+        "Recieved Request: %s, Sequence Number: %hu, sending ack",
+        loraFsm_packetTypeToString(packet.packetInterpreter->type),
+        seq);
+
+    vTaskDelay(5000 / portTICK_PERIOD_MS);
+    loraFsm_packetWrapper_t ackPacket = loraFsm_packetCreate(
+        loraFsm_packetType_ack, (uint8_t*)&seq, sizeof(seq));
+    loraFsm_packetSend(&ackPacket);
+    loraFsm_packetFree(&ackPacket);
+
+    if (seenSeq(seq))
+    { // we already recieved this command and proceesed it, so we wont run it again
+        loraFsm_packetFree(&packet);
+        _loraFsm_currentState_s = loraFsm_radioStates_idle;
+        return;
+    }
+
+    recordSeq(seq);
 
     switch (packet.packetInterpreter->type)
     {
@@ -333,15 +396,15 @@ static void _loraFsm_runStateCmd()
         // state overriding and forwarding
         case loraFsm_packetType_fastForwardReq:
         {
-            psatFSM_state_e targetState =
-                (psatFSM_state_e)*packet.packetInterpreter->data;
+            psatFSM_state_e targetState = (psatFSM_state_e) *
+                (packet.packetInterpreter->data + sizeof(seq));
             psatFSM_stateFastForward(targetState);
             break;
         }
         case loraFsm_packetType_stateOverrideReq:
         {
-            psatFSM_state_e targetState =
-                (psatFSM_state_e)*packet.packetInterpreter->data;
+            psatFSM_state_e targetState = (psatFSM_state_e) *
+                (packet.packetInterpreter->data + sizeof(seq));
             psatFSM_stateOverride(targetState);
             break;
         }
@@ -350,14 +413,16 @@ static void _loraFsm_runStateCmd()
         case loraFsm_packetType_enableComponentReq:
         {
             psatFSM_component_e targetComponent =
-                (psatFSM_component_e)*packet.packetInterpreter->data;
+                (psatFSM_component_e) *
+                (packet.packetInterpreter->data + sizeof(seq));
             psatFSM_enableComponent(targetComponent);
             break;
         }
         case loraFsm_packetType_disableComponentReq:
         {
             psatFSM_component_e targetComponent =
-                (psatFSM_component_e)*packet.packetInterpreter->data;
+                (psatFSM_component_e) *
+                (packet.packetInterpreter->data + sizeof(seq));
             psatFSM_disableComponent(targetComponent);
             break;
         }
@@ -365,14 +430,16 @@ static void _loraFsm_runStateCmd()
         case loraFsm_packetType_startComponentTaskReq:
         {
             psatFSM_component_e targetComponent =
-                (psatFSM_component_e)*packet.packetInterpreter->data;
+                (psatFSM_component_e) *
+                (packet.packetInterpreter->data + sizeof(seq));
             psatFSM_startComponentTask(targetComponent);
             break;
         }
         case loraFsm_packetType_stopComponentTaskReq:
         {
             psatFSM_component_e targetComponent =
-                (psatFSM_component_e)*packet.packetInterpreter->data;
+                (psatFSM_component_e) *
+                (packet.packetInterpreter->data + sizeof(seq));
             psatFSM_stopComponentTask(targetComponent);
             break;
         }
@@ -380,7 +447,8 @@ static void _loraFsm_runStateCmd()
         case loraFsm_packetType_markComponentEnabledReq:
         {
             psatFSM_component_e targetComponent =
-                (psatFSM_component_e)*packet.packetInterpreter->data;
+                (psatFSM_component_e) *
+                (packet.packetInterpreter->data + sizeof(seq));
             psatFSM_markComponentEnabled(targetComponent, true);
             break;
         }
@@ -388,7 +456,8 @@ static void _loraFsm_runStateCmd()
         case loraFsm_packetType_markComponentDisabledReq:
         {
             psatFSM_component_e targetComponent =
-                (psatFSM_component_e)*packet.packetInterpreter->data;
+                (psatFSM_component_e) *
+                (packet.packetInterpreter->data + sizeof(seq));
             psatFSM_markComponentEnabled(targetComponent, false);
             break;
         }
@@ -396,8 +465,8 @@ static void _loraFsm_runStateCmd()
         default: ESP_LOGE(__FUNCTION__, "Invalid request!"); break;
     }
 
-    _loraFsm_currentState_s = loraFsm_radioStates_idle;
     loraFsm_packetFree(&packet);
+    _loraFsm_currentState_s = loraFsm_radioStates_idle;
 }
 
 static void _loraFsm_runStateBeacon()

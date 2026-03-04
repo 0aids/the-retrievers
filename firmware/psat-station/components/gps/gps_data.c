@@ -7,19 +7,21 @@
 #include "freertos/semphr.h"
 #include "shared_state.h"
 
+#define TEAM_ID 1
 #define TIMEOUT 20 // max time for the semaphore to lock
 
-static gps_data_t        gpsData_s;
-static SemaphoreHandle_t gpsStateMutex_s;
+static gps_data_t                gpsData_s;
+static gps_psatTelemetryPacket_t psatTelemetryPacket_s;
+static SemaphoreHandle_t         gpsStateMutex_s;
 
+int*               gps_linesRecieved = &gpsData_s.linesRecieved;
 
-int* gps_linesRecieved = &gpsData_s.linesRecieved;
+static const char* TAG = "GPS";
 
-static const char*       TAG = "GPS";
-
-void                     gps_stateInit(void)
+void               gps_stateInit(void)
 {
     memset(&gpsData_s, 0, sizeof(gpsData_s));
+    memset(&psatTelemetryPacket_s, 0, sizeof(psatTelemetryPacket_s));
 
     // by default set everything being valid to false
     gpsData_s.positionValid = false;
@@ -47,15 +49,16 @@ void gps_stateGetSnapshot(gps_data_t* out)
     }
 }
 
-void gps_stateCompleteOverwrite(const gps_data_t* src)
+void gps_telemtryPacketGetSnapshot(gps_psatTelemetryPacket_t* out)
 {
-    if (!src || !gpsStateMutex_s)
+    if (!out || !gpsStateMutex_s)
         return;
 
     if (xSemaphoreTake(gpsStateMutex_s, pdMS_TO_TICKS(TIMEOUT)) ==
         pdTRUE)
     {
-        memcpy(&gpsData_s, src, sizeof(gpsData_s));
+        memcpy(out, &psatTelemetryPacket_s,
+               sizeof(psatTelemetryPacket_s));
         xSemaphoreGive(gpsStateMutex_s);
     }
 }
@@ -74,8 +77,7 @@ void gps_logGpsSnapshot(gps_data_t* gps)
     if (memcmp(gps, &zeroStruct, sizeof(*gps)) == 0)
     {
 
-        ESP_LOGW(TAG,
-                 "GPS struct all zeros (no data received yet)");
+        ESP_LOGW(TAG, "GPS struct all zeros (no data received yet)");
         return;
     }
 
@@ -95,8 +97,7 @@ void gps_logGpsSnapshot(gps_data_t* gps)
     ESP_LOGI(TAG, "Time: %02d:%02d:%02d", gps->hours, gps->minutes,
              gps->seconds);
 
-    ESP_LOGI(TAG, "Fix Valid: %s",
-             BOOL_TO_STRING(gps->fixInfoValid));
+    ESP_LOGI(TAG, "Fix Valid: %s", BOOL_TO_STRING(gps->fixInfoValid));
     ESP_LOGI(TAG, "Fix Quality: %d", gps->fixQuality);
     ESP_LOGI(TAG, "Satellites Tracked: %d", gps->satellitesTracked);
     ESP_LOGI(TAG, "HDOP: %f", gps->hdop);
@@ -109,14 +110,16 @@ void gps_logGpsSnapshot(gps_data_t* gps)
     ESP_LOGI(TAG, "===END OF GPS DATA===\n\n");
 }
 
-// Static functions for internal state use:
-
+// Forward declarations of static functions for internal state use:
 static void
 gps_stateUpdateFromRMC(const struct minmea_sentence_rmc* rmc);
 static void
 gps_stateUpdateFromGGA(const struct minmea_sentence_gga* gga);
 static void
-     gps_stateUpdateFromGSV(const struct minmea_sentence_gsv* gsv);
+gps_stateUpdateFromGSV(const struct minmea_sentence_gsv* gsv);
+static void
+     gps_encodeBinaryFromGGA(uint8_t                           out[14],
+                             const struct minmea_sentence_gga* gga);
 
 void gps_processLine(const char* gpsBuffer_c)
 {
@@ -127,7 +130,13 @@ void gps_processLine(const char* gpsBuffer_c)
     }
 
     //increasing lines read for preflight test
-    gpsData_s.linesRecieved++;
+    if (xSemaphoreTake(gpsStateMutex_s, pdMS_TO_TICKS(TIMEOUT)) ==
+        pdTRUE)
+    {
+
+        gpsData_s.linesRecieved++;
+        xSemaphoreGive(gpsStateMutex_s);
+    }
 
     ESP_LOGD(TAG, "Processing Received Line");
 
@@ -199,6 +208,7 @@ gps_stateUpdateFromRMC(const struct minmea_sentence_rmc* rmc)
         return;
     }
 
+    // Main GPS Struct
     gpsData_s.latitude      = minmea_tocoord(&rmc->latitude);
     gpsData_s.longitude     = minmea_tocoord(&rmc->longitude);
     gpsData_s.positionValid = true;
@@ -242,6 +252,8 @@ gps_stateUpdateFromGGA(const struct minmea_sentence_gga* gga)
     gpsData_s.altitude      = minmea_tofloat(&gga->altitude);
     gpsData_s.geoidalSep    = minmea_tofloat(&gga->height);
     gpsData_s.altitudeValid = true;
+
+    gps_encodeBinaryFromGGA(psatTelemetryPacket_s.data, gga);
 }
 
 static void
@@ -255,4 +267,49 @@ gps_stateUpdateFromGSV(const struct minmea_sentence_gsv* gsv)
     { // only update on first message and ignore rest
         gpsData_s.satsInView = gsv->total_sats;
     }
+}
+
+static void
+gps_encodeBinaryFromGGA(uint8_t                           out[14],
+                        const struct minmea_sentence_gga* gga)
+{
+    memset(out, 0, 14);
+
+    uint8_t teamId = TEAM_ID & 0x1F;
+
+    uint8_t hours   = gga->time.hours & 0x1F;
+    uint8_t minutes = gga->time.minutes & 0x3F;
+    uint8_t seconds = gga->time.seconds & 0x3F;
+
+    out[0] = (teamId << 3) | (hours >> 2);
+
+    out[1] = ((hours & 0x3) << 6) | minutes;
+
+    uint8_t fixOk  = (gga->fix_quality > 0) ? 1 : 0;
+    uint8_t difFix = (gga->fix_quality == 2) ? 1 : 0;
+    out[2]         = (seconds << 2) | (fixOk << 1) | difFix;
+
+    uint8_t numSats = gga->satellites_tracked & 0x0F;
+    int32_t altitudeDm =
+        (int32_t)(minmea_tofloat(&gga->altitude) * 10.0f);
+    out[3] = (numSats << 4) | ((altitudeDm >> 16) & 0x0F);
+
+    out[4] = (altitudeDm >> 8) & 0xFF;
+    out[5] = altitudeDm & 0xFF;
+
+    int32_t lat1e7 =
+        (int32_t)(minmea_tocoord(&gga->latitude) * 10000000.0);
+
+    int32_t lon1e7 =
+        (int32_t)(minmea_tocoord(&gga->longitude) * 10000000.0);
+
+    out[6] = (lat1e7 >> 24) & 0xFF;
+    out[7] = (lat1e7 >> 16) & 0xFF;
+    out[8] = (lat1e7 >> 8) & 0xFF;
+    out[9] = lat1e7 & 0xFF;
+
+    out[10] = (lon1e7 >> 24) & 0xFF;
+    out[11] = (lon1e7 >> 16) & 0xFF;
+    out[12] = (lon1e7 >> 8) & 0xFF;
+    out[13] = lon1e7 & 0xFF;
 }
