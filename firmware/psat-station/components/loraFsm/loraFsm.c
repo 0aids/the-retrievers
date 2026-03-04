@@ -314,9 +314,9 @@ static void _loraFsm_runStateCmd()
         loraFsm_packetTypeToString(packet.packetInterpreter->type),
         seq);
 
+    vTaskDelay(5000 / portTICK_PERIOD_MS);
     loraFsm_packetWrapper_t ackPacket = loraFsm_packetCreate(
         loraFsm_packetType_ack, (uint8_t*)&seq, sizeof(seq));
-    vTaskDelay(50 / portTICK_PERIOD_MS);
     loraFsm_packetSend(&ackPacket);
     loraFsm_packetFree(&ackPacket);
 
@@ -397,14 +397,14 @@ static void _loraFsm_runStateCmd()
         case loraFsm_packetType_fastForwardReq:
         {
             psatFSM_state_e targetState = (psatFSM_state_e) *
-                (packet.packetInterpreter->data + 4);
+                (packet.packetInterpreter->data + sizeof(seq));
             psatFSM_stateFastForward(targetState);
             break;
         }
         case loraFsm_packetType_stateOverrideReq:
         {
             psatFSM_state_e targetState = (psatFSM_state_e) *
-                (packet.packetInterpreter->data + 4);
+                (packet.packetInterpreter->data + sizeof(seq));
             psatFSM_stateOverride(targetState);
             break;
         }
@@ -414,7 +414,7 @@ static void _loraFsm_runStateCmd()
         {
             psatFSM_component_e targetComponent =
                 (psatFSM_component_e) *
-                (packet.packetInterpreter->data + 4);
+                (packet.packetInterpreter->data + sizeof(seq));
             psatFSM_enableComponent(targetComponent);
             break;
         }
@@ -422,7 +422,7 @@ static void _loraFsm_runStateCmd()
         {
             psatFSM_component_e targetComponent =
                 (psatFSM_component_e) *
-                (packet.packetInterpreter->data + 4);
+                (packet.packetInterpreter->data + sizeof(seq));
             psatFSM_disableComponent(targetComponent);
             break;
         }
@@ -431,7 +431,7 @@ static void _loraFsm_runStateCmd()
         {
             psatFSM_component_e targetComponent =
                 (psatFSM_component_e) *
-                (packet.packetInterpreter->data + 4);
+                (packet.packetInterpreter->data + sizeof(seq));
             psatFSM_startComponentTask(targetComponent);
             break;
         }
@@ -439,7 +439,7 @@ static void _loraFsm_runStateCmd()
         {
             psatFSM_component_e targetComponent =
                 (psatFSM_component_e) *
-                (packet.packetInterpreter->data + 4);
+                (packet.packetInterpreter->data + sizeof(seq));
             psatFSM_stopComponentTask(targetComponent);
             break;
         }
@@ -448,7 +448,7 @@ static void _loraFsm_runStateCmd()
         {
             psatFSM_component_e targetComponent =
                 (psatFSM_component_e) *
-                (packet.packetInterpreter->data + 4);
+                (packet.packetInterpreter->data + sizeof(seq));
             psatFSM_markComponentEnabled(targetComponent, true);
             break;
         }
@@ -457,7 +457,7 @@ static void _loraFsm_runStateCmd()
         {
             psatFSM_component_e targetComponent =
                 (psatFSM_component_e) *
-                (packet.packetInterpreter->data + 4);
+                (packet.packetInterpreter->data + sizeof(seq));
             psatFSM_markComponentEnabled(targetComponent, false);
             break;
         }
