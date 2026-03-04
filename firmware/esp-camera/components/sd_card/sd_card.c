@@ -30,7 +30,7 @@ void deinit_sd_card(void){
 
 void log_data(const char* data){
     FILE *f = fopen(MOUNT_POINT"/data.txt", "a");
-    if (f == NULL) {
+        if (f == NULL) {
         UART_MESSAGE("Failed to open file for writing");
         return;
     }

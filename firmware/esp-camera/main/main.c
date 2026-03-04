@@ -67,8 +67,7 @@ void uart_task(void *pvParameters){
                 deinit_sd_card();
                 esp_camera_deinit();
                 sdmmc_host_deinit();
-                UART_MESSAGE("Successfully deinitialised");
-
+                UART_MESSAGE("TEST: Successfully deinitialised");
             }
             else if (strstr((const char*)data, "++DEINIT++")){
                 deinit_sd_card();
