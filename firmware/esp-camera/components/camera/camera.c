@@ -76,4 +76,28 @@ void take_pics(void){
         UART_MESSAGE("Saved pic");
         vTaskDelay(pdMS_TO_TICKS(2000));
     }
+    UART_MESSAGE("Pictures taken");
+}
+
+void test_pic(void){
+    
+    camera_fb_t *fb = esp_camera_fb_get();
+    if (!fb) {
+        UART_MESSAGE("Camera capture failed");
+        return;
+    }
+
+    char filename[32];
+    sprintf(filename, MOUNT_POINT"/test.jpg");
+
+    FILE *file = fopen(filename, "wb");
+    if (file == NULL) {
+        UART_MESSAGE("Failed to open file for writing");
+        return;
+    }
+    fwrite(fb->buf, 1, fb->len, file);
+    fclose(file);
+    esp_camera_fb_return(fb);
+    UART_MESSAGE("Saved pic");
+    UART_MESSAGE("Pic taken");
 }

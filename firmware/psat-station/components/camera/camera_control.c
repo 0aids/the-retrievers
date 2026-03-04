@@ -1,5 +1,6 @@
 #include "camera_control.h"
 #include "driver/uart.h"
+#include "esp_log.h"
 #include "freertos/idf_additions.h"
 #include "freertos/projdefs.h"
 #include "pin_config.h"
@@ -38,7 +39,7 @@ void camera_task(void *pvParameters){
 
     while (1) {
         // Read data from the UART
-        int len = uart_read_bytes(CAMERA_UART_NUM, data, (BUF_SIZE - 1), pdMS_TO_TICKS(100));
+        int len = uart_read_bytes(CAMERA_UART_NUM, data, (BUF_SIZE - 1), 100 / portTICK_PERIOD_MS);
         
         if (len) {
             data[len] = 0;
@@ -86,15 +87,68 @@ void camera_control_deinit(void){
     uart_driver_delete(CAMERA_UART_NUM);
 }
 
+void camera_control_test(void *const pvParameters){
+    bool *pass_ptr = (bool *)pvParameters;
+    uint8_t *data = (uint8_t *) malloc(BUF_SIZE);
+
+    char* tag = "Test";
+
+    if (data == NULL) {
+        ESP_LOGE(tag, "Failed to allocate memory!");
+        vTaskDelete(NULL);
+        return;
+    }
+
+    bool init = false, pic = false, log = false, deinit = false;
+
+    while (!*pass_ptr) {
+        // Read data from the UART
+        int len = uart_read_bytes(CAMERA_UART_NUM, data, (BUF_SIZE - 1), 100 / portTICK_PERIOD_MS);
+        
+        if (len) {
+            data[len] = 0;
+            // Write data back to the UART
+            if (strstr((const char*)data, "successful init"))           init = true;
+            else if (strstr((const char*)data, "Pic taken"))            pic = true;
+            else if (strstr((const char*)data, "Logged data"))          log = true;
+            else if (strstr((const char*)data, "Successfully deinit"))  deinit = true;
+        }
+        if (init && pic && log && deinit){
+            *pass_ptr = true;
+            
+        }
+    }
+    free(data);
+    vTaskDelete(NULL);
+}
+
 // preflight -> called during prelaunch
-void camera_preflightTest(void){
+bool camera_preflightTest(void){
+    bool pass = false;
+    TaskHandle_t xHandleTestCamera_s = NULL;    
     camera_control_init();
     camera_startTask();
+    xTaskCreate(camera_control_test, "camera control test", STACK_SIZE,
+                &pass, 9, &xHandleTestCamera_s);
+                
     vTaskDelay(pdMS_TO_TICKS(5000));
+
     camera_init();
     vTaskDelay(pdMS_TO_TICKS(1000));
+
+    CAMERA_MESSAGE("++TEST++");
+    ESP_LOGI("Test", "Taking pic");
+    vTaskDelay(pdMS_TO_TICKS(1000));
+
+    log_data("Test: Data logged");
+    vTaskDelay(pdMS_TO_TICKS(1000));
+
     camera_deinit();
     vTaskDelay(pdMS_TO_TICKS(200));
+
     camera_stopTask();
     camera_control_deinit();
+    vTaskDelete(xHandleTestCamera_s);
+    if (pass == true) ESP_LOGI("Test", "Successful cam test");
+    return pass;
 }
