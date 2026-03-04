@@ -15,6 +15,7 @@ LIBRARY_PATH = join(dirname(__file__), "libLoraParser.so")
 
 lib_lora = ctypes.CDLL(LIBRARY_PATH)
 sending_queue: Queue[bytes] = Queue()
+sent_commands: dict[int, int] = {}
 
 
 @ctypes.CFUNCTYPE(
@@ -108,6 +109,26 @@ def lora_receive_callback(payload, size, _rssi, _snr):
             )
         )
         state_manager.update_preflight(mask)
+
+    elif packet_type == PacketType.loraFsm_packetType_ack:
+        if not data:
+            return
+
+        seq = int.from_bytes(data)
+        try:
+            name = PacketType(sent_commands[seq]).name
+        except (ValueError, KeyError, IndexError):
+            name = "idk"
+
+        print(
+            Panel(
+                f"[bold magenta]Received Ack Packet[/bold magenta]\n\n"
+                f"[bold cyan]Sequence Number:[/bold cyan] {seq}\n"
+                f"[cyan]Command:[/cyan] {name}",
+                title="ACK RX",
+                border_style="red",
+            )
+        )
 
 
 @ctypes.CFUNCTYPE(None, ctypes.POINTER(ctypes.c_uint8), ctypes.c_uint16)
