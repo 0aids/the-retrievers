@@ -16,6 +16,7 @@
 #include "components.h"
 #include "bmp280.h"
 #include "highg.h"
+#include "bmi323.h"
 
 #include "register_components.h"
 
@@ -49,7 +50,10 @@ void psatFSM_registerAllComponents()
         bmp280_init, bmp280_deinit, NULL, NULL, NULL, bmp280_preflightTest);
 
     psatFSM_registerComponent(psatFSM_component_highg, psatFSM_componentType_normal, 
-        highg_init, highg_deinit, NULL, NULL, NULL, NULL);
+        highg_init, highg_deinit, NULL, NULL, NULL, highg_preflightTest);
+    
+    psatFSM_registerComponent(psatFSM_component_bmi323, psatFSM_componentType_normal, 
+        bmi323_init, bmi323_deinit, NULL, NULL, NULL, bmi323_preflightTest);
 
-    // TODO: whats left: PRESSURE, CAMERA, ACCELEROMETER, BATTERY
+    // TODO: whats left: CAMERA, BATTERY
 }

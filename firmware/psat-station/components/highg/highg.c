@@ -81,3 +81,29 @@ void highg_getData() {
 
 
 }
+
+bool highg_preflightTest() {
+
+     psatErr_error_t* lastErr = psatErr_getMostRecentError();
+
+    I2C_init_bus2();
+
+    highg_init();
+    highg_getData();
+    highg_deinit();
+
+    I2C_deinit_bus2();
+
+    psatErr_error_t* currentErr = psatErr_getMostRecentError();
+
+    if(currentErr == NULL) {
+        return true;
+    }
+
+    if(lastErr->id == currentErr->id){
+        return true;
+    }
+
+
+    return false;
+}

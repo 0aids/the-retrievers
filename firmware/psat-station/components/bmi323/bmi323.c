@@ -35,21 +35,28 @@ static i2c_master_dev_handle_t bmi323_handle;
 void bmi323_init() {
     if(i2c_master_bus_add_device(i2c_bus1_handle, &bmi323_Config, &bmi323_handle) != ESP_OK) {
         psatErr_postError(psatErr_bmi323_i2cBusAddition_failed, psatFSM_component_bmi323, psatFSM_getCurrentState());
+        printf("\nA\n");
         return;
     }
 
+    printf("\n%d    %d\n\n\n%d\n\n\n", ESP_ERR_INVALID_ARG, ESP_ERR_TIMEOUT,i2c_master_transmit(bmi323_handle, bmi323_fifoConfig, sizeof(bmi323_fifoConfig), -1));
+    return;
+
     if(i2c_master_transmit(bmi323_handle, bmi323_fifoConfig, sizeof(bmi323_fifoConfig), I2c_WAIT_TIME_MS) != ESP_OK){
         psatErr_postError(psatErr_bmi323_FIFOConfig_failed, psatFSM_component_bmi323, psatFSM_getCurrentState());
+        printf("\nB\n");
         return;
     }
 
     if(i2c_master_transmit(bmi323_handle, bmi323_accConfig, sizeof(bmi323_accConfig), I2c_WAIT_TIME_MS) != ESP_OK){
         psatErr_postError(psatErr_bmi323_AccConfig_failed, psatFSM_component_bmi323, psatFSM_getCurrentState());
+        printf("\nC\n");
         return;
     }
 
     if(i2c_master_transmit(bmi323_handle, bmi323_gyroConfig, sizeof(bmi323_gyroConfig), I2c_WAIT_TIME_MS) != ESP_OK){
         psatErr_postError(psatErr_bmi323_GyroConfig_failed, psatFSM_component_bmi323, psatFSM_getCurrentState());
+        printf("\nD\n");
         return;
     }
 
@@ -64,6 +71,7 @@ void bmi323_init() {
 
     if(bmi323_readBuffer[0]!=0 || bmi323_readBuffer[1] != 0) {
         psatErr_postError(psatErr_bmi323_ChipError, psatFSM_component_bmi323, psatFSM_getCurrentState());
+        printf("\nE\n");
         return;
     }
 
@@ -136,3 +144,29 @@ void bmi323_getData() {
 
 }
 
+
+bool bmi323_preflightTest() {
+
+     psatErr_error_t* lastErr = psatErr_getMostRecentError();
+
+    I2C_init_bus1();
+
+    bmi323_init();
+    bmi323_getData();
+    bmi323_deinit();
+
+    I2C_deinit_bus1();
+
+    psatErr_error_t* currentErr = psatErr_getMostRecentError();
+
+    if(currentErr == NULL) {
+        return true;
+    }
+
+    if(lastErr->id == currentErr->id){
+        return true;
+    }
+
+
+    return false;
+}

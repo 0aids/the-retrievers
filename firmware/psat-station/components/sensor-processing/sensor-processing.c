@@ -80,9 +80,9 @@ void updateAccData() {
     // for when only gravity is acting on the rocket
 
     //set orientation as well based on recieved data
-    sensorData.orintationX = atan(bmi323_data.accY/(sqrt(bmi323_data.accX*bmi323_data.accX + bmi323_data.accZ*bmi323_data.accZ))); //Yaw
-    sensorData.orintationY = atan(-bmi323_data.accX/(sqrt(bmi323_data.accY*bmi323_data.accY+bmi323_data.accZ*bmi323_data.accZ))); //Pitch
-    sensorData.orintationZ = atan(bmi323_data.accZ/(sqrt(bmi323_data.accX*bmi323_data.accX + bmi323_data.accY*bmi323_data.accY))); //Roll
+    sensorData.orientationX = atan(bmi323_data.accY/(sqrt(bmi323_data.accX*bmi323_data.accX + bmi323_data.accZ*bmi323_data.accZ))); //Yaw
+    sensorData.orientationY = atan(-bmi323_data.accX/(sqrt(bmi323_data.accY*bmi323_data.accY+bmi323_data.accZ*bmi323_data.accZ))); //Pitch
+    sensorData.orientationZ = atan(bmi323_data.accZ/(sqrt(bmi323_data.accX*bmi323_data.accX + bmi323_data.accY*bmi323_data.accY))); //Roll
 
 }
 
@@ -128,9 +128,9 @@ void lowPassOrientation() {
     //low pass filter factor
     double A = LOW_PASS_ALPHA; //add pin config 
     //'xk = A*'x(k-1) + (1-A)xk
-    sensorData.orintationX = A*sensorData.orintationX+(1-A)*bmi323_data.gyroX*(bmi323_data.time-sensorData.oriTime)/1000000;
-    sensorData.orintationY = A*sensorData.orintationY+(1-A)*bmi323_data.gyroY*(bmi323_data.time-sensorData.oriTime)/1000000;
-    sensorData.orintationZ = A*sensorData.orintationZ+(1-A)*bmi323_data.gyroZ*(bmi323_data.time-sensorData.oriTime)/1000000;
+    sensorData.orientationX = A*sensorData.orientationX+(1-A)*bmi323_data.gyroX*(bmi323_data.time-sensorData.oriTime)/1000000;
+    sensorData.orientationY = A*sensorData.orientationY+(1-A)*bmi323_data.gyroY*(bmi323_data.time-sensorData.oriTime)/1000000;
+    sensorData.orientationZ = A*sensorData.orientationZ+(1-A)*bmi323_data.gyroZ*(bmi323_data.time-sensorData.oriTime)/1000000;
 }
 
 
@@ -141,7 +141,7 @@ void updateSensorData() {
         onPad = false;
     }
 
-    sensorData.ldrVoltage = ldr_getVoltage();
+    //sensorData.ldrVoltage = ldr_getVoltage();
 
     sensorData.batterVoltage = 1; //TODO once battery refac is done
     bmi323_getData();
@@ -180,9 +180,9 @@ void updateSensorData() {
 
         
 
-        sensorData.orintationX = (acos(sensorData.accX/accMag)/PI * 180) - 90;
-        sensorData.orintationY = (acos(sensorData.accY/accMag)/PI * 180) - 90;
-        sensorData.orintationZ = 0;
+        sensorData.orientationX = (acos(sensorData.accX/accMag)/PI * 180) - 90;
+        sensorData.orientationY = (acos(sensorData.accY/accMag)/PI * 180) - 90;
+        sensorData.orientationZ = 0;
 
         return;
     }
@@ -206,4 +206,3 @@ void updateSensorData() {
     updateVelocity();
 }
 
-//add bmi323 and highg preflight tests and register components

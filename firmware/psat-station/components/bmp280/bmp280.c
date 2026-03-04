@@ -105,6 +105,7 @@ void bmp280_init()
         psatErr_postError(psatErr_bmp280_i2cBusAddition_failed, psatFSM_component_bmp280, psatFSM_getCurrentState());
         bmp280_err = psatErr_bmp280_i2cBusAddition_failed;
         bmp280_is_healthy = false;
+        printf("\nB1\n");
         return;
     }
 
@@ -117,6 +118,7 @@ void bmp280_init()
         psatErr_postError(psatErr_bmp280_powerConfig_failed, psatFSM_component_bmp280, psatFSM_getCurrentState());
         bmp280_err = psatErr_bmp280_powerConfig_failed;
         bmp280_is_healthy = false;
+        printf("\nB2\n");
         return;
     }
 
@@ -129,6 +131,7 @@ void bmp280_init()
         psatErr_postError(psatErr_bmp280_measurementConfig_failed, psatFSM_component_bmp280, psatFSM_getCurrentState());
         bmp280_err = psatErr_bmp280_measurementConfig_failed;
         bmp280_is_healthy = false;
+        printf("\nB3\n");
         return;
     }
 

@@ -282,9 +282,9 @@ typedef struct {
     double accY;
     double accZ;
 
-    double orintationX; //Yaw
-    double orintationY; //Pitch
-    double orintationZ; //Roll
+    double orientationX; //Yaw
+    double orientationY; //Pitch
+    double orientationZ; //Roll
 
     double velX;
     double velY;

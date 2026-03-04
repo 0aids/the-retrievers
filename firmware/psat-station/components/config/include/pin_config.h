@@ -24,7 +24,7 @@
 #define I2C_SCL_1        4
 #define I2C_SDA_2        41
 #define I2C_SCL_2        40
-#define I2C_FREQUENCY    100000
+#define I2C_FREQUENCY    400000
 #define I2c_WAIT_TIME_MS 2000
 
 #define BMP280_CALIBRATION_DATA_ADDRESS 0x88
