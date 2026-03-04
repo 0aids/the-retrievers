@@ -9,12 +9,13 @@
 #include "driver/i2c_master.h"
 #include "sm.h"
 #include <stdint.h>
+#include "math.h"
 
 
 
 static uint8_t highg_powerConfig[2] = {HIGHG_POWER_ADDRESS, HIGHG_POWER_CONFIG};
 
-highGAcc_data_t highg_data = {0};
+highg_data_t highg_data = {0};
 
 static i2c_device_config_t highg_Config = {
     .dev_addr_length = I2C_ADDR_BIT_7,
@@ -40,6 +41,10 @@ void highg_init() {
 }
 
 void highg_deinit() {
+
+    uint8_t highg_powerOff[2] = {HIGHG_POWER_ADDRESS, 0};
+
+    i2c_master_transmit(highg_handle, highg_powerOff, sizeof(highg_powerOff), I2c_WAIT_TIME_MS);
 
     if(i2c_master_bus_rm_device(highg_handle) != ESP_OK) {
         psatErr_postError(psatErr_highg_i2cBusAddition_failed, psatFSM_component_highg, psatFSM_getCurrentState());
@@ -71,5 +76,8 @@ void highg_getData() {
     highg_data.accX = ((double)rawData[0] /327.67) * 9.81;
     highg_data.accY = ((double)rawData[1] /327.67) * 9.81;
     highg_data.accZ = ((double)rawData[2] /327.67) * 9.81;
+
+    highg_data.accMag = sqrt(highg_data.accX*highg_data.accX+highg_data.accY*highg_data.accY+highg_data.accZ*highg_data.accZ);
+
 
 }
