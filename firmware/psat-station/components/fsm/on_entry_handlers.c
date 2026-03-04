@@ -8,6 +8,7 @@
 #include "loraFsm.h"
 #include "components.h"
 #include "register_components.h"
+#include "camera_control.h"
 
 void loraFSM_startAsTask()
 {
@@ -24,6 +25,11 @@ void psatFSM_prelaunchEntryHandler()
     loraFsm_init();
     loraFSM_startAsTask();
 
+    psatFSM_getComponent(psatFSM_component_camera)->start();
+
+    camera_init();
+
+    timer_start(timer_timerId_10s);
     button_enable(button_id_prelaunch);
 }
 
@@ -43,7 +49,8 @@ void psatFSM_deployedEntryHandler()
     timer_start(timer_timerId_1s);
     timer_start(timer_timerId_5s);
 
-     psatFSM_getComponent(psatFSM_component_camera)->start();
+    camera_take_pics();
+    
     timer_startOnce(timer_timerId_mechanical, 10000);
 }
 
