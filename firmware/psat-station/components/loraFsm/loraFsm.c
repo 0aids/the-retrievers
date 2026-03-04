@@ -186,6 +186,19 @@ static void _loraFsm_broadcast_sendState()
     loraFsm_packetFree(&psatStatePacket);
 }
 
+static void _loraFsm_broadcast_sendComponents()
+{
+    psatFSM_componentConfig_t psatConfig;
+    psatFSM_getComponentConfig(&psatConfig);
+
+    loraFsm_packetWrapper_t psatConfigPacket = loraFsm_packetCreate(
+        loraFsm_packetType_componentData, (uint8_t*)&psatConfig,
+        sizeof(psatConfig));
+
+    loraFsm_packetSend(&psatConfigPacket);
+    loraFsm_packetFree(&psatConfigPacket);
+}
+
 static void _loraFsm_broadcast_sendSensors() {}
 
 static void _loraFsm_broadcast()
@@ -195,6 +208,8 @@ static void _loraFsm_broadcast()
     _loraFsm_broadcast_sendState();
     vTaskDelay(100 / portTICK_PERIOD_MS);
     _loraFsm_broadcast_sendGPS();
+    vTaskDelay(100 / portTICK_PERIOD_MS);
+    _loraFsm_broadcast_sendComponents();
     vTaskDelay(100 / portTICK_PERIOD_MS);
     _loraFsm_broadcast_sendSensors();
 }
@@ -319,14 +334,14 @@ static void _loraFsm_runStateCmd()
         case loraFsm_packetType_fastForwardReq:
         {
             psatFSM_state_e targetState =
-                *(psatFSM_state_e*)(&packet.packetInterpreter->data);
+                (psatFSM_state_e)*packet.packetInterpreter->data;
             psatFSM_stateFastForward(targetState);
             break;
         }
         case loraFsm_packetType_stateOverrideReq:
         {
             psatFSM_state_e targetState =
-                *(psatFSM_state_e*)(&packet.packetInterpreter->data);
+                (psatFSM_state_e)*packet.packetInterpreter->data;
             psatFSM_stateOverride(targetState);
             break;
         }
@@ -335,22 +350,48 @@ static void _loraFsm_runStateCmd()
         case loraFsm_packetType_enableComponentReq:
         {
             psatFSM_component_e targetComponent =
-                *(psatFSM_component_e*)(&packet.packetInterpreter
-                                             ->data);
+                (psatFSM_component_e)*packet.packetInterpreter->data;
             psatFSM_enableComponent(targetComponent);
             break;
         }
         case loraFsm_packetType_disableComponentReq:
         {
             psatFSM_component_e targetComponent =
-                *(psatFSM_component_e*)(&packet.packetInterpreter
-                                             ->data);
+                (psatFSM_component_e)*packet.packetInterpreter->data;
             psatFSM_disableComponent(targetComponent);
             break;
         }
 
-        // just send everything psat knows about itself
-        case loraFsm_packetType_dataDumpReq: break; // TODO:
+        case loraFsm_packetType_startComponentTaskReq:
+        {
+            psatFSM_component_e targetComponent =
+                (psatFSM_component_e)*packet.packetInterpreter->data;
+            psatFSM_startComponentTask(targetComponent);
+            break;
+        }
+        case loraFsm_packetType_stopComponentTaskReq:
+        {
+            psatFSM_component_e targetComponent =
+                (psatFSM_component_e)*packet.packetInterpreter->data;
+            psatFSM_stopComponentTask(targetComponent);
+            break;
+        }
+
+        case loraFsm_packetType_markComponentEnabledReq:
+        {
+            psatFSM_component_e targetComponent =
+                (psatFSM_component_e)*packet.packetInterpreter->data;
+            psatFSM_markComponentEnabled(targetComponent, true);
+            break;
+        }
+
+        case loraFsm_packetType_markComponentDisabledReq:
+        {
+            psatFSM_component_e targetComponent =
+                (psatFSM_component_e)*packet.packetInterpreter->data;
+            psatFSM_markComponentEnabled(targetComponent, false);
+            break;
+        }
 
         default: ESP_LOGE(__FUNCTION__, "Invalid request!"); break;
     }

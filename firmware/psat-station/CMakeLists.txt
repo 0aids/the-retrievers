@@ -24,4 +24,3 @@ idf_build_set_property(
 
 idf_build_set_property(C_COMPILE_OPTIONS -Wno-error APPEND)
 get_filename_component(C_COMPILER_NAME ${CMAKE_C_COMPILER} NAME)
-

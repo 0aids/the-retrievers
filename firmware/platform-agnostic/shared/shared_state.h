@@ -3,117 +3,111 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#define PSAT_FSM_STATE_LIST   \
-    X(psatFSM_state_start)     \
-    X(psatFSM_state_prelaunch)  \
-    X(psatFSM_state_ascent)      \
-    X(psatFSM_state_deployPending)\
-    X(psatFSM_state_deployed)      \
-    X(psatFSM_state_descent)        \
-    X(psatFSM_state_landing)         \
-    X(psatFSM_state_recovery)         \
-    X(psatFSM_state_lowPower)          \
-    X(psatFSM_state_error)              \
-    X(psatFSM_state_permanentError)      \
-                                          \
-    X(psatFSM_state__COUNT)                
-                                            
-#define PSAT_FSM_EVENT_TYPE_LIST             \
-    X(psatFSM_eventType_startPrelaunch)       \
-    X(psatFSM_eventType_prelaunchComplete)     \
-    X(psatFSM_eventType_deploymentPending)      \
-    X(psatFSM_eventType_deploymentTimeout)       \
-    X(psatFSM_eventType_deploymentConfirmed)      \
-    X(psatFSM_eventType_timer1s)                   \
-    X(psatFSM_eventType_timer5s)                    \
-    X(psatFSM_eventType_timer10s)                    \
-    X(psatFSM_eventType_cameraOn)                     \
-    X(psatFSM_eventType_cameraStop)                    \
-    X(psatFSM_eventType_unfoldMechanism)                \
-    X(psatFSM_eventType_landingConfirmed)                \
-    X(psatFSM_eventType_audioOn)                          \
-    X(psatFSM_eventType_audioOff)                          \
-    X(psatFSM_eventType_audioBeep)                          \
-    X(psatFSM_eventType_loraCommand)                         \
-    X(psatFSM_eventType_error)                                \
-                                                               \
+#define PSAT_FSM_STATE_LIST                                          \
+    X(psatFSM_state_start)                                           \
+    X(psatFSM_state_prelaunch)                                       \
+    X(psatFSM_state_ascent)                                          \
+    X(psatFSM_state_deployPending)                                   \
+    X(psatFSM_state_deployed)                                        \
+    X(psatFSM_state_descent)                                         \
+    X(psatFSM_state_landing)                                         \
+    X(psatFSM_state_recovery)                                        \
+    X(psatFSM_state_lowPower)                                        \
+    X(psatFSM_state_error)                                           \
+    X(psatFSM_state_permanentError)                                  \
+                                                                     \
+    X(psatFSM_state__COUNT)
+
+#define PSAT_FSM_EVENT_TYPE_LIST                                     \
+    X(psatFSM_eventType_startPrelaunch)                              \
+    X(psatFSM_eventType_prelaunchComplete)                           \
+    X(psatFSM_eventType_deploymentPending)                           \
+    X(psatFSM_eventType_deploymentTimeout)                           \
+    X(psatFSM_eventType_deploymentConfirmed)                         \
+    X(psatFSM_eventType_timer1s)                                     \
+    X(psatFSM_eventType_timer5s)                                     \
+    X(psatFSM_eventType_timer10s)                                    \
+    X(psatFSM_eventType_cameraOn)                                    \
+    X(psatFSM_eventType_cameraStop)                                  \
+    X(psatFSM_eventType_unfoldMechanism)                             \
+    X(psatFSM_eventType_landingConfirmed)                            \
+    X(psatFSM_eventType_audioOn)                                     \
+    X(psatFSM_eventType_audioOff)                                    \
+    X(psatFSM_eventType_audioBeep)                                   \
+    X(psatFSM_eventType_loraCommand)                                 \
+    X(psatFSM_eventType_error)                                       \
+                                                                     \
     X(psatFSM_eventType__COUNT)
 
-#define PSAT_FSM_COMPONENTS_LIST\
-    X(psatFSM_component_ldr)     \
-    X(psatFSM_component_gps)      \
-    X(psatFSM_component_buzzers)   \
-    X(psatFSM_component_buttons)    \
-    X(psatFSM_component_battery)     \
-    X(psatFSM_component_camera)       \
-    X(psatFSM_component_servo)         \
-    X(psatFSM_component_timers)         \
-    X(psatFSM_component_bmp280)          \
-    X(psatFSM_component_bmi323)           \
-    X(psatFSM_component_highg)          \
-    X(psatFSM_component__COUNT)           
-                                          
-#define PSAT_FSM_COMPONENTS_STATUS_LIST     \
-    X(psatFSM_componentStatus_unRegistered)  \
-    X(psatFSM_componentStatus_disabled)       \
-    X(psatFSM_componentStatus_enabled)         \
-    X(psatFSM_componentStatus_recovery)
+#define PSAT_FSM_COMPONENTS_LIST                                     \
+    X(psatFSM_component_ldr)                                         \
+    X(psatFSM_component_gps)                                         \
+    X(psatFSM_component_buzzers)                                     \
+    X(psatFSM_component_buttons)                                     \
+    X(psatFSM_component_battery)                                     \
+    X(psatFSM_component_camera)                                      \
+    X(psatFSM_component_servo)                                       \
+    X(psatFSM_component_timers)                                      \
+    X(psatFSM_component_bmp280)                                      \
+    X(psatFSM_component_bmi323)                                      \
+    X(psatFSM_component_highg)                                       \
+    X(psatFSM_component__COUNT)
 
-#define PSAT_FSM_COMPONENTS_TYPES_LIST            \
-    X(psatFSM_componentType_task)                  \
-    X(psatFSM_componentType_normal)                 \
+#define PSAT_FSM_COMPONENTS_TYPES_LIST                               \
+    X(psatFSM_componentType_task)                                    \
+    X(psatFSM_componentType_normal)                                  \
     X(psatFSM_componentType_multiple)
 
 // TODO: suffixes for the error codes, currently ive just made them all _failed
-#define PSAT_ERR_CODE_LIST                              \
-    X(psatErr_none)                                      \
-                                                          \
-    X(psatErr_ldr_calibrationInit_failed)                  \
-    X(psatErr_ldr_adcInit_failed)                           \
-    X(psatErr_ldr_adcConfig_failed)                          \
-    X(psatErr_ldr_readRawValue_failed)                        \
-    X(psatErr_ldr_voltage_failed)                              \
-    X(psatErr_ldr_openMemStr_failed)                \
-    X(psatErr_ldr_adcDelUnit_failed)                 \
-    X(psatErr_ldr_caliDeleteScheme_failed)            \
-                                                       \
-    X(psatErr_bmp280_i2cBusAddition_failed)             \
-    X(psatErr_bmp280_powerConfig_failed)                 \
-    X(psatErr_bmp280_measurementConfig_failed)            \
-    X(psatErr_bmp280_calibration_failed)                   \
-    X(psatErr_bmp280_i2cBusRemoval_failed)                  \
-    X(psatErr_bmp280_dataRead_failed)                        \
-    X(psatErr_bmp280_reset_failed)                            \
-                                                               \
-    X(psatErr_gps_uartConfig_failed)                            \
-    X(psatErr_gps_uartPinSet_failed)                             \
-    X(psatErr_gps_uartDriverInstall_failed)                       \
-    X(psatErr_gps_uartDriverUninstall_failed)                      \
-    X(psatErr_gps_startTask_failed)                                 \
+#define PSAT_ERR_CODE_LIST                                           \
+    X(psatErr_none)                                                  \
                                                                      \
-    X(psatErr_buzzer_gpioConfig_failed)                               \
-    X(psatErr_buzzer_gpioInitLevel_failed)                             \
-    X(psatErr_buzzer_gpioDeinitLevel_failed)                            \
-    X(psatErr_buzzer_gpioReset_failed)                                   \
-    X(psatErr_buzzer_turnOn_failed)                                       \
-    X(psatErr_buzzer_turnOff_failed)                                       \
-    X(psatErr_timer_init_failed)                                            \
-                                                                             \
-    X(psatErr_bmi323_i2cBusAddition_failed)                                   \
-    X(psatErr_bmi323_FIFOConfig_failed)                                        \
-    X(psatErr_bmi323_AccConfig_failed)                                          \
-    X(psatErr_bmi323_GyroConfig_failed)                                          \
-    X(psatErr_bmi323_ChipError)                                                   \
-    X(psatErr_bmi323_i2cBusRemoval_failed)                                         \
-    X(psatErr_bmi323_DataRead_failed)                                               \
-    X(psatErr_bmi323_reset_failed)                                                   \
-                                                                                      \
-    X(psatErr_highg_i2cBusAddition_failed)                                             \
-    X(psatErr_highg_AccConfig_failed)                                                   \
-    X(psatErr_highg_i2cBusRemoval_failed)                                                \
-    X(psatErr_highg_DataRead_failed)                                                      \
-    X(psatErr_highg_reset_failed)                                                          \
-                                                                                            \
+    X(psatErr_ldr_calibrationInit_failed)                            \
+    X(psatErr_ldr_adcInit_failed)                                    \
+    X(psatErr_ldr_adcConfig_failed)                                  \
+    X(psatErr_ldr_readRawValue_failed)                               \
+    X(psatErr_ldr_voltage_failed)                                    \
+    X(psatErr_ldr_openMemStr_failed)                                 \
+    X(psatErr_ldr_adcDelUnit_failed)                                 \
+    X(psatErr_ldr_caliDeleteScheme_failed)                           \
+                                                                     \
+    X(psatErr_bmp280_i2cBusAddition_failed)                          \
+    X(psatErr_bmp280_powerConfig_failed)                             \
+    X(psatErr_bmp280_measurementConfig_failed)                       \
+    X(psatErr_bmp280_calibration_failed)                             \
+    X(psatErr_bmp280_i2cBusRemoval_failed)                           \
+    X(psatErr_bmp280_dataRead_failed)                                \
+    X(psatErr_bmp280_reset_failed)                                   \
+                                                                     \
+    X(psatErr_gps_uartConfig_failed)                                 \
+    X(psatErr_gps_uartPinSet_failed)                                 \
+    X(psatErr_gps_uartDriverInstall_failed)                          \
+    X(psatErr_gps_uartDriverUninstall_failed)                        \
+    X(psatErr_gps_startTask_failed)                                  \
+                                                                     \
+    X(psatErr_buzzer_gpioConfig_failed)                              \
+    X(psatErr_buzzer_gpioInitLevel_failed)                           \
+    X(psatErr_buzzer_gpioDeinitLevel_failed)                         \
+    X(psatErr_buzzer_gpioReset_failed)                               \
+    X(psatErr_buzzer_turnOn_failed)                                  \
+    X(psatErr_buzzer_turnOff_failed)                                 \
+    X(psatErr_timer_init_failed)                                     \
+                                                                     \
+    X(psatErr_bmi323_i2cBusAddition_failed)                          \
+    X(psatErr_bmi323_FIFOConfig_failed)                              \
+    X(psatErr_bmi323_AccConfig_failed)                               \
+    X(psatErr_bmi323_GyroConfig_failed)                              \
+    X(psatErr_bmi323_ChipError)                                      \
+    X(psatErr_bmi323_i2cBusRemoval_failed)                           \
+    X(psatErr_bmi323_DataRead_failed)                                \
+    X(psatErr_bmi323_reset_failed)                                   \
+                                                                     \
+    X(psatErr_highg_i2cBusAddition_failed)                           \
+    X(psatErr_highg_AccConfig_failed)                                \
+    X(psatErr_highg_i2cBusRemoval_failed)                            \
+    X(psatErr_highg_DataRead_failed)                                 \
+    X(psatErr_highg_reset_failed)                                    \
+                                                                     \
     X(psatErr__COUNT)
 
 // DEFINE ENUMS FOR EACH LIST
@@ -132,10 +126,6 @@ typedef enum
 } psatFSM_component_e;
 typedef enum
 {
-    PSAT_FSM_COMPONENTS_STATUS_LIST
-} psatFSM_componentStatus_e;
-typedef enum
-{
     PSAT_FSM_COMPONENTS_TYPES_LIST
 } psatFSM_componentType_e;
 typedef enum
@@ -143,6 +133,18 @@ typedef enum
     PSAT_ERR_CODE_LIST
 } psatErr_code_e;
 #undef X
+
+// For component statusses
+typedef struct
+{
+    // prelaunch:
+    uint16_t enabled;
+
+    // During mission:
+    uint16_t init;
+    uint16_t task;
+    uint16_t error;
+} psatFSM_componentConfig_t;
 
 // STATE MACHINE EVENT
 typedef struct
@@ -194,7 +196,6 @@ typedef struct
     bool (*preflight)(void);
 
     psatFSM_componentType_e            type;
-    psatFSM_componentStatus_e          status;
     psatFSM_componentRecoveryContext_t recoveryContext;
 
 } psatFSM_component_t;
@@ -222,19 +223,18 @@ typedef struct
 
 typedef struct
 {
-    float temperature;
-    int  pressure;
+    float   temperature;
+    int     pressure;
 
-    double altitude;
+    double  altitude;
 
     int64_t time;
-
 
 } bmp280_data_t;
 
 // BMI323 IMU (LOW-G ACCELEROMETER & GRYOSCOPE) DATA
 
-typedef struct 
+typedef struct
 {
     //acc in m/s/s and gyro in degree/s
     double accX;
@@ -253,7 +253,7 @@ typedef struct
 } bmi323_data_t;
 
 // HIGH G ACCELEROMETER DATA
-typedef struct 
+typedef struct
 {
     //acc in m/s/s
     double accX;
@@ -267,20 +267,20 @@ typedef struct
 
 } highg_data_t;
 
-
 //SENSOR DATA STRUCT
 
-typedef struct {
+typedef struct
+{
 
     float temperature;
     int pressure;
 
-    double barometric_altitude;
-    double altitude;
+    double  barometric_altitude;
+    double  altitude;
 
-    double accX;
-    double accY;
-    double accZ;
+    double  accX;
+    double  accY;
+    double  accZ;
 
     double orintationX; //Yaw
     double orintationY; //Pitch
@@ -305,7 +305,6 @@ typedef struct {
     int64_t barometerTime;
 
     //adjusted gps based accelerometer and barometer?
-
 
 } sensorData_t;
 
@@ -338,7 +337,7 @@ typedef struct
     bool    fixInfoValid;  // fix quality, sats tracked
     bool    altitudeValid; // altitude, geoidal
 
-    int linesRecieved;
+    int     linesRecieved;
 } gps_data_t;
 
 // FUNCTIONS TO CONVERT ENUM TO A STRING
@@ -380,19 +379,6 @@ psatFSM_componentToString(psatFSM_component_e type)
     }
 }
 
-static inline const char*
-psatFSM_componentStatusToString(psatFSM_componentStatus_e type)
-{
-    switch (type)
-    {
-#define X(name)                                                      \
-    case name: return #name;
-        PSAT_FSM_COMPONENTS_STATUS_LIST
-#undef X
-        default: return "psatFSM_componentStatus_invalid";
-    }
-}
-
 static inline const char* psatErr_codeToString(psatErr_code_e err)
 {
     switch (err)
@@ -404,5 +390,3 @@ static inline const char* psatErr_codeToString(psatErr_code_e err)
         default: return "psatErr_invalid";
     }
 }
-
-

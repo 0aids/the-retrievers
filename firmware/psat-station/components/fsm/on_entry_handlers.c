@@ -29,25 +29,27 @@ void psatFSM_prelaunchEntryHandler()
 
 void psatFSM_ascentEntryHandler()
 {
-    psatFSM_getComponent(psatFSM_component_ldr)->start();
+    psatFSM_startComponentTask(psatFSM_component_ldr);
 }
 
 void psatFSM_deployPendingEntryHandler() {}
 
 void psatFSM_deployedEntryHandler()
 {
-    psatFSM_getComponent(psatFSM_component_ldr)->stop();
+    psatFSM_stopComponentTask(psatFSM_component_ldr);
 
     timer_stop(timer_timerId_10s);
 
     timer_start(timer_timerId_1s);
     timer_start(timer_timerId_5s);
+
+     psatFSM_getComponent(psatFSM_component_camera)->start();
     timer_startOnce(timer_timerId_mechanical, 10000);
 }
 
 void psatFSM_descentEntryHandler()
 {
-    psatFSM_getComponent(psatFSM_component_gps)->start();
+    psatFSM_startComponentTask(psatFSM_component_gps);
     button_enable(button_id_landing);
 }
 

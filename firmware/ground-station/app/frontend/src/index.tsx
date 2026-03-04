@@ -10,6 +10,7 @@ import MapView from "./components/map/MapView";
 import Commands from "./components/Commands";
 import StatusTopBar from "./components/Bar";
 import Prelaunch from "./components/Prelaunch";
+import ComponentsPanel from "./components/ComponentPanel";
 
 import { usePoll } from "./hooks/usePoll";
 import { StateProvider, useAppState } from "./hooks/StateContext";
@@ -41,6 +42,7 @@ function InnerApp() {
 
                     <SensorsDataPanel />
                     <OtherDataPanel />
+                    <ComponentsPanel />
                     <LogPanel />
                 </div>
             )}
