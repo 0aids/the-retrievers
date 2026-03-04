@@ -62,13 +62,21 @@ void uart_task(void *pvParameters){
             }
             else if (strstr((const char*)data, "++LOG++"))      log_data((const char*)data);
             else if (strstr((const char*)data, "++TEST++"))     take_pics(0);
+            else if (strstr((const char*)data, "++TEST DEINIT++"))
+            {
+                deinit_sd_card();
+                esp_camera_deinit();
+                sdmmc_host_deinit();
+                UART_MESSAGE("Successfully deinitialised");
+
+            }
             else if (strstr((const char*)data, "++DEINIT++")){
                 deinit_sd_card();
                 esp_camera_deinit();
                 sdmmc_host_deinit();
                 free(data);
                 UART_MESSAGE("Successfully deinitialised");
-                vTaskDelay(pdMS_TO_TICKS(500));
+                vTaskDelay(pdMS_TO_TICKS(200));
                 listen = false;
             }
         }

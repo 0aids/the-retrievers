@@ -21,5 +21,6 @@ void app_main(void)
     // helpers_printHeapDetails();
     // psatFSM_startAsTask();    
     camera_preflightTest();
+    camera_preflightTest();
 }
 

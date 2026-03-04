@@ -152,7 +152,7 @@ bool camera_preflightTest(void){
     camera_init();
     vTaskDelay(pdMS_TO_TICKS(1000));
 
-        CAMERA_MESSAGE("++TEST++");
+    CAMERA_MESSAGE("++TEST++");
     ESP_LOGI(TAG, "Taking pic");
     vTaskDelay(pdMS_TO_TICKS(1000));
 
@@ -162,8 +162,9 @@ bool camera_preflightTest(void){
     camera_deinit();
     vTaskDelay(pdMS_TO_TICKS(200));
 
-    camera_control_deinit();
+    CAMERA_MESSAGE("++TEST DEINIT++");
     vTaskDelete(xHandleTestCamera_s);
     if (pass == true) ESP_LOGI("Test", "Successful cam test");
+    uart_driver_delete(CAMERA_UART_NUM);
     return pass;
 }
