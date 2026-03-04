@@ -13,6 +13,7 @@
 #include "state_handlers.h"
 #include "timers.h"
 #include "loraFsm.h"
+#include "camera_control.h"
 #include "components.h"
 #include "bmp280.h"
 #include "highg.h"
@@ -50,6 +51,11 @@ void psatFSM_registerAllComponents()
 
     // psatFSM_registerComponent(psatFSM_component_highg, psatFSM_componentType_normal, 
     //     highg_init, highg_deinit, NULL, NULL, NULL, NULL);
+
+    psatFSM_registerComponent(
+        psatFSM_component_camera, psatFSM_componentType_task,
+        camera_control_init, camera_control_deinit, NULL, camera_startTask, camera_stopTask);
+
 
     // TODO: whats left: PRESSURE, CAMERA, ACCELEROMETER, BATTERY
 }

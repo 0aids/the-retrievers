@@ -51,6 +51,9 @@
 #define ADXL345_DATA_REGISTER          0x32
 #define ADXL345_ADDRESS                0x1D
 
+#define CAMERA_UART_NUM        (2)
+#define CAMERA_TX_IO           (17)
+#define CAMERA_RX_IO           (16)
 #define BMI323_ADDRESS  0X68
 #define BMI323_ERRREG_ADDRESS 0x01
 #define BMI323_ACCELEROMETER_CONFIG_ADDRESS 0x20
