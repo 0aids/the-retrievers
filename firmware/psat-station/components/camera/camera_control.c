@@ -148,6 +148,7 @@ bool camera_preflightTest(void){
     camera_control_init();
     xTaskCreate(camera_control_test, "camera control test", STACK_SIZE,
                 &pass, 9, &xHandleTestCamera_s);
+    vTaskDelay(pdMS_TO_TICKS(5000));
     
     camera_init();
     vTaskDelay(pdMS_TO_TICKS(1000));
@@ -159,10 +160,10 @@ bool camera_preflightTest(void){
     log_data("Test: Data logged");
     vTaskDelay(pdMS_TO_TICKS(1000));
 
-    camera_deinit();
+    CAMERA_MESSAGE("++TEST DEINIT++");
     vTaskDelay(pdMS_TO_TICKS(200));
 
-    CAMERA_MESSAGE("++TEST DEINIT++");
+
     vTaskDelete(xHandleTestCamera_s);
     if (pass == true) ESP_LOGI("Test", "Successful cam test");
     camera_control_deinit();
