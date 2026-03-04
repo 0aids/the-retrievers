@@ -3,6 +3,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "servo.h"
+#include "shared_state.h"
 #include "state_handlers.h"
 #include "timers.h"
 #include "loraFsm.h"
@@ -24,10 +25,6 @@ void psatFSM_prelaunchEntryHandler()
 
     loraFsm_init();
     loraFSM_startAsTask();
-
-    psatFSM_getComponent(psatFSM_component_camera)->start();
-
-    camera_init();
 
     timer_start(timer_timerId_10s);
     button_enable(button_id_prelaunch);
