@@ -98,6 +98,5 @@ void test_pic(void){
     fwrite(fb->buf, 1, fb->len, file);
     fclose(file);
     esp_camera_fb_return(fb);
-    UART_MESSAGE("Saved pic");
     UART_MESSAGE("Pic taken");
 }

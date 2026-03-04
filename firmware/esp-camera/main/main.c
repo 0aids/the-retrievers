@@ -47,7 +47,7 @@ void uart_task(void *pvParameters){
 
     while (listen) {
         // Read data from the UART
-        int len = uart_read_bytes(CAM_UART_NUM, data, (BUF_SIZE - 1), 50 / portTICK_PERIOD_MS);
+        int len = uart_read_bytes(CAM_UART_NUM, data, (BUF_SIZE - 1), 100 / portTICK_PERIOD_MS);
         
         if (len) {
             data[len] = 0;
