@@ -165,6 +165,6 @@ bool camera_preflightTest(void){
     CAMERA_MESSAGE("++TEST DEINIT++");
     vTaskDelete(xHandleTestCamera_s);
     if (pass == true) ESP_LOGI("Test", "Successful cam test");
-    uart_driver_delete(CAMERA_UART_NUM);
+    camera_control_deinit();
     return pass;
 }
