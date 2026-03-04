@@ -314,14 +314,14 @@ static void _loraFsm_runStateCmd()
         loraFsm_packetTypeToString(packet.packetInterpreter->type),
         seq);
 
-    vTaskDelay(5000 / portTICK_PERIOD_MS);
-    loraFsm_packetWrapper_t ackPacket = loraFsm_packetCreate(
-        loraFsm_packetType_ack, (uint8_t*)&seq, sizeof(seq));
-    loraFsm_packetSend(&ackPacket);
-    loraFsm_packetFree(&ackPacket);
-
     if (seenSeq(seq))
     { // we already recieved this command and proceesed it, so we wont run it again
+        vTaskDelay(5000 / portTICK_PERIOD_MS);
+        loraFsm_packetWrapper_t ackPacket = loraFsm_packetCreate(
+            loraFsm_packetType_ack, (uint8_t*)&seq, sizeof(seq));
+        loraFsm_packetSend(&ackPacket);
+        loraFsm_packetFree(&ackPacket);
+
         loraFsm_packetFree(&packet);
         _loraFsm_currentState_s = loraFsm_radioStates_idle;
         return;
@@ -464,6 +464,12 @@ static void _loraFsm_runStateCmd()
 
         default: ESP_LOGE(__FUNCTION__, "Invalid request!"); break;
     }
+
+    vTaskDelay(5000 / portTICK_PERIOD_MS);
+    loraFsm_packetWrapper_t ackPacket = loraFsm_packetCreate(
+        loraFsm_packetType_ack, (uint8_t*)&seq, sizeof(seq));
+    loraFsm_packetSend(&ackPacket);
+    loraFsm_packetFree(&ackPacket);
 
     loraFsm_packetFree(&packet);
     _loraFsm_currentState_s = loraFsm_radioStates_idle;
