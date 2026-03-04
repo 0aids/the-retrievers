@@ -3,6 +3,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "servo.h"
+#include "shared_state.h"
 #include "state_handlers.h"
 #include "timers.h"
 #include "loraFsm.h"

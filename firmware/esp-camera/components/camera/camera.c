@@ -54,33 +54,7 @@ esp_err_t init_camera(void)
 }
 
 
-void take_pics(void){
-    for (int i = 1; i <= 5; i++) {
-        camera_fb_t *fb = esp_camera_fb_get();
-        if (!fb) {
-            UART_MESSAGE("Camera capture failed");
-            return;
-        }
-
-        char filename[32];
-        sprintf(filename, MOUNT_POINT"/img_%d.jpg", i);
-
-        FILE *file = fopen(filename, "wb");
-        if (file == NULL) {
-            UART_MESSAGE("Failed to open file for writing");
-            return;
-        }
-        fwrite(fb->buf, 1, fb->len, file);
-        fclose(file);
-        esp_camera_fb_return(fb);
-        UART_MESSAGE("Saved pic");
-        vTaskDelay(pdMS_TO_TICKS(2000));
-    }
-    UART_MESSAGE("Pictures taken");
-}
-
-void test_pic(void){
-    
+void take_pics(int pic_num){
     camera_fb_t *fb = esp_camera_fb_get();
     if (!fb) {
         UART_MESSAGE("Camera capture failed");
@@ -88,7 +62,7 @@ void test_pic(void){
     }
 
     char filename[32];
-    sprintf(filename, MOUNT_POINT"/test.jpg");
+    sprintf(filename, MOUNT_POINT"/img_%d.jpg",pic_num);
 
     FILE *file = fopen(filename, "wb");
     if (file == NULL) {
@@ -98,5 +72,5 @@ void test_pic(void){
     fwrite(fb->buf, 1, fb->len, file);
     fclose(file);
     esp_camera_fb_return(fb);
-    UART_MESSAGE("Pic taken");
+    UART_MESSAGE("Saved pic");
 }

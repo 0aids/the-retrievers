@@ -17,6 +17,7 @@
 #include "components.h"
 #include "bmp280.h"
 #include "highg.h"
+#include <string.h>
 
 #include "register_components.h"
 
@@ -54,7 +55,7 @@ void psatFSM_registerAllComponents()
 
     psatFSM_registerComponent(
         psatFSM_component_camera, psatFSM_componentType_task,
-        camera_control_init, camera_control_deinit, NULL, camera_startTask, camera_stopTask);
+        camera_control_init, camera_control_deinit, NULL, camera_startTask, camera_stopTask, camera_preflightTest);
 
 
     // TODO: whats left: PRESSURE, CAMERA, ACCELEROMETER, BATTERY

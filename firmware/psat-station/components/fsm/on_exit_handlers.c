@@ -11,12 +11,17 @@
 #include "state_handlers.h"
 #include "timers.h"
 #include "components.h"
+#include "camera_control.h"
 
 void psatFSM_startExitHandler() {} // do nothing
 
 void psatFSM_prelaunchExitHandler()
 {
     psatFSM_initAll();
+
+    psatFSM_startComponentTask(psatFSM_component_camera);
+    camera_init();
+
     timer_start(timer_timerId_10s);
     button_disable(button_id_prelaunch);
 }

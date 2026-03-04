@@ -14,6 +14,7 @@
 #include "bmi323.h"
 #include "highg.h"
 //#include "sensor-processing.h"
+#include "camera_control.h"
 
 void app_main(void)
 {

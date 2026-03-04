@@ -21,5 +21,5 @@
 
 
 esp_err_t init_camera(void);
-void take_pics(void);
+void take_pics(int pic_num);
 void test_pic(void);
