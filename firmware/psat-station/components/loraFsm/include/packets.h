@@ -13,22 +13,60 @@
 // Consider using malloc rather than using massive structs
 #define loraFsm_defaultPacketSize_d 255
 
+#define LORA_FSM_PACKET_TYPE_LIST                                    \
+    X(loraFsm_packetType_empty)                                      \
+    X(loraFsm_packetType_test)                                       \
+    X(loraFsm_packetType_ack)                                        \
+                                                                     \
+    X(loraFsm_packetType_ping)                                       \
+    X(loraFsm_packetType_pong)                                       \
+                                                                     \
+    X(loraFsm_packetType_gpsData)                                    \
+    X(loraFsm_packetType_stateData)                                  \
+    X(loraFsm_packetType_sensorData)                                 \
+    X(loraFsm_packetType_componentData)                              \
+    X(loraFsm_packetType_preflightData)                              \
+                                                                     \
+    X(loraFsm_packetType_preflightReq)                               \
+    X(loraFsm_packetType_preflightDataReq)                           \
+    X(loraFsm_packetType_prelaunchCompleteReq)                       \
+                                                                     \
+    X(loraFsm_packetType_buzzShortReq)                               \
+    X(loraFsm_packetType_buzzLongReq)                                \
+                                                                     \
+    X(loraFsm_packetType_fastForwardReq)                             \
+    X(loraFsm_packetType_stateOverrideReq)                           \
+                                                                     \
+    X(loraFsm_packetType_markComponentEnabledReq)                    \
+    X(loraFsm_packetType_markComponentDisabledReq)                   \
+                                                                     \
+    X(loraFsm_packetType_enableComponentReq)                         \
+    X(loraFsm_packetType_disableComponentReq)                        \
+                                                                     \
+    X(loraFsm_packetType_startComponentTaskReq)                      \
+    X(loraFsm_packetType_stopComponentTaskReq)                       \
+                                                                     \
+    X(loraFsm_packetType__COUNT)
+
+#define X(name) name,
 typedef enum __attribute__((packed))
 {
-    loraFsm_packetType_empty,
-    loraFsm_packetType_ping,
-    loraFsm_packetType_pong,
-    loraFsm_packetType_ack,
-    loraFsm_packetType_gpsData,
-    loraFsm_packetType_buzReq,    // Uses ACK for acknowledgement.
-    loraFsm_packetType_stateData, // This fits
-    loraFsm_packetType_fastForwardReq,
-    loraFsm_packetType_stateOverrideReq,
-    loraFsm_packetType_stateDumpReq,
-    loraFsm_packetType_test,
-    loraFsm_packetType_prelaunch,
-    loraFsm_packetType_landing,
+    LORA_FSM_PACKET_TYPE_LIST
 } loraFsm_packetType_e;
+#undef X
+
+static inline const char*
+loraFsm_packetTypeToString(loraFsm_packetType_e packetType)
+{
+    switch (packetType)
+    {
+#define X(packetType)                                                \
+    case packetType: return #packetType; break;
+        LORA_FSM_PACKET_TYPE_LIST
+#undef X
+        default: return "loraFsm_packetType_invalid";
+    }
+}
 
 // This will be sent as a raw buffer, up to m_dataSize bytes.
 typedef struct __attribute__((packed))
@@ -60,7 +98,5 @@ loraFsm_packetWrapper_t
 void loraFsm_packetSend(loraFsm_packetWrapper_t* packet);
 
 bool loraFsm_packetFree(loraFsm_packetWrapper_t* packet);
-
-const char* loraFsm_packetTypeToStr(loraFsm_packetType_e type);
 
 #endif // packets_h_INCLUDED

@@ -23,17 +23,42 @@ export type GPSState = {
 };
 
 export type FSMState = {
-    state: number | null;
-    name: string | null;
+    currentState: number | null;
+    currentStateName: string | null;
+    prevState: number | null;
+    prevStateName: string | null;
 };
 
+export type GeoPosition = {
+    lat: number;
+    lon: number;
+    accuracy?: number;
+};
+
+export type ComponentData = {
+    id: number;
+    name: string;
+    enabled: boolean;
+    inited: boolean;
+    task: boolean;
+    error: boolean;
+    preflightSuccess: boolean | null;
+}[];
+
 export type ApiState = {
-    gps: GPSState;
+    preflightSuccess: boolean | null;
+    data: {
+        gps: GPSState;
+        ldrVoltage: number | null;
+        servoAngle: number | null;
+        batteryLevel: number | null;
+        temperature: number | null;
+        cameraOn: boolean | null;
+        pressure: number | null;
+        // TODO: accelerometer: {},
+        // TODO: imu: {}
+    };
     fsm: FSMState;
-    radio: {
-        last_packet_time: number | null;
-    };
-    stats: {
-        packets_received: number | null;
-    };
+    components: ComponentData;
+    radio: { lastPacketTime: number | null; packetsReceived: number | null };
 };

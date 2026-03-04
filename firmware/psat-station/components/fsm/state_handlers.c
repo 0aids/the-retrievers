@@ -15,6 +15,12 @@
 #include "timers.h"
 #include "esp_timer.h"
 
+const int SHORT_BUZZ_MS = 2500;
+const int LONG_BUZZ_MS  = 5000;
+
+#define SERVO_UNFOLD_ANGLE 120
+#define SERVO_UNFOLD_SPEED 60
+
 void globalEventHandler(const psatFSM_event_t* event)
 {
     // static const char* TAG = "PSAT_FSM-Global-Event";
@@ -22,10 +28,17 @@ void globalEventHandler(const psatFSM_event_t* event)
     switch (event->type)
     {
         case psatFSM_eventType_unfoldMechanism:
-            servo_moveTo(120, 60);
+            servo_moveTo(SERVO_UNFOLD_ANGLE, SERVO_UNFOLD_SPEED);
             return;
 
-        case psatFSM_eventType_audioBeep: buzzer_beep(2500); return;
+        case psatFSM_eventType_audioBeep:
+        {
+            bool buzzLong = (bool)event->arg;
+            int  buzzDuration =
+                (buzzLong ? LONG_BUZZ_MS : SHORT_BUZZ_MS);
+            buzzer_beep(buzzDuration);
+            return;
+        }
 
         default: return;
     }
@@ -135,9 +148,6 @@ psatFSM_recoveryStateHandler(const psatFSM_event_t* event)
 
     switch (event->type)
     {
-        case psatFSM_eventType_audioBeep:
-            buzzer_beep(2500);
-            return psatFSM_state_recovery;
         default: return psatFSM_state_recovery;
     }
 }
@@ -174,8 +184,10 @@ psatFSM_errorStateHandler(const psatFSM_event_t* event)
     {
         ESP_LOGE(
             TAG,
-            "Permanent failure in %s, going to permanent error state",
+            "Permanent failure in %s, disabling and transitioning to "
+            "permanent error state",
             psatFSM_componentToString(comp));
+        psatFSM_disableComponent(comp);
         return psatFSM_state_permanentError;
     }
 

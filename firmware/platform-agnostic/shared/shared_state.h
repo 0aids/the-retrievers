@@ -49,13 +49,9 @@
     X(psatFSM_component_servo)                                       \
     X(psatFSM_component_timers)                                      \
     X(psatFSM_component_bmp280)                                      \
+    X(psatFSM_component_bmi323)                                      \
+    X(psatFSM_component_highg)                                       \
     X(psatFSM_component__COUNT)
-
-#define PSAT_FSM_COMPONENTS_STATUS_LIST                              \
-    X(psatFSM_componentStatus_unRegistered)                          \
-    X(psatFSM_componentStatus_disabled)                              \
-    X(psatFSM_componentStatus_enabled)                               \
-    X(psatFSM_componentStatus_recovery)
 
 #define PSAT_FSM_COMPONENTS_TYPES_LIST                               \
     X(psatFSM_componentType_task)                                    \
@@ -83,6 +79,35 @@
     X(psatErr_bmp280_dataRead_failed)                                \
     X(psatErr_bmp280_reset_failed)                                   \
                                                                      \
+    X(psatErr_gps_uartConfig_failed)                                 \
+    X(psatErr_gps_uartPinSet_failed)                                 \
+    X(psatErr_gps_uartDriverInstall_failed)                          \
+    X(psatErr_gps_uartDriverUninstall_failed)                        \
+    X(psatErr_gps_startTask_failed)                                  \
+                                                                     \
+    X(psatErr_buzzer_gpioConfig_failed)                              \
+    X(psatErr_buzzer_gpioInitLevel_failed)                           \
+    X(psatErr_buzzer_gpioDeinitLevel_failed)                         \
+    X(psatErr_buzzer_gpioReset_failed)                               \
+    X(psatErr_buzzer_turnOn_failed)                                  \
+    X(psatErr_buzzer_turnOff_failed)                                 \
+    X(psatErr_timer_init_failed)                                     \
+                                                                     \
+    X(psatErr_bmi323_i2cBusAddition_failed)                          \
+    X(psatErr_bmi323_FIFOConfig_failed)                              \
+    X(psatErr_bmi323_AccConfig_failed)                               \
+    X(psatErr_bmi323_GyroConfig_failed)                              \
+    X(psatErr_bmi323_ChipError)                                      \
+    X(psatErr_bmi323_i2cBusRemoval_failed)                           \
+    X(psatErr_bmi323_DataRead_failed)                                \
+    X(psatErr_bmi323_reset_failed)                                   \
+                                                                     \
+    X(psatErr_highg_i2cBusAddition_failed)                           \
+    X(psatErr_highg_AccConfig_failed)                                \
+    X(psatErr_highg_i2cBusRemoval_failed)                            \
+    X(psatErr_highg_DataRead_failed)                                 \
+    X(psatErr_highg_reset_failed)                                    \
+                                                                     \
     X(psatErr__COUNT)
 
 // DEFINE ENUMS FOR EACH LIST
@@ -101,10 +126,6 @@ typedef enum
 } psatFSM_component_e;
 typedef enum
 {
-    PSAT_FSM_COMPONENTS_STATUS_LIST
-} psatFSM_componentStatus_e;
-typedef enum
-{
     PSAT_FSM_COMPONENTS_TYPES_LIST
 } psatFSM_componentType_e;
 typedef enum
@@ -112,6 +133,18 @@ typedef enum
     PSAT_ERR_CODE_LIST
 } psatErr_code_e;
 #undef X
+
+// For component statusses
+typedef struct
+{
+    // prelaunch:
+    uint16_t enabled;
+
+    // During mission:
+    uint16_t init;
+    uint16_t task;
+    uint16_t error;
+} psatFSM_componentConfig_t;
 
 // STATE MACHINE EVENT
 typedef struct
@@ -160,8 +193,9 @@ typedef struct
 
     void (*recover)(void);
 
+    bool (*preflight)(void);
+
     psatFSM_componentType_e            type;
-    psatFSM_componentStatus_e          status;
     psatFSM_componentRecoveryContext_t recoveryContext;
 
 } psatFSM_component_t;
@@ -189,9 +223,74 @@ typedef struct
 
 typedef struct
 {
+    float   temperature;
+    int     pressure;
+
+    double  altitude;
+
+    int64_t time;
+
+} bmp280_data_t;
+
+// BMI323 IMU (LOW-G ACCELEROMETER & GRYOSCOPE) DATA
+
+typedef struct
+{
+    //acc in m/s/s and gyro in degree/s
+    double accX;
+    double accY;
+    double accZ;
+    double gyroX;
+    double gyroY;
+    double gyroZ;
+
+    //time is in uS since esp power on using esp_timer_get_time()
+    int64_t time;
+
+} bmi323_data_t;
+
+// HIGH G ACCELEROMETER DATA
+typedef struct
+{
+    //acc in m/s/s
+    double accX;
+    double accY;
+    double accZ;
+
+    //time is in uS since esp power on using esp_timer_get_time()
+    int64_t time;
+
+} highGAcc_data_t;
+
+//SENSOR DATA STRUCT
+
+typedef struct
+{
+
     int32_t temperature;
     double  pressure;
-} bmp280_preflightStatus_t;
+
+    double  barometric_altitude;
+    double  altitude;
+
+    double  accX;
+    double  accY;
+    double  accZ;
+
+    double  velX;
+    double  velY;
+    double  velZ;
+
+    double  gyroX;
+    double  gyroY;
+    double  gyroZ;
+
+    double  batterVoltage;
+    double  ldrVoltage;
+
+    //adjusted gps based accelerometer and barometer?
+
+} sensorData_t;
 
 // GPS DATA
 typedef struct
@@ -221,6 +320,8 @@ typedef struct
     bool    navValid;      // knots, kph & course
     bool    fixInfoValid;  // fix quality, sats tracked
     bool    altitudeValid; // altitude, geoidal
+
+    int     linesRecieved;
 } gps_data_t;
 
 // FUNCTIONS TO CONVERT ENUM TO A STRING
@@ -259,19 +360,6 @@ psatFSM_componentToString(psatFSM_component_e type)
         PSAT_FSM_COMPONENTS_LIST
 #undef X
         default: return "psatFSM_component_invalid";
-    }
-}
-
-static inline const char*
-psatFSM_componentStatusToString(psatFSM_componentStatus_e type)
-{
-    switch (type)
-    {
-#define X(name)                                                      \
-    case name: return #name;
-        PSAT_FSM_COMPONENTS_STATUS_LIST
-#undef X
-        default: return "psatFSM_componentStatus_invalid";
     }
 }
 

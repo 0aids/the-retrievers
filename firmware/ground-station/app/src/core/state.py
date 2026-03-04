@@ -1,76 +1,92 @@
-import ctypes
-import threading
 import time
+
+import threading
 from copy import deepcopy
-from enum import IntEnum, auto
+from functools import wraps
+
+from core.types import FullState, FSMState, ComponentData, FSMComponent
 
 
-class FSMState(IntEnum):
-    psatFSM_state_start = 0
-    psatFSM_state_prelaunch = auto()
-    psatFSM_state_ascent = auto()
-    psatFSM_state_deployPending = auto()
-    psatFSM_state_deployed = auto()
-    psatFSM_state_descent = auto()
-    psatFSM_state_landing = auto()
-    psatFSM_state_recovery = auto()
-    psatFSM_state_lowPower = auto()
-    psatFSM_state_error = auto()
-    psatFSM_state__COUNT = auto()
+def with_lock(writing: bool = True):
+    def decorator(f):
+        @wraps(f)
+        def wrapper(self: "StateManager", *args, **kwds):
+            with self._lock:
+                if writing:
+                    self._state.radio.lastPacketTime = time.time()
+                    self._state.radio.packetsReceived += 1
 
+                return f(self, *args, **kwds)
 
-class GPSStruct(ctypes.Structure):
-    _fields_ = [
-        ("latitude", ctypes.c_float),
-        ("longitude", ctypes.c_float),
-        ("speedKnots", ctypes.c_float),
-        ("speedKph", ctypes.c_float),
-        ("courseDeg", ctypes.c_float),
-        ("hdop", ctypes.c_float),
-        ("altitude", ctypes.c_float),
-        ("geoidalSep", ctypes.c_float),
-        ("day", ctypes.c_uint32),
-        ("month", ctypes.c_uint32),
-        ("year", ctypes.c_uint32),
-        ("hours", ctypes.c_uint32),
-        ("minutes", ctypes.c_uint32),
-        ("seconds", ctypes.c_uint32),
-        ("fixQuality", ctypes.c_uint32),
-        ("satellitesTracked", ctypes.c_uint32),
-        ("satsInView", ctypes.c_uint32),
-        ("positionValid", ctypes.c_bool),
-        ("navValid", ctypes.c_bool),
-        ("fixInfoValid", ctypes.c_bool),
-        ("altitudeValid", ctypes.c_bool),
-    ]
+        return wrapper
+
+    return decorator
 
 
 class StateManager:
     def __init__(self):
         self._lock = threading.Lock()
-        self._state = {
-            "gps": {field[0]: None for field in GPSStruct._fields_},
-            "fsm": {"state": None, "name": None},
-            "radio": {"last_packet_time": None},
-            "stats": {"packets_received": 0},
-        }
+        self._state = FullState()
 
+        self._state.components = [
+            ComponentData(
+                id=comp.value,
+                name=comp.name,
+                enabled=False,
+                inited=False,
+                task=False,
+                error=False,
+                preflightSuccess=None,
+            )
+            for comp in FSMComponent
+            if comp != FSMComponent.psatFSM_component__COUNT
+        ]
+
+    @with_lock()
     def update_gps(self, gps: dict):
-        with self._lock:
-            self._state["gps"].update(gps)
-            self._state["radio"]["last_packet_time"] = time.time()
-            self._state["stats"]["packets_received"] += 1
+        for key, value in gps.items():
+            if hasattr(self._state.data.gps, key):
+                setattr(self._state.data.gps, key, value)
 
-    def update_state(self, new_state: int | FSMState):
-        with self._lock:
-            self._state["fsm"]["state"] = FSMState(new_state)
-            self._state["fsm"]["name"] = FSMState(new_state).name
-            self._state["radio"]["last_packet_time"] = time.time()
-            self._state["stats"]["packets_received"] += 1
+    @with_lock()
+    def update_component_runtime(self, enabled, init, task, error):
+        for c in self._state.components:
+            bit = 1 << c.id
 
+            c.enabled = bool(enabled & bit)
+            c.inited = bool(init & bit)
+            c.task = bool(task & bit)
+            c.error = bool(error & bit)
+
+    @with_lock()
+    def update_preflight(self, mask: int):
+        for c in self._state.components:
+            bit = 1 << c.id
+            c.preflightSuccess = bool(mask & bit)
+
+    @with_lock()
+    def update_state(self, new_state: int, prev_state: int):
+        try:
+            self._state.fsm.currentState = FSMState(new_state)
+            self._state.fsm.currentStateName = FSMState(new_state).name
+        except Exception:
+            self._state.fsm.currentState = int(new_state)
+            self._state.fsm.currentStateName = f"state_{int(new_state)}"
+
+        try:
+            self._state.fsm.prevState = FSMState(prev_state)
+            self._state.fsm.prevStateName = FSMState(prev_state).name
+        except Exception:
+            self._state.fsm.prevState = int(prev_state)
+            self._state.fsm.prevStateName = f"state_{int(prev_state)}"
+
+    @with_lock()
+    def set_preflight_results(self, data: list[ComponentData]):
+        self._state.components = data
+
+    @with_lock(False)
     def snapshot(self):
-        with self._lock:
-            return deepcopy(self._state)
+        return deepcopy(self._state)
 
 
 state_manager = StateManager()

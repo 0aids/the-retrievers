@@ -1,11 +1,13 @@
 #include "loraFsm.h"
 #include <stdint.h>
+#include "components.h"
 #include <stdio.h>
 #include <string.h>
 #include <shared_lora.h>
 #include <shared_state.h>
 #include <helpers.h>
 
+#include "components.h"
 #include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -128,40 +130,88 @@ static bool _loraFsm_attemptPing()
     }
     if (_rxProcessed)
     {
-        // TODO: Check if we actually received a pong.
-        ESP_LOGI(__FUNCTION__, "Received pong, successful ping pong");
         _rxProcessed = false;
+
+        loraFsm_packetWrapper_t packet = loraFsm_packetParse(
+            rxBuffer.mp.buffer, rxBuffer.currentlyUsedSize);
+
+        if (!packet.wellFormed)
+        {
+            ESP_LOGE(__FUNCTION__, "not well formed packet");
+            return false;
+        }
+
+        if (packet.packetInterpreter->type == loraFsm_packetType_pong)
+        {
+            ESP_LOGI(__FUNCTION__, "Valid pong received");
+            loraFsm_packetFree(&packet);
+            return true;
+        }
+
+        ESP_LOGW(__FUNCTION__, "Received packet, but not pong: %s",
+                 loraFsm_packetTypeToString(
+                     packet.packetInterpreter->type));
+
+        loraFsm_packetFree(&packet);
         return true;
     }
     ESP_LOGW(__FUNCTION__, "Unsuccessful ping pong.");
     return false;
 }
 
-static void _loraFsm_broadcast()
+static void _loraFsm_broadcast_sendGPS()
 {
-    // Get state and then transmit it.
-    // TODO: create function that returns more than just our current PSAT state.
-    ESP_LOGI(__FUNCTION__, "Broadcasting state information!");
-    psatFSM_state_e psatState = psatFSM_getCurrentState();
-    gps_data_t      gpsData   = {0};
-    // Might not fill out the data.
+    gps_data_t gpsData = {0};
     gps_stateGetSnapshot(&gpsData);
-    // Transmit the state data
-    loraFsm_packetWrapper_t psatStatePacket =
-        loraFsm_packetCreate(loraFsm_packetType_stateData,
-                             (uint8_t*)&psatState, sizeof(psatState));
-
-    loraFsm_packetSend(&psatStatePacket);
-    loraFsm_packetFree(&psatStatePacket);
-
-    vTaskDelay(100 / portTICK_PERIOD_MS);
 
     loraFsm_packetWrapper_t gpsStatePacket =
         loraFsm_packetCreate(loraFsm_packetType_gpsData,
                              (uint8_t*)&gpsData, sizeof(gpsData));
 
     loraFsm_packetSend(&gpsStatePacket);
+    loraFsm_packetFree(&gpsStatePacket);
+}
+
+static void _loraFsm_broadcast_sendState()
+{
+    psatGlobal_state_t psatState = {
+        .currentFSMState = psatFSM_getCurrentState(),
+        .prevFSMState    = psatFSM_getPreviousState()};
+
+    loraFsm_packetWrapper_t psatStatePacket =
+        loraFsm_packetCreate(loraFsm_packetType_stateData,
+                             (uint8_t*)&psatState, sizeof(psatState));
+
+    loraFsm_packetSend(&psatStatePacket);
     loraFsm_packetFree(&psatStatePacket);
+}
+
+static void _loraFsm_broadcast_sendComponents()
+{
+    psatFSM_componentConfig_t psatConfig;
+    psatFSM_getComponentConfig(&psatConfig);
+
+    loraFsm_packetWrapper_t psatConfigPacket = loraFsm_packetCreate(
+        loraFsm_packetType_componentData, (uint8_t*)&psatConfig,
+        sizeof(psatConfig));
+
+    loraFsm_packetSend(&psatConfigPacket);
+    loraFsm_packetFree(&psatConfigPacket);
+}
+
+static void _loraFsm_broadcast_sendSensors() {}
+
+static void _loraFsm_broadcast()
+{
+    ESP_LOGI(__FUNCTION__, "Broadcasting state information!");
+
+    _loraFsm_broadcast_sendState();
+    vTaskDelay(100 / portTICK_PERIOD_MS);
+    _loraFsm_broadcast_sendGPS();
+    vTaskDelay(100 / portTICK_PERIOD_MS);
+    _loraFsm_broadcast_sendComponents();
+    vTaskDelay(100 / portTICK_PERIOD_MS);
+    _loraFsm_broadcast_sendSensors();
 }
 
 static void _loraFsm_runStateIdle()
@@ -212,59 +262,136 @@ static void _loraFsm_runStateCmd()
         return;
     }
 
+    ESP_LOGI(
+        __FUNCTION__, "Recieved Request: %s",
+        loraFsm_packetTypeToString(packet.packetInterpreter->type));
+
     switch (packet.packetInterpreter->type)
     {
-        case loraFsm_packetType_buzReq:
+        // Buzzer Requests
+        case loraFsm_packetType_buzzLongReq:
         {
-            ESP_LOGE(__FUNCTION__, "Buzzer Request Received!");
             psatFSM_event_t event = {
                 .global = true,
                 .type   = psatFSM_eventType_audioBeep,
+                .arg    = true,
             };
             psatFSM_postEvent(&event);
             break;
         }
-
-        case loraFsm_packetType_landing:
+        case loraFsm_packetType_buzzShortReq:
         {
-            ESP_LOGE(__FUNCTION__,
-                     "Landing Complete Request Received!");
             psatFSM_event_t event = {
-                .global = false,
-                .type   = psatFSM_eventType_landingConfirmed,
+                .global = true,
+                .type   = psatFSM_eventType_audioBeep,
+                .arg    = false,
             };
             psatFSM_postEvent(&event);
             break;
         }
 
-        case loraFsm_packetType_prelaunch:
+        // Prelaunch Stuff
+        case loraFsm_packetType_prelaunchCompleteReq:
         {
-            ESP_LOGE(__FUNCTION__,
-                     "Prelaunch Complete Request "
-                     "Received!");
             psatFSM_event_t event = {
                 .global = false,
                 .type   = psatFSM_eventType_prelaunchComplete,
             };
+
             psatFSM_postEvent(&event);
             break;
         }
+        case loraFsm_packetType_preflightReq:
+        {
+            uint16_t prelaunchOutput = psatFSM_preflightTest(false);
+            ESP_LOGI("PREFLIGHT", "PREFLIGHT TEST RESULTS: %hx",
+                     prelaunchOutput);
 
-        case loraFsm_packetType_stateDumpReq:
-            ESP_LOGE(__FUNCTION__, "Dump request received! noop");
+            loraFsm_packetWrapper_t preflightStatePacket =
+                loraFsm_packetCreate(loraFsm_packetType_preflightData,
+                                     (uint8_t*)&prelaunchOutput,
+                                     sizeof(prelaunchOutput));
+
+            loraFsm_packetSend(&preflightStatePacket);
+            loraFsm_packetFree(&preflightStatePacket);
             break;
+        }
+        case loraFsm_packetType_preflightDataReq:
+        {
+            uint16_t prelaunchOutput = psatFSM_preflightTest(true);
 
+            loraFsm_packetWrapper_t preflightStatePacket =
+                loraFsm_packetCreate(loraFsm_packetType_preflightData,
+                                     (uint8_t*)&prelaunchOutput,
+                                     sizeof(prelaunchOutput));
+
+            loraFsm_packetSend(&preflightStatePacket);
+            loraFsm_packetFree(&preflightStatePacket);
+            break;
+        }
+
+        // state overriding and forwarding
         case loraFsm_packetType_fastForwardReq:
-            ESP_LOGE(__FUNCTION__,
-                     "Fast forward request received! "
-                     "noop");
+        {
+            psatFSM_state_e targetState =
+                (psatFSM_state_e)*packet.packetInterpreter->data;
+            psatFSM_stateFastForward(targetState);
             break;
-
+        }
         case loraFsm_packetType_stateOverrideReq:
-            ESP_LOGE(__FUNCTION__, "Overriding state!");
-            psatFSM_stateOverride(
-                *(psatFSM_state_e*)(&packet.packetInterpreter->data));
+        {
+            psatFSM_state_e targetState =
+                (psatFSM_state_e)*packet.packetInterpreter->data;
+            psatFSM_stateOverride(targetState);
             break;
+        }
+
+        // component stuff
+        case loraFsm_packetType_enableComponentReq:
+        {
+            psatFSM_component_e targetComponent =
+                (psatFSM_component_e)*packet.packetInterpreter->data;
+            psatFSM_enableComponent(targetComponent);
+            break;
+        }
+        case loraFsm_packetType_disableComponentReq:
+        {
+            psatFSM_component_e targetComponent =
+                (psatFSM_component_e)*packet.packetInterpreter->data;
+            psatFSM_disableComponent(targetComponent);
+            break;
+        }
+
+        case loraFsm_packetType_startComponentTaskReq:
+        {
+            psatFSM_component_e targetComponent =
+                (psatFSM_component_e)*packet.packetInterpreter->data;
+            psatFSM_startComponentTask(targetComponent);
+            break;
+        }
+        case loraFsm_packetType_stopComponentTaskReq:
+        {
+            psatFSM_component_e targetComponent =
+                (psatFSM_component_e)*packet.packetInterpreter->data;
+            psatFSM_stopComponentTask(targetComponent);
+            break;
+        }
+
+        case loraFsm_packetType_markComponentEnabledReq:
+        {
+            psatFSM_component_e targetComponent =
+                (psatFSM_component_e)*packet.packetInterpreter->data;
+            psatFSM_markComponentEnabled(targetComponent, true);
+            break;
+        }
+
+        case loraFsm_packetType_markComponentDisabledReq:
+        {
+            psatFSM_component_e targetComponent =
+                (psatFSM_component_e)*packet.packetInterpreter->data;
+            psatFSM_markComponentEnabled(targetComponent, false);
+            break;
+        }
 
         default: ESP_LOGE(__FUNCTION__, "Invalid request!"); break;
     }
@@ -296,6 +423,7 @@ static void _loraFsm_runStateBeacon()
 static void _loraFsm_runStateTxRoutine()
 {
     _loraFsm_broadcast();
+    lora_setRx(0);
     _loraFsm_currentState_s = loraFsm_radioStates_idle;
     vTaskDelay(500 / portTICK_PERIOD_MS);
     // Send a ping request.

@@ -3,13 +3,13 @@
 #include "driver/uart.h"
 
 #define CFG_GPS_UART_NUM_d         UART_NUM_1
-#define CFG_GPS_TX_PIN_d           48 // 37 // CANNOT USE! Part of heap.
-#define CFG_GPS_RX_PIN_d           42
-#define CFG_LANDING_BUTTON_PIN_d   39
-#define CFG_PRELAUNCH_BUTTON_PIN_d 21
-#define CFG_LIGHT1_PIN_d           41
-#define CFG_BUZZER_PIN_d           40
-#define CFG_SERVO_PIN_d            8
+#define CFG_GPS_TX_PIN_d           6 // 37 // CANNOT USE! Part of heap.
+#define CFG_GPS_RX_PIN_d           7
+#define CFG_LANDING_BUTTON_PIN_d   47
+#define CFG_PRELAUNCH_BUTTON_PIN_d 45
+#define CFG_LIGHT1_PIN_d           42
+#define CFG_BUZZER_PIN_d           38
+#define CFG_SERVO_PIN_d            48
 
 #define LDR_ADC_UNIT_d                 ADC_UNIT_1
 #define LDR_ADC_CHANNEL_d              ADC_CHANNEL_1
@@ -54,3 +54,17 @@
 #define CAMERA_UART_NUM        (2)
 #define CAMERA_TX_IO           (17)
 #define CAMERA_RX_IO           (16)
+#define BMI323_ADDRESS  0X68
+#define BMI323_ERRREG_ADDRESS 0x01
+#define BMI323_ACCELEROMETER_CONFIG_ADDRESS 0x20
+#define BMI323_ACCELEROMETER_CONFIG1 0b01110000
+#define BMI323_ACCELEROMETER_CONFIG2 0b00111110
+#define BMI323_GYRO_CONFIG_ADDRESS 0x21
+#define BMI323_GYRO_CONFIG1 0b01110000
+#define BMI323_GYRO_CONFIG2 0b00101110
+#define BMI323_FIFO_CONFIG_ADDRESS 0x36
+
+#define HIGHG_ADDRESS  0b0011000
+#define HIGHG_POWER_ADDRESS 0x20
+#define HIGHG_POWER_CONFIG 0b00101111
+#define HIGHG_DATA_ADDRESS 0x29

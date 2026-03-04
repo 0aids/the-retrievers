@@ -20,25 +20,23 @@ void psatFSM_prelaunchEntryHandler()
     gpio_install_isr_service(0);
 
     psatFSM_registerAllComponents();
-    psatFSM_initAll();
 
     loraFsm_init();
     loraFSM_startAsTask();
 
-    timer_start(timer_timerId_10s);
     button_enable(button_id_prelaunch);
 }
 
 void psatFSM_ascentEntryHandler()
 {
-    psatFSM_getComponent(psatFSM_component_ldr)->start();
+    psatFSM_startComponentTask(psatFSM_component_ldr);
 }
 
 void psatFSM_deployPendingEntryHandler() {}
 
 void psatFSM_deployedEntryHandler()
 {
-    psatFSM_getComponent(psatFSM_component_ldr)->stop();
+    psatFSM_stopComponentTask(psatFSM_component_ldr);
 
     timer_stop(timer_timerId_10s);
 
@@ -51,7 +49,7 @@ void psatFSM_deployedEntryHandler()
 
 void psatFSM_descentEntryHandler()
 {
-    psatFSM_getComponent(psatFSM_component_gps)->start();
+    psatFSM_startComponentTask(psatFSM_component_gps);
     button_enable(button_id_landing);
 }
 

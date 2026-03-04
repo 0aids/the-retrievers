@@ -4,14 +4,16 @@
 #include <pin_config.h>
 #include <string.h>
 
-void           bmp280_init(i2c_master_bus_handle_t* BusHandle);
+
+void           bmp280_init();
 void           bmp280_deinit();
 void           bmp280_reset();
 void           bmp280_getCalibration();
+bool           bmp280_isHealthy();
 
-double         bmp280_getPressure();    // in Pa
-int32_t        bmp280_getTemperature(); // in degrees C
 
-psatErr_code_e bmp280_checkErr();
-bmp280_preflightStatus_t bmp280_preflightTest();
+double         bmp280_getData();    
+//int32_t        bmp280_getTemperature(); // in degrees C
+
+bool bmp280_preflightTest();
 bmp280_status_t          bmp280_queryStatus();
