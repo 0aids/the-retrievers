@@ -11,6 +11,7 @@
 #include "state_handlers.h"
 #include "timers.h"
 #include "components.h"
+#include "camera_control.h"
 
 void psatFSM_startExitHandler() {} // do nothing
 
