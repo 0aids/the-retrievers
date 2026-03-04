@@ -121,9 +121,9 @@ void bmi323_getData() {
     bmi323_data.accY = ((double)rawData[1] /2048.9375) * 9.81;
     bmi323_data.accZ = ((double)rawData[2] /2048.9375) * 9.81;
 
-    bmi323_data.gyroX = ((double)rawData[3] / 32767) * 500;
-    bmi323_data.gyroY = ((double)rawData[4] / 32767) * 500;
-    bmi323_data.gyroZ = ((double)rawData[5] / 32767) * 500;    
+    bmi323_data.gyroX = ((double)rawData[3] / 32767) * 500 /180 * PI;
+    bmi323_data.gyroY = ((double)rawData[4] / 32767) * 500 /180 * PI;
+    bmi323_data.gyroZ = ((double)rawData[5] / 32767) * 500 /180 * PI;    
 
     printf("\n raw done time: %lld\n\n", esp_timer_get_time());
 

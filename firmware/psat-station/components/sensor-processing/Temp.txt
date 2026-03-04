@@ -1,0 +1,123 @@
+//TEMP MPU6050 CODE FOR TESTING 
+/*
+
+
+static i2c_device_config_t mpu6050_Config = {
+    .dev_addr_length = I2C_ADDR_BIT_7,
+    .device_address  = 0x68,
+    .scl_speed_hz    = I2C_FREQUENCY,
+};
+
+static i2c_master_dev_handle_t mpu6050_handle;
+
+
+void mpu6050_init() {
+
+    i2c_master_bus_add_device(i2c_bus1_handle, &mpu6050_Config, &mpu6050_handle);
+
+    uint8_t writeBuffer[2] = {0x1A, 0x05};
+
+    i2c_master_transmit(mpu6050_handle, writeBuffer, 2,-1);
+
+    uint8_t writeBuffer2[2] = {0x1B, 0x8};
+
+    i2c_master_transmit(mpu6050_handle, writeBuffer2, 2,-1);
+
+    uint8_t writeBuffer4[2] = {0x1C, 0x10};
+
+    i2c_master_transmit(mpu6050_handle, writeBuffer4, 2,-1);
+
+
+    uint8_t writeBuffer3[2] = {0x6B, 0x00};
+
+    i2c_master_transmit(mpu6050_handle, writeBuffer3, 2,-1);
+
+
+}
+int n = 0;
+double avgX = 0;
+double avgY = 0;
+double avgZ = 0;
+
+void mpu6050_getData() {
+
+    n++;
+
+    uint8_t readBuffer[6] = {0};
+
+    uint8_t writeBuffer[1] = {0x43};
+
+    i2c_master_transmit_receive(mpu6050_handle, writeBuffer, 2, readBuffer, 6, -1);
+
+    uint8_t readBuffer2[6] = {0};
+
+    uint8_t writeBuffer2[1] = {0x3B};
+
+    i2c_master_transmit_receive(mpu6050_handle, writeBuffer2, 2, readBuffer2, 6, -1);
+
+
+    bmi323_data.time = esp_timer_get_time();
+
+
+    int16_t gyroX;
+    int16_t gyroY;
+    int16_t gyroZ;
+
+    memcpy(&gyroX, readBuffer, 2);
+    memcpy(&gyroY, readBuffer+2, 2);
+    memcpy(&gyroZ, readBuffer+4, 2);
+
+    double rateX = (double)gyroX/65.5 -0.8;
+    double rateY = (double)gyroY/65.5 - 1.17;
+    double rateZ = (double)gyroZ/65.5 - 1.48;
+
+    
+
+    bmi323_data.gyroX = gyroX;
+    bmi323_data.gyroY = gyroY;
+    bmi323_data.gyroZ = gyroZ;
+
+    int16_t accX;
+    int16_t accY;
+    int16_t accZ;
+
+    memcpy(&accX, readBuffer2, 2);
+    memcpy(&accY, readBuffer2+2, 2);
+    memcpy(&accZ, readBuffer2+4, 2);
+
+    double AccX = (double)accX/4096 *9.81 -0.282;
+    double AccY = (double)accY/4096 *9.81 +0.997;
+    double AccZ = (double)accZ/4096 *9.81 +3.4;
+
+    avgX = (avgX*(n-1)/n)+AccX/n;
+    avgY = (avgY*(n-1)/n)+AccY/n;
+    avgZ = (avgZ*(n-1)/n)+AccZ/n;
+
+    printf("X: %lf\nY: %lf\nZ: %lf\n\n", AccX, AccY, AccZ);
+
+
+}
+
+double x = 0;
+double y = 0;
+double z = 0;
+int64_t lastTime = 0;
+
+void getOrientation() {
+    if(lastTime == 0) {
+        lastTime = esp_timer_get_time();
+    }
+
+    mpu6050_getData();
+    x += bmi323_data.gyroX*(bmi323_data.time-lastTime)/1000000;
+    y += bmi323_data.gyroY*(bmi323_data.time-lastTime)/1000000;
+    z += bmi323_data.gyroZ*(bmi323_data.time-lastTime)/1000000;
+
+
+    printf("X: %lf\nY: %lf\nZ: %lf\n\n", x, y, z);
+
+}
+
+#include"I2C.h"
+#include "sm.h"
+#include <string.h>
