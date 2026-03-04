@@ -209,6 +209,11 @@ void psatFSM_killTask()
 
 void psatFSM_stateOverride(psatFSM_state_e newState)
 {
+    if (newState >= psatFSM_state__COUNT)
+    {
+        return;
+    }
+
     ESP_LOGI(TAG, "Overriding current state to %i", newState);
     psatFSM_setCurrentState(newState);
 
@@ -238,7 +243,7 @@ void psatFSM_stateFastForward(psatFSM_state_e target)
 {
     ESP_LOGI(TAG, "Fast forwarding current state to %i", target);
     psatFSM_state_e currentState = psatFSM_getCurrentState();
-    if (target < currentState)
+    if (target < currentState || target >= psatFSM_state__COUNT)
     {
         return;
     }

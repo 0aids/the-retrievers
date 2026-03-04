@@ -26,7 +26,9 @@ void psatFSM_prelaunchEntryHandler()
     loraFsm_init();
     loraFSM_startAsTask();
 
-    timer_start(timer_timerId_10s);
+    psatFSM_startComponentTask(psatFSM_component_camera);
+
+    psatFSM_enableComponent(psatFSM_component_buttons);
     button_enable(button_id_prelaunch);
 }
 
