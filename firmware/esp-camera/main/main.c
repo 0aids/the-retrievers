@@ -20,15 +20,12 @@ void system_init(void){
         UART_MESSAGE("Cam init fails");
         return;
     }
-    UART_MESSAGE("Cam init success");
-
     err = init_sd_card();
     if (err != ESP_OK) {
         if (err == ESP_FAIL) UART_MESSAGE("Failed to mount filesystem.");
         else UART_MESSAGE("Failed to initialize the card.");
         return;
     }
-    UART_MESSAGE("Filesystem mounted.");
     UART_MESSAGE("Camera and sd card successful init");
 }
 
@@ -44,6 +41,7 @@ void uart_task(void *pvParameters){
 
     bool listen;
     listen = true;
+    int pic_num = 1;
 
     while (listen) {
         // Read data from the UART
@@ -53,9 +51,17 @@ void uart_task(void *pvParameters){
             data[len] = 0;
             // Write data back to the UART
             if (strstr((const char*)data, "++INIT++"))          system_init();
-            else if (strstr((const char*)data, "++APOGEE++"))   take_pics();
+            else if (strstr((const char*)data, "++TAKE++"))   
+            {    
+                for (int i = 1; i <= 10; i++) {
+                    take_pics(pic_num);
+                    pic_num++;
+                    if (i != 10) vTaskDelay(pdMS_TO_TICKS(1000));
+                }
+                UART_MESSAGE("Pictures taken");
+            }
             else if (strstr((const char*)data, "++LOG++"))      log_data((const char*)data);
-            else if (strstr((const char*)data, "++TEST++"))     test_pic();
+            else if (strstr((const char*)data, "++TEST++"))     take_pics(0);
             else if (strstr((const char*)data, "++DEINIT++")){
                 deinit_sd_card();
                 esp_camera_deinit();

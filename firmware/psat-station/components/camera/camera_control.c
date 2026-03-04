@@ -7,6 +7,7 @@
 #include <stdio.h>
 
 static TaskHandle_t      xHandleCamera_s  = NULL;
+#define TAG             "Cam-controller"
 
 void camera_control_init(void) {
     uart_config_t control_uart_config = {
@@ -27,7 +28,7 @@ void camera_task(void *pvParameters){
     // Configure a temporary buffer for the incoming data
     uint8_t *data = (uint8_t *) malloc(BUF_SIZE);
 
-    char* tag = "Camera";
+    char* tag = "Camera module echo";
 
     if (data == NULL) {
         ESP_LOGE(tag, "Failed to allocate memory!");
@@ -35,7 +36,7 @@ void camera_task(void *pvParameters){
         return;
     }
 
-    ESP_LOGI(tag, "UART started.");
+    ESP_LOGI(tag, "Echo started");
 
     while (1) {
         // Read data from the UART
@@ -50,13 +51,13 @@ void camera_task(void *pvParameters){
 }
 
 void camera_init(void){
-    ESP_LOGI("Control", "Initialising");
+    ESP_LOGI(TAG, "Initialising");
     CAMERA_MESSAGE("++INIT++");
 }
 
 void camera_take_pics(void){
-    ESP_LOGI("Control", "Apogee reached");
-    CAMERA_MESSAGE("++APOGEE++");
+    ESP_LOGI(TAG, "Taking 10 pictures");
+    CAMERA_MESSAGE("++TAKE++");
 }
 
 void log_data(const char* data){
@@ -65,12 +66,12 @@ void log_data(const char* data){
 
     len = snprintf(message, sizeof(message), "++LOG++\n%s\n\n", data);
 
-    ESP_LOGI("Control", "Logging data");
+    ESP_LOGI(TAG, "Logging data");
     uart_write_bytes(CAMERA_UART_NUM, message, len);
 }
 
 void camera_deinit(void){
-    ESP_LOGI("Control", "Deinitialise");
+    ESP_LOGI(TAG, "Deinitialise");
     CAMERA_MESSAGE("++DEINIT++");
 }
 
@@ -99,6 +100,7 @@ void camera_control_test(void *const pvParameters){
         return;
     }
 
+    ESP_LOGI(tag, "Start");
     bool init = false, pic = false, log = false, deinit = false;
 
     while (!*pass_ptr) {
@@ -107,15 +109,32 @@ void camera_control_test(void *const pvParameters){
         
         if (len) {
             data[len] = 0;
+            ESP_LOGI("Camera module echo", "%s", data);
+            // Write data back to the console.
             // Write data back to the UART
-            if (strstr((const char*)data, "successful init"))           init = true;
-            else if (strstr((const char*)data, "Pic taken"))            pic = true;
-            else if (strstr((const char*)data, "Logged data"))          log = true;
-            else if (strstr((const char*)data, "Successfully deinit"))  deinit = true;
+            if (strstr((const char*)data, "successful init"))    
+            {
+                init = true; 
+                ESP_LOGI(tag, "INIT success");
+            }
+            else if (strstr((const char*)data, "Saved pic"))            
+            {
+                pic = true; 
+                ESP_LOGI(tag, "PIC success");
+            }
+            else if (strstr((const char*)data, "Logged data"))         
+            { 
+                log = true; 
+                ESP_LOGI(tag, "LOG success");
+            }
+            else if (strstr((const char*)data, "Successfully deinit"))  
+            {
+                deinit = true; 
+                ESP_LOGI(tag, "DEINIT success");
+            }
         }
         if (init && pic && log && deinit){
             *pass_ptr = true;
-            
         }
     }
     free(data);
@@ -127,17 +146,14 @@ bool camera_preflightTest(void){
     bool pass = false;
     TaskHandle_t xHandleTestCamera_s = NULL;    
     camera_control_init();
-    camera_startTask();
     xTaskCreate(camera_control_test, "camera control test", STACK_SIZE,
                 &pass, 9, &xHandleTestCamera_s);
-                
-    vTaskDelay(pdMS_TO_TICKS(5000));
-
+    
     camera_init();
     vTaskDelay(pdMS_TO_TICKS(1000));
 
-    CAMERA_MESSAGE("++TEST++");
-    ESP_LOGI("Test", "Taking pic");
+        CAMERA_MESSAGE("++TEST++");
+    ESP_LOGI(TAG, "Taking pic");
     vTaskDelay(pdMS_TO_TICKS(1000));
 
     log_data("Test: Data logged");
@@ -146,7 +162,6 @@ bool camera_preflightTest(void){
     camera_deinit();
     vTaskDelay(pdMS_TO_TICKS(200));
 
-    camera_stopTask();
     camera_control_deinit();
     vTaskDelete(xHandleTestCamera_s);
     if (pass == true) ESP_LOGI("Test", "Successful cam test");
