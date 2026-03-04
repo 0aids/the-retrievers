@@ -245,4 +245,4 @@ vite.config.ts.timestamp-*
 .vite/
 static/
 
-actual/
+actual*/
