@@ -50,9 +50,12 @@ void uart_task(void *pvParameters){
         if (len) {
             data[len] = 0;
             // Write data back to the UART
-            if (strstr((const char*)data, "++INIT++"))          system_init();
-            else if (strstr((const char*)data, "++TAKE++"))   
-            {    
+            if (strstr((const char*)data, "++INIT++")){
+                UART_MESSAGE("Initialising");
+                system_init();
+            }
+            else if (strstr((const char*)data, "++TAKE++")){    
+                UART_MESSAGE("Taking 10 pictures");
                 for (int i = 1; i <= 10; i++) {
                     take_pics(pic_num);
                     pic_num++;
@@ -60,10 +63,16 @@ void uart_task(void *pvParameters){
                 }
                 UART_MESSAGE("Pictures taken");
             }
-            else if (strstr((const char*)data, "++LOG++"))      log_data((const char*)data);
-            else if (strstr((const char*)data, "++TEST++"))     take_pics(0);
-            else if (strstr((const char*)data, "++TEST DEINIT++"))
-            {
+            else if (strstr((const char*)data, "++LOG++")){
+                UART_MESSAGE("Attempting log");
+                log_data((const char*)data);
+            }
+            else if (strstr((const char*)data, "++TEST++")){
+                UART_MESSAGE("Taking test pic");
+                take_pics(0);
+            }
+            else if (strstr((const char*)data, "++TEST DEINIT++")){
+                UART_MESSAGE("Attempting deinit ");
                 deinit_sd_card();
                 esp_camera_deinit();
                 sdmmc_host_deinit();
@@ -83,6 +92,7 @@ void uart_task(void *pvParameters){
     uart_driver_delete(CAM_UART_NUM);
     vTaskDelete(NULL);
 }
+
 
 void app_main(void){
     init_uart();
