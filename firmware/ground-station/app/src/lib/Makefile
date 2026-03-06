@@ -7,5 +7,5 @@ all:
 		loraImpl.c \
 		utilsImpl.c \
 		-std=c23
-	@gcc -shared -Wl  -o libLoraParser.so *.o
+	@gcc -shared -o libLoraParser.so *.o
 

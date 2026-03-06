@@ -110,8 +110,7 @@ void camera_control_test(void *const pvParameters){
         if (len) {
             data[len] = 0;
             ESP_LOGI("Camera module echo", "%s", data);
-            // Write data back to the console.
-            // Write data back to the UART
+
             if (strstr((const char*)data, "successful init"))    
             {
                 init = true; 
@@ -148,8 +147,8 @@ bool camera_preflightTest(void){
     camera_control_init();
     xTaskCreate(camera_control_test, "camera control test", STACK_SIZE,
                 &pass, 9, &xHandleTestCamera_s);
-    vTaskDelay(pdMS_TO_TICKS(5000));
-    
+    vTaskDelay(pdMS_TO_TICKS(1000));
+
     camera_init();
     vTaskDelay(pdMS_TO_TICKS(1000));
 
@@ -157,15 +156,17 @@ bool camera_preflightTest(void){
     ESP_LOGI(TAG, "Taking pic");
     vTaskDelay(pdMS_TO_TICKS(1000));
 
-    log_data("Test: Data logged");
+    log_data("Test: Data. WHAT WHAT WHAT");
     vTaskDelay(pdMS_TO_TICKS(1000));
 
+    ESP_LOGI(TAG, "Deinitialise");
     CAMERA_MESSAGE("++TEST DEINIT++");
     vTaskDelay(pdMS_TO_TICKS(200));
 
-
     vTaskDelete(xHandleTestCamera_s);
-    if (pass == true) ESP_LOGI("Test", "Successful cam test");
+    if (pass == true) ESP_LOGI("Test", "Cam test SUCCESS");
+    else ESP_LOGI("Test", "Cam test FAIL");
     camera_control_deinit();
     return pass;
 }
+
