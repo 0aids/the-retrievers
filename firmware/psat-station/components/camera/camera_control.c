@@ -75,6 +75,11 @@ void camera_deinit(void){
     CAMERA_MESSAGE("++DEINIT++");
 }
 
+void camera_deepsleep(void){
+    ESP_LOGI(TAG, "Putting the camera to sleep");
+    CAMERA_MESSAGE("++SLEEP++");
+}
+
 void camera_startTask(void){
     xTaskCreate(camera_task, "camera_task", STACK_SIZE,
                 NULL, 10, &xHandleCamera_s);
@@ -156,7 +161,7 @@ bool camera_preflightTest(void){
     ESP_LOGI(TAG, "Taking pic");
     vTaskDelay(pdMS_TO_TICKS(1000));
 
-    log_data("Test: Data. WHAT WHAT WHAT");
+    log_data("Test: Data.......");
     vTaskDelay(pdMS_TO_TICKS(1000));
 
     ESP_LOGI(TAG, "Deinitialise");

@@ -25,3 +25,4 @@ void camera_startTask(void);
 void camera_stopTask(void);
 void camera_control_deinit(void);
 bool camera_preflightTest(void);
+void camera_deepsleep(void);

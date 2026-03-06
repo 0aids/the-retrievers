@@ -10,6 +10,7 @@
 #include "freertos/idf_additions.h"
 #include "freertos/projdefs.h"
 #include "uart.h"
+#include <esp_sleep.h>
 
 
 void system_init(void){
@@ -19,7 +20,7 @@ void system_init(void){
         UART_MESSAGE(esp_err_to_name(err));
         return;
     }
-    
+
     err = init_psat_sd_card();
     if (err != ESP_OK) {
         UART_MESSAGE(esp_err_to_name(err));
@@ -71,6 +72,11 @@ void uart_task(void *pvParameters){
                 deinit_psat_sd_card();
                 esp_camera_deinit();
                 sdmmc_host_deinit();
+                UART_MESSAGE("TEST: Successfully deinitialised");
+            }
+            else if (strstr((const char*)data, "++SLEEP++")){
+                UART_MESSAGE("Attempting deinit ");
+                esp_deep_sleep_start();
                 UART_MESSAGE("TEST: Successfully deinitialised");
             }
             else if (strstr((const char*)data, "++DEINIT++")){
