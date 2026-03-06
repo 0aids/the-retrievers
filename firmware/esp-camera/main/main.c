@@ -74,11 +74,6 @@ void uart_task(void *pvParameters){
                 sdmmc_host_deinit();
                 UART_MESSAGE("TEST: Successfully deinitialised");
             }
-            else if (strstr((const char*)data, "++SLEEP++")){
-                UART_MESSAGE("Attempting deinit ");
-                esp_deep_sleep_start();
-                UART_MESSAGE("TEST: Successfully deinitialised");
-            }
             else if (strstr((const char*)data, "++DEINIT++")){
                 deinit_psat_sd_card();
                 esp_camera_deinit();
@@ -91,6 +86,7 @@ void uart_task(void *pvParameters){
         }
     }
     uart_driver_delete(CAM_UART_NUM);
+    esp_deep_sleep_start();
     vTaskDelete(NULL);
 }
 
