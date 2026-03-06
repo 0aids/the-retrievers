@@ -18,6 +18,6 @@
 #define PIN_D3      (13)
 
 
-esp_err_t init_sd_card(void);
-void deinit_sd_card(void);
+esp_err_t init_psat_sd_card(void);
+void deinit_psat_sd_card(void);
 void log_data(const char* data);

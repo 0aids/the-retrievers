@@ -2,7 +2,7 @@
 
 sdmmc_card_t *card;
 
-esp_err_t init_sd_card(void){
+esp_err_t init_psat_sd_card(void){
     // Inside your app_main or setup function
     esp_vfs_fat_sdmmc_mount_config_t mount_config = {
         .format_if_mount_failed = false,
@@ -24,7 +24,7 @@ esp_err_t init_sd_card(void){
     return esp_vfs_fat_sdmmc_mount(MOUNT_POINT, &host, &slot_config, &mount_config, &card);
 }
 
-void deinit_sd_card(void){
+void deinit_psat_sd_card(void){
     esp_vfs_fat_sdcard_unmount(MOUNT_POINT, card);
 }
 

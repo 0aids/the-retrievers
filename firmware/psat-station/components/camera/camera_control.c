@@ -19,9 +19,9 @@ void camera_control_init(void) {
     };
     int intr_alloc_flags = 0;
     // Configure UART parameters
-    ESP_ERROR_CHECK(uart_driver_install(CAMERA_UART_NUM, BUF_SIZE, 0, 0, NULL, intr_alloc_flags));
-    ESP_ERROR_CHECK(uart_param_config(CAMERA_UART_NUM, &control_uart_config));
-    ESP_ERROR_CHECK(uart_set_pin(CAMERA_UART_NUM, CAMERA_TX_IO, CAMERA_RX_IO, -1, -1));
+    uart_driver_install(CAMERA_UART_NUM, BUF_SIZE, 0, 0, NULL, intr_alloc_flags);
+    uart_param_config(CAMERA_UART_NUM, &control_uart_config);
+    uart_set_pin(CAMERA_UART_NUM, CAMERA_TX_IO, CAMERA_RX_IO, -1, -1);
 }
 
 void camera_task(void *pvParameters){

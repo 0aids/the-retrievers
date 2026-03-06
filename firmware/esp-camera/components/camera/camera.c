@@ -40,7 +40,7 @@ static camera_config_t camera_config = {
     .grab_mode = CAMERA_GRAB_WHEN_EMPTY,
 };
 
-esp_err_t init_camera(void)
+esp_err_t init_psat_camera(void)
 {
     //initialize the camera
     esp_err_t err = esp_camera_init(&camera_config);
@@ -69,8 +69,9 @@ void take_pics(int pic_num){
         UART_MESSAGE("Failed to open file for writing");
         return;
     }
+
     fwrite(fb->buf, 1, fb->len, file);
-    fclose(file);
+    fclose(file);    
     esp_camera_fb_return(fb);
     UART_MESSAGE("Saved pic");
 }
