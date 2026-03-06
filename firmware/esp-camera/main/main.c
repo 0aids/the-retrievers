@@ -13,17 +13,16 @@
 
 
 void system_init(void){
-    esp_err_t err ;
-
-    err = init_camera();
+    esp_err_t err;
+    err = init_psat_camera();
     if(err != ESP_OK) {
-        UART_MESSAGE("Cam init fails");
+        UART_MESSAGE(esp_err_to_name(err));
         return;
     }
-    err = init_sd_card();
+    
+    err = init_psat_sd_card();
     if (err != ESP_OK) {
-        if (err == ESP_FAIL) UART_MESSAGE("Failed to mount filesystem.");
-        else UART_MESSAGE("Failed to initialize the card.");
+        UART_MESSAGE(esp_err_to_name(err));
         return;
     }
     UART_MESSAGE("Camera and sd card successful init");
@@ -55,13 +54,9 @@ void uart_task(void *pvParameters){
                 system_init();
             }
             else if (strstr((const char*)data, "++TAKE++")){    
-                UART_MESSAGE("Taking 10 pictures");
-                for (int i = 1; i <= 10; i++) {
-                    take_pics(pic_num);
-                    pic_num++;
-                    if (i != 10) vTaskDelay(pdMS_TO_TICKS(1000));
-                }
-                UART_MESSAGE("Pictures taken");
+                UART_MESSAGE("Taking pic");
+                take_pics(pic_num);
+                pic_num++;
             }
             else if (strstr((const char*)data, "++LOG++")){
                 UART_MESSAGE("Attempting log");
@@ -73,13 +68,13 @@ void uart_task(void *pvParameters){
             }
             else if (strstr((const char*)data, "++TEST DEINIT++")){
                 UART_MESSAGE("Attempting deinit ");
-                deinit_sd_card();
+                deinit_psat_sd_card();
                 esp_camera_deinit();
                 sdmmc_host_deinit();
                 UART_MESSAGE("TEST: Successfully deinitialised");
             }
             else if (strstr((const char*)data, "++DEINIT++")){
-                deinit_sd_card();
+                deinit_psat_sd_card();
                 esp_camera_deinit();
                 sdmmc_host_deinit();
                 free(data);
@@ -95,7 +90,7 @@ void uart_task(void *pvParameters){
 
 
 void app_main(void){
-    init_uart();
+    init_psat_uart();
     xTaskCreate(uart_task, "uart_echo_task", STACK_SIZE, NULL, 10, NULL);
 }
 

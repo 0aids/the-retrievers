@@ -20,6 +20,6 @@
 
 
 
-esp_err_t init_camera(void);
+esp_err_t init_psat_camera(void);
 void take_pics(int pic_num);
 void test_pic(void);

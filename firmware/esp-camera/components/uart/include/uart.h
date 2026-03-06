@@ -23,4 +23,4 @@
 
 #define UART_MESSAGE(message)      (uart_write_bytes(CAM_UART_NUM, message, strlen(message)))
 
-void init_uart(void);
+void init_psat_uart(void);
